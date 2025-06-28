@@ -361,4 +361,4 @@ adminSchema.methods.toJSON = function() {
   return adminObject;
 };
 
-module.exports = mongoose.model('Admin', adminSchema);
+export default mongoose.model('Admin', adminSchema);

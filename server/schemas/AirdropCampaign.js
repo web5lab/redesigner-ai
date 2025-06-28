@@ -346,4 +346,4 @@ airdropCampaignSchema.statics.getCampaignStats = function(timeframe = 30) {
   ]);
 };
 
-module.exports = mongoose.model('AirdropCampaign', airdropCampaignSchema);
+export default mongoose.model('AirdropCampaign', airdropCampaignSchema);

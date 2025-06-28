@@ -315,4 +315,4 @@ socialTaskSchema.statics.getUserCompletionStatus = function(userId) {
   ]);
 };
 
-module.exports = mongoose.model('SocialTask', socialTaskSchema);
+export default mongoose.model('SocialTask', socialTaskSchema);

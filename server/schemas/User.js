@@ -237,4 +237,4 @@ userSchema.methods.useTicket = function() {
   throw new Error('No tickets available');
 };
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

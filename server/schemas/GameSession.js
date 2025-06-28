@@ -380,4 +380,4 @@ gameSessionSchema.statics.getSessionAnalytics = function(timeframe = 7) {
   ]);
 };
 
-module.exports = mongoose.model('GameSession', gameSessionSchema);
+export default mongoose.model('GameSession', gameSessionSchema);

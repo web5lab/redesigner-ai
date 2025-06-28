@@ -189,4 +189,4 @@ spinResultSchema.statics.getUserStats = function(userId) {
   ]);
 };
 
-module.exports = mongoose.model('SpinResult', spinResultSchema);
+export default mongoose.model('SpinResult', spinResultSchema);

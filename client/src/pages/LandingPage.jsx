@@ -298,16 +298,6 @@ const LandingPage= () => {
                     }));
                   }
                 }}
-                  if (isAuthenticated) {
-                    navigate('/game');
-                  } else if (wallet.isConnected) {
-                    dispatch(connectWallet({
-                      walletAddress: wallet.address,
-                      walletProvider: 'metamask',
-                      network: 'BSC'
-                    }));
-                  }
-                }}
                 className="bg-white text-gray-900 px-10 py-4 rounded-xl font-bold text-xl hover:bg-gray-100 transition-all transform hover:scale-110 shadow-xl flex items-center space-x-3 mx-auto"
               >
                 <Trophy className="w-6 h-6" />

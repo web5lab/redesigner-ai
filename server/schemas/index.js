@@ -1,15 +1,15 @@
 // Central export file for all MongoDB schemas
-const User = require('./User');
-const SpinResult = require('./SpinResult');
-const Reward = require('./Reward');
-const Transaction = require('./Transaction');
-const SocialTask = require('./SocialTask');
-const AirdropCampaign = require('./AirdropCampaign');
-const ReferralSystem = require('./ReferralSystem');
-const Admin = require('./Admin');
-const GameSession = require('./GameSession');
+import User from './User.js';
+import SpinResult from './SpinResult.js';
+import Reward from './Reward.js';
+import Transaction from './Transaction.js';
+import SocialTask from './SocialTask.js';
+import AirdropCampaign from './AirdropCampaign.js';
+import ReferralSystem from './ReferralSystem.js';
+import Admin from './Admin.js';
+import GameSession from './GameSession.js';
 
-module.exports = {
+export {
   User,
   SpinResult,
   Reward,

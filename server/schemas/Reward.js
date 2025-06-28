@@ -210,4 +210,4 @@ rewardSchema.statics.validateProbabilities = function() {
   ]);
 };
 
-module.exports = mongoose.model('Reward', rewardSchema);
+export default mongoose.model('Reward', rewardSchema);

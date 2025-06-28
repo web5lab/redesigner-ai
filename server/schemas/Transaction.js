@@ -230,4 +230,4 @@ transactionSchema.statics.getTransactionStats = function(timeframe = 30) {
   ]);
 };
 
-module.exports = mongoose.model('Transaction', transactionSchema);
+export default mongoose.model('Transaction', transactionSchema);

@@ -393,4 +393,4 @@ referralSystemSchema.statics.expireOldReferrals = function() {
   );
 };
 
-module.exports = mongoose.model('ReferralSystem', referralSystemSchema);
+export default mongoose.model('ReferralSystem', referralSystemSchema);

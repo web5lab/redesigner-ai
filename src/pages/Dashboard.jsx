@@ -27,8 +27,6 @@ import ReferAndEarnPopup from '../components/dashboard/ReferAndEarnPopup';
 import EmptyState from '../components/dashboard/EmptyState';
 import TemplatesTab from '../components/dashboard/TemplatesTab';
 import ImageToCodeTab from '../components/dashboard/ImageToCodeTab';
-import WelcomeModal from '../components/dashboard/WelcomeModal';
-import PlatformTour from '../components/dashboard/PlatformTour';
 
 const Dashboard = () => {
   const [isNewWebsiteModalOpen, setIsNewWebsiteModalOpen] = useState(false);
@@ -47,8 +45,6 @@ const Dashboard = () => {
   const [showAddWebpageModal, setShowAddWebpageModal] = useState(false);
   const [newPagePrompt, setNewPagePrompt] = useState('');
   const [newPageData, setNewPageData] = useState(null);
-  const [showTour, setShowTour] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8); // Adjust this number based on your preference
@@ -72,14 +68,6 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Check if user has completed the tour
-      const tourCompleted = localStorage.getItem('platformTourCompleted');
-      const welcomeModalShown = localStorage.getItem('welcomeModalShown');
-      
-      if (!welcomeModalShown) {
-        setShowWelcomeModal(true);
-      }
-      
       dispatch(GetUserData(token));
 
       const interval = setInterval(() => {
@@ -254,24 +242,11 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-900 text-slate-100 font-sans">
-      {/* Welcome Modal */}
-      {showWelcomeModal && (
-        <WelcomeModal 
-          user={user} 
-          onClose={() => setShowWelcomeModal(false)} 
-          onStartTour={() => setShowTour(true)} 
-        />
-      )}
-      
-      {/* Platform Tour */}
-      {showTour && <PlatformTour onClose={() => setShowTour(false)} />}
-      
       <DashboardSidebar
         user={user}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isMobileSidebarOpen={isMobileSidebarOpen}
-        setShowTour={setShowTour}
         closeMobileSidebar={closeMobileSidebar}
         setShowBilling={setShowBilling}
         setIsProfileOpen={setIsProfileOpen}

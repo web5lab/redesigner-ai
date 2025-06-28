@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  CreditCard, History, Sparkles, LogOut, ChevronDown, X, HelpCircle,
+  CreditCard, History, Sparkles, LogOut, ChevronDown, X,
   BookTemplate, Component
 } from 'lucide-react';
 import logo from "../../assets/logo.png";
@@ -13,7 +13,6 @@ const DashboardSidebar = ({
   setActiveTab,
   isMobileSidebarOpen,
   closeMobileSidebar,
-  setShowTour,
   setShowBilling,
   setIsProfileOpen,
   setIsReferralPopupOpen,
@@ -91,7 +90,7 @@ const DashboardSidebar = ({
             icon: Sparkles,
             label: "Current Plan",
             value: user?.currentPlan || 'N/A',
-            tab: 'plan', 
+            tab: 'plan',
             accent: true,
             onClick: () => setShowBilling(true),
           },
@@ -130,19 +129,6 @@ const DashboardSidebar = ({
       </nav>
 
       <div className="mt-auto border-t border-slate-700 pt-3 sm:pt-4">
-        <button
-          onClick={() => setShowTour(true)}
-          className="w-full flex items-center gap-3 p-2 sm:p-3 mb-2 rounded-lg text-left hover:bg-slate-700/50 transition-colors"
-        >
-          <div className="p-1.5 sm:p-2 rounded-md bg-slate-700 text-slate-300">
-            <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-          </div>
-          <div>
-            <p className="text-sm text-slate-400">Need help?</p>
-            <p className="text-base sm:text-lg font-semibold text-white">Platform Tour</p>
-          </div>
-        </button>
-        
         <button
           onClick={() => { setIsProfileOpen(true); closeMobileSidebar(); }}
           className="w-full flex items-center gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-slate-700/50 transition-colors group"

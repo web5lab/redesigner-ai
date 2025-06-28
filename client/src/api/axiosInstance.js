@@ -5,6 +5,20 @@ const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
 });
 
+// Request interceptor to add auth token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Response Interceptor
 axiosInstance.interceptors.response.use(
   function (response) {
@@ -18,7 +32,10 @@ const successMessage = function (response) {
   const data = response?.data;
   const msg = data?.message;
   if (msg && data?.success) {
-    console.log(msg);
+    // Only show success messages for certain operations
+    if (response.config.method !== 'get') {
+      toast.success(msg);
+    }
   }
 };
 
@@ -26,8 +43,15 @@ const errorFunction = function (error) {
   const message = error?.response?.data?.message;
   if (message) {
     toast.error(message);
-    console.log(message)
+    console.error('API Error:', message);
   }
+  
+  // Handle 401 errors (unauthorized)
+  if (error?.response?.status === 401) {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  }
+  
   throw error;
 };
 

@@ -1,9 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import globalReducer from './globalSlice'
+import authReducer from './authSlice'
+import gameReducer from './gameSlice'
+import socialReducer from './socialSlice'
+import referralReducer from './referralSlice'
 
 export const store = configureStore({
   reducer: {
-    global: globalReducer,
-    
+    auth: authReducer,
+    game: gameReducer,
+    social: socialReducer,
+    referral: referralReducer
   },
 })

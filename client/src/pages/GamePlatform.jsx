@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import UserSidebar from '../components/UserSidebar';
 import Dashboard from '../components/Dashboard';
@@ -9,44 +10,99 @@ import SpinHistory from '../components/SpinHistory';
 import ReferralSystem from '../components/ReferralSystem';
 import SocialTasks from '../components/SocialTasks';
 import { useAccount } from 'wagmi';
+import { getUserProfile, logout, updateUserBalance, updateUserTickets, updateUserStats } from '../store/authSlice';
+import { getRewards, purchaseTickets, spinWheel, getSpinHistory } from '../store/gameSlice';
+import { getSocialTasks } from '../store/socialSlice';
+import { getReferralStats } from '../store/referralSlice';
 
 
 const GamePlatform= () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const wallet = useAccount();
-  const [user, setUser] = useState(null);
+  
+  // Redux state
+  const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
+  const { rewards, spinHistory, lastSpinResult, spinning } = useSelector((state) => state.game);
+  
   const [activeSection, setActiveSection] = useState('spin');
-  const [tickets, setTickets] = useState(0);
-  const [spinHistory, setSpinHistory] = useState([]);
+
+  // Load user data and game data on component mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getUserProfile());
+      dispatch(getRewards());
+      dispatch(getSpinHistory());
+      dispatch(getSocialTasks());
+      dispatch(getReferralStats());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated && !loading) {
+      navigate('/');
+    }
+  }, [isAuthenticated, loading, navigate]);
+
   const handleWalletDisconnect = () => {
-    setUser(null);
-    setTickets(0);
-    setSpinHistory([]);
+    dispatch(logout());
+    navigate('/');
   };
 
-  const handleTicketPurchase = (amount) => {
-    if (user) {
-      setUser({
-        ...user,
-        tokenBalance: user.tokenBalance - (amount * 10) // 10 XXX per ticket
-      });
-      setTickets(prev => prev + amount);
+  const handleTicketPurchase = async (amount) => {
+    try {
+      const result = await dispatch(purchaseTickets(amount)).unwrap();
+      
+      // Update user balance and tickets
+      dispatch(updateUserBalance({ xxxhub: result.newBalance }));
+      dispatch(updateUserTickets(result.currentTickets));
+      
+    } catch (error) {
+      console.error('Purchase failed:', error);
     }
   };
 
-  const handleSpin = (result) => {
-    setTickets(prev => prev - 1);
-    setSpinHistory(prev => [result, ...prev]);
-    if (user && result.winAmount > 0) {
-      setUser({
-        ...user,
-        totalWinnings: user.totalWinnings + result.winAmount,
-        totalSpins: user.totalSpins + 1,
-      });
+  const handleSpin = async () => {
+    try {
+      const result = await dispatch(spinWheel()).unwrap();
+      
+      // Update user stats
+      dispatch(updateUserStats({
+        currentTickets: result.userStats.currentTickets,
+        totalSpins: result.userStats.totalSpins,
+        totalWinnings: result.userStats.totalWinnings
+      }));
+      
+      // Update balance if tokens were won
+      if (result.userStats.newBalance) {
+        dispatch(updateUserBalance({ xxxhub: result.userStats.newBalance }));
+      }
+      
+    } catch (error) {
+      console.error('Spin failed:', error);
     }
   };
 
+  const handleTaskComplete = (reward) => {
+    if (reward.type === 'tickets') {
+      dispatch(updateUserTickets(user.currentTickets + reward.amount));
+    } else if (reward.type === 'tokens') {
+      const currentBalance = parseFloat(user.tokenBalances.xxxhub);
+      dispatch(updateUserBalance({ xxxhub: (currentBalance + reward.amount).toString() }));
+    }
+  };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-yellow-100 to-amber-100">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading game platform...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-yellow-50 via-yellow-100 to-amber-100">
@@ -59,8 +115,8 @@ const GamePlatform= () => {
             wallet={wallet}
             onDisconnect={handleWalletDisconnect}
             userStats={user ? {
-              tokenBalance: user.tokenBalance,
-              tickets: tickets,
+              tokenBalance: parseFloat(user.tokenBalances?.xxxhub || '0'),
+              tickets: user.currentTickets,
               totalSpins: user.totalSpins,
               totalWinnings: user.totalWinnings
             } : undefined}
@@ -96,24 +152,27 @@ const GamePlatform= () => {
             {activeSection === 'dashboard' && user && (
               <Dashboard 
                 user={user} 
-                tickets={tickets}
+                tickets={user.currentTickets}
                 recentSpins={spinHistory.slice(0, 3)}
               />
             )}
             
             {activeSection === 'buy' && wallet.address && (
               <TicketPurchase 
-                tokenBalance={user?.tokenBalance||1}
+                tokenBalance={parseFloat(user?.tokenBalances?.xxxhub || '0')}
                 onPurchase={handleTicketPurchase}
               />
             )}
             
             {activeSection === 'spin' && (
               <SpinWheel 
-                tickets={tickets}
+                tickets={user?.currentTickets || 0}
                 onSpin={handleSpin}
                 wallet={wallet}
-                tokenBalance={user?.tokenBalance}
+                tokenBalance={parseFloat(user?.tokenBalances?.xxxhub || '0')}
+                rewards={rewards}
+                spinning={spinning}
+                lastResult={lastSpinResult}
               />
             )}
             
@@ -126,13 +185,7 @@ const GamePlatform= () => {
             )}
             
             {activeSection === 'tasks' && wallet?.address && (
-              <SocialTasks userAddress={wallet?.address} onTaskComplete={(reward) => {
-                if (reward.type === 'tickets') {
-                  setTickets(prev => prev + reward.amount);
-                } else if (reward.type === 'tokens' && user) {
-                  setUser(prev => prev ? { ...prev, tokenBalance: prev.tokenBalance + reward.amount } : null);
-                }
-              }} />
+              <SocialTasks userAddress={wallet?.address} onTaskComplete={handleTaskComplete} />
             )}
           </main>
         </div>

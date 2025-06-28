@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin, getDashboardStats } from '../store/adminSlice';
+import { getDashboardStats } from '../store/adminSlice';
 import { Shield, Settings } from 'lucide-react';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminSidebar from '../components/admin/AdminSidebar';
@@ -12,6 +12,7 @@ import AirdropIntegration from '../components/admin/AirdropIntegration';
 import ReferralManagement from '../components/admin/ReferralManagement';
 import SocialTasksManagement from '../components/admin/SocialTasksManagement';
 import SpinBoardManagement from '../components/admin/SpinBoardManagement';
+import AirdropIntegration from '../components/admin/AirdropIntegration';
 
 const AdminPage = () => {
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ const AdminPage = () => {
       case 'users':
         return <UserTracking />;
       case 'airdrops':
-        return <AirdropIntegration />;
+        return <AirdropIntegration />; 
       case 'referrals':
         return <ReferralManagement />;
       case 'social-tasks':

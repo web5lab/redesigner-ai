@@ -24,6 +24,7 @@ import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import SharePopup from '../components/dashboard/SharePopup';
 import EditDesignPopup from '../components/dashboard/EditDesignPopup';
 import ReferAndEarnPopup from '../components/dashboard/ReferAndEarnPopup';
+import DashboardTour from '../components/dashboard/DashboardTour';
 import EmptyState from '../components/dashboard/EmptyState';
 import TemplatesTab from '../components/dashboard/TemplatesTab';
 import ImageToCodeTab from '../components/dashboard/ImageToCodeTab';
@@ -41,6 +42,7 @@ const Dashboard = () => {
   const [isReferralPopupOpen, setIsReferralPopupOpen] = useState(false);
   const [referralLink, setReferralLink] = useState('');
   const [isTemplatesModalOpen, setIsTemplatesModalOpen] = useState(false);
+  const [showTourModal, setShowTourModal] = useState(false);
   const [activeTab, setActiveTab] = useState('websites');
   const [showAddWebpageModal, setShowAddWebpageModal] = useState(false);
   const [newPagePrompt, setNewPagePrompt] = useState('');
@@ -68,6 +70,13 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
+      // Check if this is the first visit to dashboard
+      const hasVisitedDashboard = localStorage.getItem('hasVisitedDashboard') === 'true';
+      if (!hasVisitedDashboard) {
+        setShowTourModal(true);
+        localStorage.setItem('hasVisitedDashboard', 'true');
+      }
+      
       dispatch(GetUserData(token));
 
       const interval = setInterval(() => {
@@ -474,6 +483,11 @@ const Dashboard = () => {
         onClose={() => setEditDesignPopup({ isOpen: false, website: null })}
         website={editDesignPopup.website}
         onDesignSelect={handleDesignSelected}
+      />
+
+      <DashboardTour 
+        isOpen={showTourModal}
+        onClose={() => setShowTourModal(false)}
       />
 
       <ReferAndEarnPopup

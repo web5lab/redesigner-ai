@@ -159,11 +159,7 @@ const RewardManagement = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Probability
-                <span className={`ml-2 text-xs ${totalProbability === 100 ? 'text-green-600' : 'text-orange-600'}`}>
-                  {totalProbability === 100 ? '(Balanced)' : '(Unbalanced)'}
-                </span>
-              </p>
+              <p className="text-sm text-gray-600">Total Probability</p>
               <p className={`text-2xl font-bold ${totalProbability === 100 ? 'text-green-600' : 'text-orange-600'}`}>
                 {totalProbability}%
               </p>
@@ -175,12 +171,9 @@ const RewardManagement = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg. Token Value</p>
+              <p className="text-sm text-gray-600">Avg. Value</p>
               <p className="text-2xl font-bold text-purple-600">
-                {rewards.filter(r => r.value > 0).length > 0 
-                  ? Math.round(rewards.filter(r => r.value > 0).reduce((sum, r) => sum + r.value, 0) / 
-                      rewards.filter(r => r.value > 0).length) 
-                  : 0}
+                {rewards.length > 0 ? Math.round(rewards.reduce((sum, r) => sum + r.value, 0) / rewards.length) : 0}
               </p>
             </div>
             <Trophy className="w-8 h-8 text-purple-500" />

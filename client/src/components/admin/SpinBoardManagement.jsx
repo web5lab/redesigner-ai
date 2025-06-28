@@ -191,11 +191,7 @@ const SpinBoardManagement = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Probability
-                <span className={`ml-2 text-xs ${totalProbability === 100 ? 'text-green-600' : 'text-orange-600'}`}>
-                  {totalProbability === 100 ? '(Balanced)' : '(Unbalanced)'}
-                </span>
-              </p>
+              <p className="text-sm text-gray-600">Total Probability</p>
               <p className={`text-2xl font-bold ${totalProbability === 100 ? 'text-green-600' : 'text-orange-600'}`}>
                 {totalProbability}%
               </p>
@@ -207,7 +203,7 @@ const SpinBoardManagement = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Highest Prize</p>
+              <p className="text-sm text-gray-600">Max Value</p>
               <p className="text-2xl font-bold text-purple-600">
                 {spinBoardRewards.length > 0 ? Math.max(...spinBoardRewards.map(r => r.value)).toLocaleString() : 0}
               </p>

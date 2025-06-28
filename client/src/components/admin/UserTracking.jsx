@@ -66,8 +66,8 @@ const UserTracking = () => {
   // Calculate total stats from current users
   const totalStats = {
     totalUsers: usersPagination.total || 0,
-    totalRevenue: users.reduce((sum, user) => sum + (user.totalSpent || 0), 0) || 0,
-    totalWinnings: users.reduce((sum, user) => sum + (user.totalWinnings || 0), 0) || 0,
+    totalRevenue: users.reduce((sum, user) => sum + (user.totalSpent || 0), 0),
+    totalWinnings: users.reduce((sum, user) => sum + (user.totalWinnings || 0), 0),
     avgWinRate: users.length > 0 
       ? users.reduce((sum, user) => sum + (user.winRate || 0), 0) / users.length 
       : 0
@@ -104,7 +104,7 @@ const UserTracking = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-blue-600">{totalStats.totalUsers.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-blue-600">{totalStats.totalUsers}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
@@ -114,7 +114,7 @@ const UserTracking = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-green-600">{totalStats.totalRevenue?.toLocaleString() || 0} XXX</p>
+              <p className="text-2xl font-bold text-green-600">{totalStats.totalRevenue.toLocaleString()} XXX</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -124,7 +124,7 @@ const UserTracking = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Winnings</p>
-              <p className="text-2xl font-bold text-purple-600">{totalStats.totalWinnings?.toLocaleString() || 0} XXX</p>
+              <p className="text-2xl font-bold text-purple-600">{totalStats.totalWinnings.toLocaleString()} XXX</p>
             </div>
             <Trophy className="w-8 h-8 text-purple-500" />
           </div>

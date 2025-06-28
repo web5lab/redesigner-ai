@@ -76,7 +76,7 @@ const ReferralManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Referrals</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.totalReferrals.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.totalReferrals}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
@@ -86,7 +86,7 @@ const ReferralManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Referrals</p>
-              <p className="text-2xl font-bold text-green-600">{stats.activeReferrals.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.activeReferrals}</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -96,7 +96,7 @@ const ReferralManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Rewards Paid</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.totalRewardsPaid.toLocaleString()} XXX</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.totalRewardsPaid} XXX</p>
             </div>
             <Gift className="w-8 h-8 text-purple-500" />
           </div>

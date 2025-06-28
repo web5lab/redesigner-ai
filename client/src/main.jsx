@@ -41,6 +41,8 @@ const LandingPage= () => {
         network: 'BSC'
       }));
     }
+  }
+  )
 
   const features = [
     {

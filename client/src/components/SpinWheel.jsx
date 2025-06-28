@@ -354,7 +354,7 @@ const SpinWheel = ({
                     🎯 CONTINUE PLAYING
                   </button>
                   
-                  {currentTickets > 0 && (
+                  {tickets > 0 && (
                     <button
                       onClick={() => {
                         resetWheel();
@@ -362,10 +362,10 @@ const SpinWheel = ({
                       }}
                       className="w-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-purple-600 hover:to-cyan-600 transition-all transform hover:scale-105 shadow-xl"
                     >
-                      🎰 SPIN AGAIN ({currentTickets} left)
+                      🎰 SPIN AGAIN ({tickets} left)
                     </button>
                   )}
-                    {tickets > 0 && (
+                </div>
               </div>
             </div>
           </div>
@@ -386,9 +386,7 @@ const SpinWheel = ({
                   <div className="relative">
                     <Icon className="w-8 h-8 mx-auto mb-2 drop-shadow-lg" />
                     <p className="font-black text-sm tracking-wide drop-shadow-lg">{reward.label}</p>
-                        🎰 SPIN AGAIN ({tickets} left)
-                      <p className="text-xs opacity-90 font-bold mt-1">💰 {reward.value.toLocaleString()}</p>
-                    )}
+                    <p className="text-xs opacity-90 font-bold mt-1">💰 {reward.value.toLocaleString()}</p>
                   </div>
                 </div>
               );

@@ -48,7 +48,6 @@ const Navbar = () => {
           <nav className="hidden lg:block">
             <ul className="flex space-x-8">
               <li><a href="#features" className="text-slate-300 hover:text-white transition-colors">Features</a></li>
-              <li><Link to="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link></li>
               <li><a href="#how-it-works" className="text-slate-300 hover:text-white transition-colors">How It Works</a></li>
               <li><a href="#pricing" className="text-slate-300 hover:text-white transition-colors">Pricing</a></li>
               <li><a href="#faq" className="text-slate-300 hover:text-white transition-colors">FAQ</a></li>
@@ -186,15 +185,6 @@ const Navbar = () => {
                   >
                     Features
                   </a>
-                </li>
-                <li>
-                  <Link 
-                    to="/blog" 
-                    className="block text-slate-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-slate-800"
-                    onClick={closeMobileMenu}
-                  >
-                    Blog
-                  </Link>
                 </li>
                 <li>
                   <a 

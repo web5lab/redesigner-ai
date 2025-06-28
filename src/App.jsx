@@ -13,7 +13,6 @@ import toast from 'react-hot-toast';
 import { setWebsiteQueqe } from './store/global.Slice';
 import TemplateGallery from './components/Template';
 import Navbar from './components/Navbar';
-import Blog from './pages/Blog';
 
 function AuthHandler() {
   const navigate = useNavigate();
@@ -118,8 +117,6 @@ function App() {
             </EditorProvider>
           </ProtectedRoute>
         } />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<Blog />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

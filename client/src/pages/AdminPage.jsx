@@ -12,7 +12,6 @@ import AirdropIntegration from '../components/admin/AirdropIntegration';
 import ReferralManagement from '../components/admin/ReferralManagement';
 import SocialTasksManagement from '../components/admin/SocialTasksManagement';
 import SpinBoardManagement from '../components/admin/SpinBoardManagement';
-import AirdropIntegration from '../components/admin/AirdropIntegration';
 
 const AdminPage = () => {
   const dispatch = useDispatch();

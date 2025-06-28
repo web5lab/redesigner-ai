@@ -45,21 +45,6 @@ export const getUsers = createAsyncThunk(
   }
 );
 
-export const addSpinsToUser = createAsyncThunk(
-  'admin/addSpinsToUser',
-  async ({ userId, spinAmount, reason }, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.post(`/admin/users/${userId}/add-spins`, {
-        spinAmount,
-        reason
-      });
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to add spins to user');
-    }
-  }
-);
-
 export const getAdminRewards = createAsyncThunk(
   'admin/getRewards',
   async (_, { rejectWithValue }) => {
@@ -361,23 +346,6 @@ const adminSlice = createSlice({
       .addCase(getUsers.fulfilled, (state, action) => {
         state.users = action.payload.users;
         state.usersPagination = action.payload.pagination;
-        state.loading = false;
-      })
-      .addCase(getUsers.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getUsers.rejected, (state) => {
-        state.loading = false;
-      })
-      
-      // Add spins to user
-      .addCase(addSpinsToUser.fulfilled, (state, action) => {
-        // Update the user in the users array
-        const userIndex = state.users.findIndex(u => u.id === action.payload.userId);
-        if (userIndex !== -1) {
-          state.users[userIndex].totalSpins = action.payload.currentSpins;
-          state.users[userIndex].currentTickets = action.payload.currentTickets;
-        }
       })
       
       // Rewards

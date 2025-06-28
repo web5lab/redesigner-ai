@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { Admin, User, SpinResult, Reward, SocialTask, ReferralSystem, Transaction, GameSession } from '../../schemas/index.js';
+import { Admin, User, SpinResult, Reward, SocialTask, ReferralSystem, Transaction } from '../../schemas/index.js';
 
 const router = express.Router();
 
@@ -225,83 +225,6 @@ router.get('/users', authenticateAdmin, checkPermission('users', 'read'), async 
     });
   } catch (error) {
     console.error('Get users error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-// Add spins to a user
-router.post('/users/:userId/add-spins', authenticateAdmin, checkPermission('users', 'update'), async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { spinAmount, reason } = req.body;
-    
-    if (!spinAmount || spinAmount <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid spin amount'
-      });
-    }
-    
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-    
-    // Update user's spin count
-    user.totalSpins += spinAmount;
-    user.currentTickets += spinAmount; // Also add tickets so they can use the spins
-    user.lastActivityDate = new Date();
-    
-    // Create a record of this admin action
-    const adminAction = {
-      type: 'admin_add_spins',
-      adminId: req.admin._id,
-      adminName: `${req.admin.firstName} ${req.admin.lastName}`,
-      details: {
-        spinAmount,
-        reason: reason || 'Admin action',
-        previousSpinCount: user.totalSpins - spinAmount,
-        newSpinCount: user.totalSpins
-      },
-      timestamp: new Date()
-    };
-    
-    // If user has an active game session, update it
-    const activeSession = await GameSession.findOne({ 
-      userId: user._id, 
-      status: 'active' 
-    });
-    
-    if (activeSession) {
-      activeSession.addActivity('admin_add_spins', {
-        spinAmount,
-        reason: reason || 'Admin action',
-        adminId: req.admin._id
-      });
-    }
-    
-    // Save the user with the updated spin count
-    await user.save();
-    
-    res.json({
-      success: true,
-      message: `Successfully added ${spinAmount} spins to user`,
-      data: {
-        userId: user._id,
-        walletAddress: user.walletAddress,
-        currentSpins: user.totalSpins,
-        currentTickets: user.currentTickets,
-        adminAction
-      }
-    });
-  } catch (error) {
-    console.error('Add spins error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

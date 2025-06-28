@@ -70,11 +70,10 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Check if this is the first visit to dashboard
-      const hasVisitedDashboard = localStorage.getItem('hasVisitedDashboard') === 'true';
-      if (!hasVisitedDashboard) {
+      // Always show tour on first visit, or if user has opted to see it again
+      const dashboardTourDontShow = localStorage.getItem('dashboardTourDontShow') === 'true';
+      if (!dashboardTourDontShow) {
         setShowTourModal(true);
-        localStorage.setItem('hasVisitedDashboard', 'true');
       }
       
       dispatch(GetUserData(token));
@@ -255,6 +254,7 @@ const Dashboard = () => {
         user={user}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        setShowTourModal={setShowTourModal}
         isMobileSidebarOpen={isMobileSidebarOpen}
         closeMobileSidebar={closeMobileSidebar}
         setShowBilling={setShowBilling}
@@ -488,6 +488,7 @@ const Dashboard = () => {
       <DashboardTour 
         isOpen={showTourModal}
         onClose={() => setShowTourModal(false)}
+        setActiveTab={setActiveTab}
       />
 
       <ReferAndEarnPopup

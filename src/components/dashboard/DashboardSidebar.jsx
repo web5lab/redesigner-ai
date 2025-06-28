@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   CreditCard, History, Sparkles, LogOut, ChevronDown, X,
-  BookTemplate, Component
+  BookTemplate, Component, HelpCircle
 } from 'lucide-react';
 import logo from "../../assets/logo.png";
 import toast from 'react-hot-toast';
@@ -13,6 +13,7 @@ const DashboardSidebar = ({
   setActiveTab,
   isMobileSidebarOpen,
   closeMobileSidebar,
+  setShowTourModal,
   setShowBilling,
   setIsProfileOpen,
   setIsReferralPopupOpen,
@@ -143,6 +144,16 @@ const DashboardSidebar = ({
             <p className="text-[10px] sm:text-xs text-slate-400">View profile & settings</p>
           </div>
           <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+        </button>
+        <button
+          onClick={() => {
+            setShowTourModal(true);
+            closeMobileSidebar();
+          }}
+          className="w-full flex items-center gap-3 p-2 sm:p-3 mt-1 sm:mt-2 rounded-lg text-left text-slate-400 hover:bg-slate-700/50 hover:text-indigo-400 transition-colors group"
+        >
+          <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+          <span className="text-xs sm:text-sm font-medium">Dashboard Tour</span>
         </button>
         <button
           onClick={() => {

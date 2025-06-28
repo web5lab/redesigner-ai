@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Check, Zap, LayoutDashboard, FileText, Image, Sparkles } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Zap, LayoutDashboard, FileText, Image, Sparkles, MessageSquare } from 'lucide-react';
 
 const DashboardTour = ({ isOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showAgain, setShowAgain] = useState(false);
   
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   useEffect(() => {
     if (isOpen) {
@@ -54,6 +54,11 @@ const DashboardTour = ({ isOpen, onClose }) => {
       title: "Manage Your Websites",
       description: "View and manage all your created websites. Preview, edit, export code, or share your designs with others.",
       icon: <LayoutDashboard className="h-8 w-8 text-indigo-400" />
+    },
+    {
+      title: "Community Chat",
+      description: "Connect with other users, share your designs, and get inspired by the community. Ask questions and provide feedback to fellow designers.",
+      icon: <MessageSquare className="h-8 w-8 text-indigo-400" />
     },
     {
       title: "Template Gallery",

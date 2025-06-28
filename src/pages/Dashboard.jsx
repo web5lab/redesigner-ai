@@ -28,6 +28,7 @@ import DashboardTour from '../components/dashboard/DashboardTour';
 import EmptyState from '../components/dashboard/EmptyState';
 import TemplatesTab from '../components/dashboard/TemplatesTab';
 import ImageToCodeTab from '../components/dashboard/ImageToCodeTab';
+import CommunityChat from '../components/dashboard/CommunityChat';
 
 const Dashboard = () => {
   const [isNewWebsiteModalOpen, setIsNewWebsiteModalOpen] = useState(false);
@@ -435,6 +436,11 @@ const Dashboard = () => {
             setShowBilling={setShowBilling}
             mainContentAnimation={mainContentAnimation}
             onRemixTemplate={handleRemixTemplate}
+          />
+        ) : activeTab === 'community' ? (
+          <CommunityChat
+            user={user}
+            mainContentAnimation={mainContentAnimation}
           />
         ) : (
           <ImageToCodeTab

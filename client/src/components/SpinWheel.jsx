@@ -382,23 +382,41 @@ const SpinWheel = ({
                   lastResult.type === 'nft' ? 'from-pink-500 to-rose-700' :
                   lastResult.type === 'bonus' ? 'from-purple-500 to-violet-700' :
                   lastResult.type === 'multiplier' ? 'from-teal-400 to-cyan-600' :
-                  'from-gray-600 to-gray-800'
+                  'from-indigo-400 to-indigo-600'
                 } rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-bounce`}>
                   {lastResult.type === 'tokens' ? <Coins className="w-12 h-12 text-white" /> :
                    lastResult.type === 'jackpot' ? <Crown className="w-12 h-12 text-white" /> :
                    lastResult.type === 'nft' ? <Gem className="w-12 h-12 text-white" /> :
                    lastResult.type === 'bonus' ? <Gift className="w-12 h-12 text-white" /> :
                    lastResult.type === 'multiplier' ? <Sparkles className="w-12 h-12 text-white" /> :
-                   <Star className="w-12 h-12 text-white" />}
+                   <Star className="w-12 h-12 text-white animate-spin-slow" />}
                 </div>
                 
                 <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-4 animate-pulse">
-                  {lastResult.winAmount > 0 || lastResult.type !== 'nothing' ? '🎉 WINNER! 🎉' : '😢 TRY AGAIN!'}
+                  {lastResult.winAmount > 0 || lastResult.type !== 'nothing' ? '🎉 WINNER! 🎉' : '🎯 BETTER LUCK NEXT TIME! 🎯'}
                 </h2>
                 
-                <p className="text-2xl font-bold text-white mb-6 animate-bounce">
+                <p className="text-2xl font-bold text-white mb-4 animate-bounce">
                   {lastResult.reward}
                 </p>
+                
+                {lastResult.type === 'nothing' && (
+                  <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-2 border-indigo-400 rounded-xl p-4 mb-6 backdrop-blur-sm">
+                    <p className="text-indigo-300 font-bold">Don't give up! Your next spin could be a big win!</p>
+                    <div className="flex justify-center mt-2 space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div 
+                          key={i} 
+                          className="w-2 h-2 rounded-full bg-indigo-400"
+                          style={{
+                            animation: `bounce 0.8s infinite`,
+                            animationDelay: `${i * 0.1}s`
+                          }}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {lastResult.winAmount > 0 && (
                   <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-2 border-green-400 rounded-xl p-4 mb-6 backdrop-blur-sm">
@@ -411,9 +429,13 @@ const SpinWheel = ({
                 <div className="space-y-4">
                   <button
                     onClick={resetWheel}
-                    className="w-full bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-yellow-500 hover:to-red-600 transition-all transform hover:scale-105 shadow-xl"
+                    className={`w-full bg-gradient-to-r ${
+                      lastResult.type === 'nothing' 
+                        ? 'from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700' 
+                        : 'from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:to-red-600'
+                    } text-white py-4 px-8 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl`}
                   >
-                    🎯 CONTINUE PLAYING
+                    {lastResult.type === 'nothing' ? '🚀 TRY AGAIN!' : '🎯 CONTINUE PLAYING'}
                   </button>
                   
                   {tickets > 0 && (
@@ -422,10 +444,25 @@ const SpinWheel = ({
                         resetWheel();
                         setTimeout(handleSpin, 500);
                       }}
-                      className="w-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-purple-600 hover:to-cyan-600 transition-all transform hover:scale-105 shadow-xl"
+                      className={`w-full bg-gradient-to-r ${
+                        lastResult.type === 'nothing'
+                          ? 'from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:to-red-600'
+                          : 'from-purple-500 via-blue-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600'
+                      } text-white py-4 px-8 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl`}
                     >
-                      🎰 SPIN AGAIN ({tickets} left)
+                      {lastResult.type === 'nothing' 
+                        ? `🍀 FEELING LUCKY! (${tickets} tickets left)`
+                        : `🎰 SPIN AGAIN (${tickets} left)`
+                      }
                     </button>
+                  )}
+                  
+                  {lastResult.type === 'nothing' && (
+                    <div className="text-center mt-2">
+                      <p className="text-indigo-300 text-sm">
+                        The odds are in your favor! Every spin brings you closer to winning!
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>

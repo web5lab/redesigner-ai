@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUsers, addUserBalance } from '../../store/adminSlice';
-import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy, Plus, Ticket, Coins } from 'lucide-react';
+import { getUsers } from '../../store/adminSlice';
+import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy } from 'lucide-react';
 
 const UserTracking = () => {
   const dispatch = useDispatch();
@@ -11,12 +11,6 @@ const UserTracking = () => {
   const [sortBy, setSortBy] = useState('totalSpent');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
-  const [showAddBalanceModal, setShowAddBalanceModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [balanceForm, setBalanceForm] = useState({
-    amount: 100,
-    type: 'tokens'
-  });
 
   // Load users on component mount and when filters change
   useEffect(() => {
@@ -67,38 +61,6 @@ const UserTracking = () => {
     a.download = 'user_analytics.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-  };
-
-  const handleAddBalance = (user) => {
-    setSelectedUser(user);
-    setShowAddBalanceModal(true);
-  };
-
-  const submitAddBalance = async () => {
-    if (!selectedUser) return;
-    
-    try {
-      await dispatch(addUserBalance({
-        userId: selectedUser.id,
-        amount: Number(balanceForm.amount),
-        type: balanceForm.type
-      })).unwrap();
-      
-      setShowAddBalanceModal(false);
-      setSelectedUser(null);
-      
-      // Refresh user list
-      dispatch(getUsers({ 
-        page, 
-        limit: 20, 
-        search: searchTerm, 
-        sortBy, 
-        sortOrder 
-      }));
-    } catch (error) {
-      console.error('Failed to add balance:', error);
-      alert('Failed to add balance: ' + error);
-    }
   };
 
   // Calculate total stats from current users
@@ -252,7 +214,6 @@ const UserTracking = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Win Rate</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -302,15 +263,6 @@ const UserTracking = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDateTime(user.lastActivityDate)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        onClick={() => handleAddBalance(user)}
-                        className="text-indigo-600 hover:text-indigo-900 transition-colors flex items-center space-x-1"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>Add Balance</span>
-                      </button>
                     </td>
                   </tr>
                 );
@@ -464,108 +416,6 @@ const UserTracking = () => {
           </div>
         </div>
       </div>
-      
-      {/* Add Balance Modal */}
-      {showAddBalanceModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Add Balance for {formatAddress(selectedUser.walletAddress)}
-            </h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setBalanceForm(prev => ({ ...prev, type: 'tokens' }))}
-                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
-                      balanceForm.type === 'tokens'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Coins className={`w-5 h-5 ${balanceForm.type === 'tokens' ? 'text-green-500' : 'text-gray-500'}`} />
-                    <span className={`font-medium ${balanceForm.type === 'tokens' ? 'text-green-700' : 'text-gray-700'}`}>Tokens</span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setBalanceForm(prev => ({ ...prev, type: 'tickets' }))}
-                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
-                      balanceForm.type === 'tickets'
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <Ticket className={`w-5 h-5 ${balanceForm.type === 'tickets' ? 'text-blue-500' : 'text-gray-500'}`} />
-                    <span className={`font-medium ${balanceForm.type === 'tickets' ? 'text-blue-700' : 'text-gray-700'}`}>Tickets</span>
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={balanceForm.amount}
-                  onChange={(e) => setBalanceForm(prev => ({ ...prev, amount: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
-                <div className="flex items-start space-x-2">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm text-blue-700">
-                      You are about to add <span className="font-bold">{balanceForm.amount} {balanceForm.type}</span> to this user's account.
-                    </p>
-                    <p className="text-xs text-blue-600 mt-1">
-                      This action will be recorded in the transaction history.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex space-x-3 pt-4">
-                <button
-                  onClick={submitAddBalance}
-                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      <span>Processing...</span>
-                    </div>
-                  ) : (
-                    <span>Add {balanceForm.type}</span>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddBalanceModal(false);
-                    setSelectedUser(null);
-                  }}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-all"
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

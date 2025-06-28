@@ -14,17 +14,6 @@ const SpinWheel = ({
 }) => {
   const [showResult, setShowResult] = useState(false);
   const wheelRef = useRef(null);
-
-  // Map API rewards to component format
-  const mappedRewards = rewards.map(reward => ({
-    label: reward.name,
-    value: reward.value,
-    type: reward.rewardType,
-    color: reward.color,
-    icon: getIconComponent(reward.icon),
-    glow: reward.glowEffect || 'shadow-yellow-500/50'
-  }));
-
   const getIconComponent = (iconName) => {
     switch (iconName) {
       case 'coins': return Coins;
@@ -38,6 +27,17 @@ const SpinWheel = ({
       default: return Coins;
     }
   };
+  // Map API rewards to component format
+  const mappedRewards = rewards.map(reward => ({
+    label: reward.name,
+    value: reward.value,
+    type: reward.rewardType,
+    color: reward.color,
+    icon: getIconComponent(reward.icon),
+    glow: reward.glowEffect || 'shadow-yellow-500/50'
+  }));
+
+
 
   // Show result when lastResult changes
   useEffect(() => {

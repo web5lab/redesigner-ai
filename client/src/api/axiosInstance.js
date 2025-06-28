@@ -5,6 +5,23 @@ const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
 });
 
+export const adminInstance = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_URL,
+});
+
+adminInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {

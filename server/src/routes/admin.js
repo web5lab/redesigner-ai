@@ -1,6 +1,5 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 import { Admin, User, SpinResult, Reward, SocialTask, AirdropCampaign, ReferralSystem } from '../../schemas/index.js';
 
 const router = express.Router();
@@ -18,9 +17,10 @@ const authenticateAdmin = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    console.log('Decoded admin token:', decoded);
     const admin = await Admin.findById(decoded.adminId);
 
-    if (!admin || !admin.isActive) {
+    if (!admin) {
       return res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -37,18 +37,6 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
-// Check admin permissions
-const checkPermission = (module, action) => {
-  return (req, res, next) => {
-    if (!req.admin.hasPermission(module, action)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Insufficient permissions'
-      });
-    }
-    next();
-  };
-};
 
 // Admin login
 router.post('/login', async (req, res) => {
@@ -173,7 +161,7 @@ router.get('/dashboard/stats', authenticateAdmin, async (req, res) => {
 });
 
 // User management routes
-router.get('/users', authenticateAdmin, checkPermission('users', 'read'), async (req, res) => {
+router.get('/users', authenticateAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -227,7 +215,7 @@ router.get('/users', authenticateAdmin, checkPermission('users', 'read'), async 
 });
 
 // Reward management routes
-router.get('/rewards', authenticateAdmin, checkPermission('rewards', 'read'), async (req, res) => {
+router.get('/rewards', authenticateAdmin, async (req, res) => {
   try {
     const rewards = await Reward.find().sort({ position: 1 });
     res.json({
@@ -243,7 +231,7 @@ router.get('/rewards', authenticateAdmin, checkPermission('rewards', 'read'), as
   }
 });
 
-router.post('/rewards', authenticateAdmin, checkPermission('rewards', 'create'), async (req, res) => {
+router.post('/rewards', authenticateAdmin, async (req, res) => {
   try {
     const rewardData = {
       ...req.body,
@@ -267,7 +255,7 @@ router.post('/rewards', authenticateAdmin, checkPermission('rewards', 'create'),
   }
 });
 
-router.put('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'update'), async (req, res) => {
+router.put('/rewards/:id', authenticateAdmin,async (req, res) => {
   try {
     const reward = await Reward.findByIdAndUpdate(
       req.params.id,
@@ -296,7 +284,7 @@ router.put('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'update
   }
 });
 
-router.delete('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'delete'), async (req, res) => {
+router.delete('/rewards/:id', authenticateAdmin, async (req, res) => {
   try {
     const reward = await Reward.findByIdAndDelete(req.params.id);
 
@@ -321,7 +309,7 @@ router.delete('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'del
 });
 
 // Social tasks management
-router.get('/social-tasks', authenticateAdmin, checkPermission('social_tasks', 'read'), async (req, res) => {
+router.get('/social-tasks', authenticateAdmin, async (req, res) => {
   try {
     const tasks = await SocialTask.find().sort({ createdAt: -1 });
     res.json({
@@ -337,7 +325,7 @@ router.get('/social-tasks', authenticateAdmin, checkPermission('social_tasks', '
   }
 });
 
-router.post('/social-tasks', authenticateAdmin, checkPermission('social_tasks', 'create'), async (req, res) => {
+router.post('/social-tasks', authenticateAdmin, async (req, res) => {
   try {
     const taskData = {
       ...req.body,
@@ -361,7 +349,7 @@ router.post('/social-tasks', authenticateAdmin, checkPermission('social_tasks', 
   }
 });
 
-router.put('/social-tasks/:id', authenticateAdmin, checkPermission('social_tasks', 'update'), async (req, res) => {
+router.put('/social-tasks/:id', authenticateAdmin, async (req, res) => {
   try {
     const task = await SocialTask.findByIdAndUpdate(
       req.params.id,
@@ -391,7 +379,7 @@ router.put('/social-tasks/:id', authenticateAdmin, checkPermission('social_tasks
 });
 
 // Referral system management
-router.get('/referrals', authenticateAdmin, checkPermission('referrals', 'read'), async (req, res) => {
+router.get('/referrals', authenticateAdmin, async (req, res) => {
   try {
     const referrals = await ReferralSystem.find()
       .populate('referrerId', 'walletAddress')

@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../api/axiosInstance';
+import  { adminInstance } from '../api/axiosInstance';
 
 // Async thunks
 export const adminLogin = createAsyncThunk(
   'admin/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/admin/login', { email, password });
+      const response = await adminInstance.post('/admin/login', { email, password });
       
       // Store admin token
       if (response.data.data.token) {
         localStorage.setItem('adminToken', response.data.data.token);
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.token}`;
+        adminInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.token}`;
       }
       
       return response.data.data;
@@ -25,7 +25,7 @@ export const getDashboardStats = createAsyncThunk(
   'admin/getDashboardStats',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/admin/dashboard/stats');
+      const response = await adminInstance.get('/admin/dashboard/stats');
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get dashboard stats');
@@ -37,7 +37,7 @@ export const getUsers = createAsyncThunk(
   'admin/getUsers',
   async ({ page = 1, limit = 20, search = '', sortBy = 'joinDate', sortOrder = 'desc' } = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/admin/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`);
+      const response = await adminInstance.get(`/admin/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get users');
@@ -49,7 +49,7 @@ export const getAdminRewards = createAsyncThunk(
   'admin/getRewards',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/admin/rewards');
+      const response = await adminInstance.get('/admin/rewards');
       return response.data.data.rewards;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get rewards');
@@ -61,7 +61,7 @@ export const createReward = createAsyncThunk(
   'admin/createReward',
   async (rewardData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/admin/rewards', rewardData);
+      const response = await adminInstance.post('/admin/rewards', rewardData);
       return response.data.data.reward;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to create reward');
@@ -73,7 +73,7 @@ export const updateReward = createAsyncThunk(
   'admin/updateReward',
   async ({ id, ...rewardData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/admin/rewards/${id}`, rewardData);
+      const response = await adminInstance.put(`/admin/rewards/${id}`, rewardData);
       return response.data.data.reward;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to update reward');
@@ -85,7 +85,7 @@ export const deleteReward = createAsyncThunk(
   'admin/deleteReward',
   async (id, { rejectWithValue }) => {
     try {
-      await axiosInstance.delete(`/admin/rewards/${id}`);
+      await adminInstance.delete(`/admin/rewards/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to delete reward');
@@ -97,7 +97,7 @@ export const getSocialTasks = createAsyncThunk(
   'admin/getSocialTasks',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/admin/social-tasks');
+      const response = await adminInstance.get('/admin/social-tasks');
       return response.data.data.tasks;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get social tasks');
@@ -109,7 +109,7 @@ export const createSocialTask = createAsyncThunk(
   'admin/createSocialTask',
   async (taskData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/admin/social-tasks', taskData);
+      const response = await adminInstance.post('/admin/social-tasks', taskData);
       return response.data.data.task;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to create social task');
@@ -121,7 +121,7 @@ export const updateSocialTask = createAsyncThunk(
   'admin/updateSocialTask',
   async ({ id, ...taskData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/admin/social-tasks/${id}`, taskData);
+      const response = await adminInstance.put(`/admin/social-tasks/${id}`, taskData);
       return response.data.data.task;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to update social task');
@@ -133,7 +133,7 @@ export const getReferrals = createAsyncThunk(
   'admin/getReferrals',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/admin/referrals');
+      const response = await adminInstance.get('/admin/referrals');
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get referrals');
@@ -145,7 +145,7 @@ export const getAnalytics = createAsyncThunk(
   'admin/getAnalytics',
   async ({ days = 7 } = {}, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/admin/analytics/overview?days=${days}`);
+      const response = await adminInstance.get(`/admin/analytics/overview?days=${days}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get analytics');
@@ -157,7 +157,7 @@ export const adminLogout = createAsyncThunk(
   'admin/logout',
   async () => {
     localStorage.removeItem('adminToken');
-    delete axiosInstance.defaults.headers.common['Authorization'];
+    delete adminInstance.defaults.headers.common['Authorization'];
     return null;
   }
 );

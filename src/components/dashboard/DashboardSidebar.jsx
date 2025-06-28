@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   CreditCard, History, Sparkles, LogOut, ChevronDown, X,
-  BookTemplate, Component, MessageSquare
+  BookTemplate, Component, MessageSquare, Users
 } from 'lucide-react';
 import logo from "../../assets/logo.png";
 import toast from 'react-hot-toast';
@@ -49,7 +49,7 @@ const DashboardSidebar = ({
           {
             icon: MessageSquare,
             label: "Community",
-            value: 'Connect & Share',
+            value: user?.completdDesign ? `${user.completdDesign} designs shared` : 'Connect & Share',
             tab: 'community',
             accent: true,
             onClick: () => setActiveTab('community'),

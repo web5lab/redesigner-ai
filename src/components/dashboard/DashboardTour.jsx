@@ -58,7 +58,7 @@ const DashboardTour = ({ isOpen, onClose }) => {
     {
       title: "Community Chat",
       description: "Connect with other users, share your designs, and get inspired by the community. Ask questions and provide feedback to fellow designers.",
-      icon: <MessageSquare className="h-8 w-8 text-indigo-400" />
+      icon: <Users className="h-8 w-8 text-indigo-400" />
     },
     {
       title: "Template Gallery",

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wand2, Globe, FileText, Sparkles, ArrowRight, Zap } from 'lucide-react';
+import { Wand2, Globe, FileText, Sparkles, ArrowRight, Zap, Github } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -8,6 +8,7 @@ const Hero = () => {
   const [activeTab, setActiveTab] = useState('redesign');
   const [formData, setFormData] = useState({
     url: '',
+    repoUrl: '',
     topic: '',
     instructions: '',
     theme: 'auto'
@@ -18,6 +19,7 @@ const Hero = () => {
 
   const tabs = [
     { id: 'redesign', label: 'Redesign Website', icon: <Wand2 className="h-4 w-4" /> },
+    { id: 'docs', label: 'GitHub Docs', icon: <Github className="h-4 w-4" /> },
     { id: 'blog', label: 'Create Blog', icon: <FileText className="h-4 w-4" /> },
     { id: 'create', label: 'Create New', icon: <Sparkles className="h-4 w-4" /> }
   ];
@@ -47,6 +49,9 @@ const Hero = () => {
   const isFormValid = () => {
     if (activeTab === 'redesign') {
       return formData.url.trim() && /^https?:\/\/.+\..+/.test(formData.url.trim());
+    }
+    if (activeTab === 'docs') {
+      return formData.repoUrl.trim() && /^https?:\/\/github\.com\/.+\/.+/.test(formData.repoUrl.trim());
     }
     if (activeTab === 'blog') {
       return formData.topic.trim();
@@ -196,6 +201,41 @@ const Hero = () => {
                   </div>
                 )}
 
+                {/* GitHub Docs Tab */}
+                {activeTab === 'docs' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="repoUrl" className="block text-white font-medium mb-2">
+                        GitHub Repository URL
+                      </label>
+                      <input
+                        type="url"
+                        id="repoUrl"
+                        value={formData.repoUrl}
+                        onChange={(e) => handleInputChange('repoUrl', e.target.value)}
+                        placeholder="https://github.com/username/repository"
+                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <p className="text-slate-400 text-sm mt-2">
+                        We'll analyze your repository and create beautiful documentation
+                      </p>
+                    </div>
+                    <div>
+                      <label htmlFor="docsInstructions" className="block text-white font-medium mb-2">
+                        Documentation Focus (Optional)
+                      </label>
+                      <textarea
+                        id="docsInstructions"
+                        value={formData.instructions}
+                        onChange={(e) => handleInputChange('instructions', e.target.value)}
+                        rows={3}
+                        placeholder="e.g., Focus on API documentation, include installation guide, highlight key features"
+                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Blog Tab */}
                 {activeTab === 'blog' && (
                   <div className="space-y-4">
@@ -267,6 +307,7 @@ const Hero = () => {
                       <>
                         <Zap className="h-5 w-5" />
                         {activeTab === 'redesign' ? 'Redesign Website' : 
+                         activeTab === 'docs' ? 'Generate Docs' :
                          activeTab === 'blog' ? 'Generate Blog' : 'Create Website'}
                         <ArrowRight className="h-5 w-5" />
                       </>
@@ -285,6 +326,8 @@ const Hero = () => {
                       <li>• Production-ready HTML/CSS code</li>
                       <li>• Responsive design for all devices</li>
                       <li>• SEO-optimized structure</li>
+                      {activeTab === 'docs' && <li>• Interactive documentation with search</li>}
+                      {activeTab === 'docs' && <li>• Code syntax highlighting</li>}
                       <li>• Clean, maintainable code</li>
                     </ul>
                   </div>

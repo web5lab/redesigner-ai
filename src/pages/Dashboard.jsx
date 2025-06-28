@@ -24,8 +24,6 @@ import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import SharePopup from '../components/dashboard/SharePopup';
 import EditDesignPopup from '../components/dashboard/EditDesignPopup';
 import ReferAndEarnPopup from '../components/dashboard/ReferAndEarnPopup';
-import CommunityTab from '../components/dashboard/CommunityTab';
-import CommunityChat from '../components/dashboard/CommunityChat';
 import EmptyState from '../components/dashboard/EmptyState';
 import TemplatesTab from '../components/dashboard/TemplatesTab';
 import ImageToCodeTab from '../components/dashboard/ImageToCodeTab';
@@ -428,16 +426,6 @@ const Dashboard = () => {
             setShowBilling={setShowBilling}
             mainContentAnimation={mainContentAnimation}
             onRemixTemplate={handleRemixTemplate}
-          />
-        ) : activeTab === 'community' ? (
-          <CommunityTab
-            mainContentAnimation={mainContentAnimation}
-            setShowBilling={setShowBilling}
-          />
-        ) : activeTab === 'chat' ? (
-          <CommunityChat
-            mainContentAnimation={mainContentAnimation}
-            setShowBilling={setShowBilling}
           />
         ) : (
           <ImageToCodeTab

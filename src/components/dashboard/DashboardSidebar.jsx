@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   CreditCard, History, Sparkles, LogOut, ChevronDown, X,
-  BookTemplate, Component, Users, MessageSquare
+  BookTemplate, Component
 } from 'lucide-react';
 import logo from "../../assets/logo.png";
 import toast from 'react-hot-toast';
@@ -79,22 +79,6 @@ const DashboardSidebar = ({
             value: user?.AiCredits ?? 'N/A',
             tab: 'credits',
             onClick: () => setShowBilling(true),
-          },
-          {
-            icon: Users,
-            label: "Community",
-            value: "Connect & Share",
-            tab: 'community',
-            accent: true,
-            onClick: () => setActiveTab('community'),
-          },
-          {
-            icon: MessageSquare,
-            label: "Community Chat",
-            value: "Live Discussions",
-            tab: 'chat',
-            accent: true,
-            onClick: () => setActiveTab('chat'),
           },
           {
             icon: History,

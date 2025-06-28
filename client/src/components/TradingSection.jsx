@@ -77,55 +77,78 @@ const TradingSection = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch current price and market data
-      const marketResponse = await fetch(
-        `${COINGECKO_API}/simple/price?ids=binancecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`
-      );
-      const marketData = await marketResponse.json();
+      // Add timeout and better error handling for API calls
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      // Fetch historical price data
-      const historyResponse = await fetch(
-        `${COINGECKO_API}/coins/binancecoin/market_chart?vs_currency=usd&days=${timeframe}&interval=${timeframe === '1' ? 'hourly' : 'daily'}`
-      );
-      const historyData = await historyResponse.json();
-
-      if (marketData.binancecoin && historyData.prices) {
-        const bnbData = marketData.binancecoin;
+      try {
+        // Fetch current price and market data
+        const marketResponse = await fetch(
+          `${COINGECKO_API}/simple/price?ids=binancecoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`,
+          { signal: controller.signal }
+        );
         
-        // Set token stats
-        setTokenStats({
-          price: bnbData.usd,
-          change24h: bnbData.usd_24h_change || 0,
-          volume24h: bnbData.usd_24h_vol || 0,
-          marketCap: bnbData.usd_market_cap || 0,
-          supply: 166801148, // BNB circulating supply
-          holders: 334771, // Estimated
-          liquidity: 2100000000 // Estimated
-        });
+        if (!marketResponse.ok) {
+          throw new Error(`HTTP error! status: ${marketResponse.status}`);
+        }
+        
+        const marketData = await marketResponse.json();
 
-        // Process historical data
-        const processedData = historyData.prices.map((item, index) => {
-          const timestamp = item[0];
-          const price = item[1];
-          const volume = historyData.total_volumes?.[index]?.[1] || 0;
+        // Fetch historical price data
+        const historyResponse = await fetch(
+          `${COINGECKO_API}/coins/binancecoin/market_chart?vs_currency=usd&days=${timeframe}&interval=${timeframe === '1' ? 'hourly' : 'daily'}`,
+          { signal: controller.signal }
+        );
+        
+        if (!historyResponse.ok) {
+          throw new Error(`HTTP error! status: ${historyResponse.status}`);
+        }
+        
+        const historyData = await historyResponse.json();
+        
+        clearTimeout(timeoutId);
+
+        if (marketData.binancecoin && historyData.prices) {
+          const bnbData = marketData.binancecoin;
           
-          return {
-            time: timeframe === '1' 
-              ? new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-              : new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            price,
-            volume,
-            timestamp
-          };
-        });
+          // Set token stats
+          setTokenStats({
+            price: bnbData.usd,
+            change24h: bnbData.usd_24h_change || 0,
+            volume24h: bnbData.usd_24h_vol || 0,
+            marketCap: bnbData.usd_market_cap || 0,
+            supply: 166801148, // BNB circulating supply
+            holders: 334771, // Estimated
+            liquidity: 2100000000 // Estimated
+          });
 
-        setPriceData(processedData);
-      } else {
-        throw new Error('Invalid API response');
+          // Process historical data
+          const processedData = historyData.prices.map((item, index) => {
+            const timestamp = item[0];
+            const price = item[1];
+            const volume = historyData.total_volumes?.[index]?.[1] || 0;
+            
+            return {
+              time: timeframe === '1' 
+                ? new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                : new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+              price,
+              volume,
+              timestamp
+            };
+          });
+
+          setPriceData(processedData);
+        } else {
+          throw new Error('Invalid API response structure');
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (err) {
-      console.error('Error fetching real price data:', err);
-      setError('Failed to fetch real market data');
+      console.warn('Error fetching real price data, using fallback:', err.message);
+      setError('Using fallback data - API temporarily unavailable');
       
       // Fallback to dummy data
       setTokenStats({
@@ -211,10 +234,11 @@ const TradingSection = () => {
   // Load token balances
   const loadTokenBalances = async (address) => {
     try {
-      const [usdtBalance, spinwinBalance] = await Promise.all([
-        web3Service.getTokenBalance(CONTRACTS.USDT, address),
-        web3Service.getTokenBalance(CONTRACTS.SPINWIN_TOKEN, address)
-      ]);
+      // Check if contracts are properly defined before making calls
+      const usdtBalance = CONTRACTS.USDT ? 
+        await web3Service.getTokenBalance(CONTRACTS.USDT, address) : '0';
+      const spinwinBalance = CONTRACTS.SPINWIN_TOKEN ? 
+        await web3Service.getTokenBalance(CONTRACTS.SPINWIN_TOKEN, address) : '0';
 
       setTokenBalances({
         bnb: wallet.balance,
@@ -223,6 +247,12 @@ const TradingSection = () => {
       });
     } catch (error) {
       console.error('Error loading token balances:', error);
+      // Set default values on error
+      setTokenBalances({
+        bnb: wallet.balance || '0',
+        usdt: '0',
+        spinwin: '0'
+      });
     }
   };
 

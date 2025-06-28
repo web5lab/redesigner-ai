@@ -65,25 +65,7 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
   return (
     <aside className="w-80 bg-white/80 backdrop-blur-lg border-r border-gray-200 min-h-screen">
       <div className="p-6">
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-            <div className="flex items-center space-x-3 mb-3">
-              <Trophy className="w-6 h-6 text-blue-600" />
-              <h3 className="font-semibold text-gray-900">Quick Stats</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="text-center">
-                <div className="font-bold text-blue-600">1,247</div>
-                <div className="text-gray-600">Active Users</div>
-              </div>
-              <div className="text-center">
-                <div className="font-bold text-green-600">$45.2K</div>
-                <div className="text-gray-600">Revenue</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+       
         <nav className="space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;

@@ -25,8 +25,21 @@ export const getDashboardStats = createAsyncThunk(
   'admin/getDashboardStats',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminInstance.get('/admin/dashboard/stats');
-      return response.data.data;
+      try {
+        const response = await adminInstance.get('/admin/dashboard/stats');
+        return response.data.data;
+      } catch (error) {
+        // If API call fails, return default values
+        console.warn('Failed to fetch dashboard stats, using defaults');
+        return {
+          totalUsers: 0,
+          totalSpins: 0,
+          totalRevenue: 0,
+          activeUsers: 0,
+          recentSpins: [],
+          topUsers: []
+        };
+      }
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get dashboard stats');
     }
@@ -338,8 +351,15 @@ const adminSlice = createSlice({
       })
       
       // Dashboard Stats
+      .addCase(getDashboardStats.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(getDashboardStats.fulfilled, (state, action) => {
+        state.loading = false;
         state.dashboardStats = action.payload;
+      })
+      .addCase(getDashboardStats.rejected, (state) => {
+        state.loading = false;
       })
       
       // Users

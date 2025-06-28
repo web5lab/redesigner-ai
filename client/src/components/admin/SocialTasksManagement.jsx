@@ -174,7 +174,7 @@ const SocialTasksManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Tasks</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.totalTasks}</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.totalTasks.toLocaleString()}</p>
             </div>
             <CheckSquare className="w-8 h-8 text-blue-500" />
           </div>
@@ -184,7 +184,7 @@ const SocialTasksManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Tasks</p>
-              <p className="text-2xl font-bold text-green-600">{stats.activeTasks}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.activeTasks.toLocaleString()}</p>
             </div>
             <Eye className="w-8 h-8 text-green-500" />
           </div>
@@ -194,7 +194,7 @@ const SocialTasksManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Completions</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.totalCompletions}</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.totalCompletions.toLocaleString()}</p>
             </div>
             <Users className="w-8 h-8 text-purple-500" />
           </div>
@@ -204,7 +204,7 @@ const SocialTasksManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-orange-600">{stats.pendingVerifications}</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.pendingVerifications.toLocaleString()}</p>
             </div>
             <ExternalLink className="w-8 h-8 text-orange-500" />
           </div>

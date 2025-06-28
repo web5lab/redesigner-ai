@@ -157,7 +157,7 @@ const PricingControl = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Rules</p>
-              <p className="text-2xl font-bold text-green-600">{localPricingRules.filter(r => r.isActive).length}</p>
+              <p className="text-2xl font-bold text-green-600">{localPricingRules?.filter(r => r.isActive).length || 0}</p>
             </div>
             <Percent className="w-8 h-8 text-green-500" />
           </div>
@@ -168,7 +168,7 @@ const PricingControl = () => {
             <div>
               <p className="text-sm text-gray-600">Max Discount</p>
               <p className="text-2xl font-bold text-blue-600">
-                {localPricingRules.filter(r => r.isActive).length > 0 
+                {localPricingRules?.filter(r => r.isActive).length > 0 
                   ? Math.max(...localPricingRules.filter(r => r.isActive).map(r => r.discountPercentage))
                   : 0}%
               </p>
@@ -192,7 +192,7 @@ const PricingControl = () => {
             <div>
               <p className="text-sm text-gray-600">Lowest Price</p>
               <p className="text-2xl font-bold text-orange-600">
-                {localPricingRules.filter(r => r.isActive).length > 0
+                {localPricingRules?.filter(r => r.isActive).length > 0
                   ? (localBasePrice * (1 - Math.max(...localPricingRules.filter(r => r.isActive).map(r => r.discountPercentage)) / 100)).toFixed(1)
                   : localBasePrice} XXX
               </p>

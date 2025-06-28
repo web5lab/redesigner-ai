@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUsers, addUserBalance, deductUserBalance } from '../../store/adminSlice';
-import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy, Plus, Minus, Ticket, Coins } from 'lucide-react';
+import { getUsers } from '../../store/adminSlice';
+import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy } from 'lucide-react';
 
 const UserTracking = () => {
   const dispatch = useDispatch();
@@ -11,13 +11,6 @@ const UserTracking = () => {
   const [sortBy, setSortBy] = useState('totalSpent');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
-  
-  // Balance management modal state
-  const [showBalanceModal, setShowBalanceModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [balanceAction, setBalanceAction] = useState('add');
-  const [balanceType, setBalanceType] = useState('tokens');
-  const [balanceAmount, setBalanceAmount] = useState('');
 
   // Load users on component mount and when filters change
   useEffect(() => {
@@ -68,57 +61,6 @@ const UserTracking = () => {
     a.download = 'user_analytics.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-  };
-
-  const handleOpenBalanceModal = (user, action = 'add') => {
-    setSelectedUser(user);
-    setBalanceAction(action);
-    setBalanceType('tokens');
-    setBalanceAmount('');
-    setShowBalanceModal(true);
-  };
-
-  const handleBalanceSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!selectedUser || !balanceAmount || isNaN(balanceAmount) || parseFloat(balanceAmount) <= 0) {
-      return;
-    }
-    
-    try {
-      const amount = parseFloat(balanceAmount);
-      
-      if (balanceAction === 'add') {
-        await dispatch(addUserBalance({
-          userId: selectedUser.id,
-          amount,
-          type: balanceType
-        })).unwrap();
-        
-        alert(`Successfully added ${amount} ${balanceType} to user ${formatAddress(selectedUser.walletAddress)}`);
-      } else {
-        await dispatch(deductUserBalance({
-          userId: selectedUser.id,
-          amount,
-          type: balanceType
-        })).unwrap();
-        
-        alert(`Successfully deducted ${amount} ${balanceType} from user ${formatAddress(selectedUser.walletAddress)}`);
-      }
-      
-      setShowBalanceModal(false);
-      
-      // Refresh user data
-      dispatch(getUsers({ 
-        page, 
-        limit: 20, 
-        search: searchTerm, 
-        sortBy, 
-        sortOrder 
-      }));
-    } catch (error) {
-      alert(`Error: ${error.message || 'Failed to update balance'}`);
-    }
   };
 
   // Calculate total stats from current users
@@ -282,27 +224,11 @@ const UserTracking = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center">
-                          <Wallet className="w-4 h-4 text-white" /> 
+                          <Wallet className="w-4 h-4 text-white" />
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{formatAddress(user.walletAddress)}</div>
                           <div className="text-xs text-gray-500">ID: {user.id}</div>
-                        </div>
-                        <div className="flex space-x-1">
-                          <button
-                            onClick={() => handleOpenBalanceModal(user, 'add')}
-                            className="p-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
-                            title="Add balance"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </button>
-                          <button
-                            onClick={() => handleOpenBalanceModal(user, 'deduct')}
-                            className="p-1 bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors"
-                            title="Deduct balance"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </button>
                         </div>
                       </div>
                     </td>
@@ -490,112 +416,6 @@ const UserTracking = () => {
           </div>
         </div>
       </div>
-      
-      {/* Balance Management Modal */}
-      {showBalanceModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {balanceAction === 'add' ? 'Add Balance' : 'Deduct Balance'} - {formatAddress(selectedUser.walletAddress)}
-            </h3>
-            
-            <form onSubmit={handleBalanceSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setBalanceType('tokens')}
-                    className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
-                      balanceType === 'tokens' 
-                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    <Coins className="w-5 h-5" />
-                    <span>Tokens</span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setBalanceType('tickets')}
-                    className={`p-3 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
-                      balanceType === 'tickets' 
-                        ? 'border-purple-500 bg-purple-50 text-purple-700' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                    }`}
-                  >
-                    <Ticket className="w-5 h-5" />
-                    <span>Tickets</span>
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount to {balanceAction === 'add' ? 'add' : 'deduct'}
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={balanceAmount}
-                  onChange={(e) => setBalanceAmount(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <div className="flex items-start space-x-2">
-                  <div className="mt-1">
-                    <Wallet className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-blue-800 font-medium">Current Balance</p>
-                    <p className="text-sm text-blue-600">
-                      {balanceType === 'tokens' 
-                        ? `${parseFloat(selectedUser.tokenBalances?.xxxhub || '0').toLocaleString()} XXX Tokens` 
-                        : `${selectedUser.currentTickets || 0} Tickets`}
-                    </p>
-                    
-                    {balanceAmount && !isNaN(balanceAmount) && parseFloat(balanceAmount) > 0 && (
-                      <div className="mt-2 pt-2 border-t border-blue-200">
-                        <p className="text-sm text-blue-800 font-medium">New Balance</p>
-                        <p className={`text-sm font-semibold ${balanceAction === 'add' ? 'text-green-600' : 'text-red-600'}`}>
-                          {balanceType === 'tokens' 
-                            ? `${(parseFloat(selectedUser.tokenBalances?.xxxhub || '0') + (balanceAction === 'add' ? 1 : -1) * parseFloat(balanceAmount)).toLocaleString()} XXX Tokens` 
-                            : `${(selectedUser.currentTickets || 0) + (balanceAction === 'add' ? 1 : -1) * parseInt(balanceAmount)} Tickets`}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="submit"
-                  className={`flex-1 text-white py-2 px-4 rounded-lg font-semibold transition-all ${
-                    balanceAction === 'add'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                      : 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700'
-                  }`}
-                >
-                  {balanceAction === 'add' ? 'Add' : 'Deduct'} {balanceType}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBalanceModal(false)}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

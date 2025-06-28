@@ -45,30 +45,6 @@ export const getUsers = createAsyncThunk(
   }
 );
 
-export const addUserBalance = createAsyncThunk(
-  'admin/addUserBalance',
-  async ({ userId, amount, type }, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.post(`/admin/users/${userId}/add-balance`, { amount, type });
-      return response.data.data.user;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to add user balance');
-    }
-  }
-);
-
-export const deductUserBalance = createAsyncThunk(
-  'admin/deductUserBalance',
-  async ({ userId, amount, type }, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.post(`/admin/users/${userId}/deduct-balance`, { amount, type });
-      return response.data.data.user;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to deduct user balance');
-    }
-  }
-);
-
 export const getAdminRewards = createAsyncThunk(
   'admin/getRewards',
   async (_, { rejectWithValue }) => {
@@ -370,37 +346,6 @@ const adminSlice = createSlice({
       .addCase(getUsers.fulfilled, (state, action) => {
         state.users = action.payload.users;
         state.usersPagination = action.payload.pagination;
-        state.loading = false;
-      })
-      .addCase(getUsers.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getUsers.rejected, (state) => {
-        state.loading = false;
-      })
-      
-      // User Balance Management
-      .addCase(addUserBalance.fulfilled, (state, action) => {
-        const updatedUser = action.payload;
-        const index = state.users.findIndex(u => u.id === updatedUser.id);
-        if (index !== -1) {
-          state.users[index] = {
-            ...state.users[index],
-            tokenBalances: updatedUser.tokenBalances,
-            currentTickets: updatedUser.currentTickets
-          };
-        }
-      })
-      .addCase(deductUserBalance.fulfilled, (state, action) => {
-        const updatedUser = action.payload;
-        const index = state.users.findIndex(u => u.id === updatedUser.id);
-        if (index !== -1) {
-          state.users[index] = {
-            ...state.users[index],
-            tokenBalances: updatedUser.tokenBalances,
-            currentTickets: updatedUser.currentTickets
-          };
-        }
       })
       
       // Rewards

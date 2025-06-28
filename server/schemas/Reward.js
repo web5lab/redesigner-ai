@@ -144,12 +144,26 @@ const rewardSchema = new mongoose.Schema({
   totalClaimed: {
     type: Number,
     default: 0,
-    min: 0
+    min: 0,
+    index: true
   },
   totalValue: {
     type: Number,
     default: 0,
-    min: 0
+    min: 0,
+    index: true
+  },
+  
+  // Analytics
+  winRate: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100
+  },
+  lastWon: {
+    type: Date,
+    sparse: true
   }
 }, {
   timestamps: true
@@ -179,6 +193,7 @@ rewardSchema.methods.claim = function() {
   this.currentClaims += 1;
   this.totalClaimed += 1;
   this.totalValue += this.value;
+  this.lastWon = new Date();
   
   return this.save();
 };
@@ -208,6 +223,26 @@ rewardSchema.statics.validateProbabilities = function() {
     { $match: { isActive: true } },
     { $group: { _id: null, totalProbability: { $sum: '$probability' } } }
   ]);
+};
+
+rewardSchema.statics.getRewardDistribution = function() {
+  return this.aggregate([
+    { $match: { isActive: true } },
+    {
+      $group: {
+        _id: '$rewardType',
+        count: { $sum: 1 },
+        totalProbability: { $sum: '$probability' },
+        avgValue: { $avg: '$value' }
+      }
+    }
+  ]);
+};
+
+rewardSchema.statics.getPopularRewards = function() {
+  return this.find()
+    .sort({ totalClaimed: -1 })
+    .limit(5);
 };
 
 export default mongoose.model('Reward', rewardSchema);

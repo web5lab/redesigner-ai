@@ -117,8 +117,15 @@ const gameSlice = createSlice({
       .addCase(spinWheel.fulfilled, (state, action) => {
         state.spinning = false;
         state.lastSpinResult = action.payload.spinResult;
-        // Add to history
-        state.spinHistory.unshift(action.payload.spinResult);
+        
+        // Add to history if not already there
+        const existingIndex = state.spinHistory.findIndex(
+          spin => spin.id === action.payload.spinResult.id
+        );
+        
+        if (existingIndex === -1) {
+          state.spinHistory.unshift(action.payload.spinResult);
+        }
       })
       .addCase(spinWheel.rejected, (state, action) => {
         state.spinning = false;

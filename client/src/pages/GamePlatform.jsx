@@ -66,19 +66,24 @@ const GamePlatform= () => {
   const handleSpin = async () => {
     try {
       const result = await dispatch(spinWheel()).unwrap();
-      
+
       // Update user stats
       dispatch(updateUserStats({
         currentTickets: result.userStats.currentTickets,
         totalSpins: result.userStats.totalSpins,
         totalWinnings: result.userStats.totalWinnings
       }));
-      
+
       // Update balance if tokens were won
       if (result.userStats.newBalance) {
         dispatch(updateUserBalance({ xxxhub: result.userStats.newBalance }));
       }
-      
+
+      // Refresh spin history after a short delay
+      setTimeout(() => {
+        dispatch(getSpinHistory());
+      }, 5000);
+
     } catch (error) {
       console.error('Spin failed:', error);
     }

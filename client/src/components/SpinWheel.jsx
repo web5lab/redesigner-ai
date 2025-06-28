@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { RotateCcw, Gift, Zap, Trophy, Star, Ticket, Coins, Gem, Crown, Sparkles, Wallet } from 'lucide-react';
 
-
-
 const SpinWheel = ({ 
   tickets = 0, 
   onSpin, 
@@ -14,6 +12,8 @@ const SpinWheel = ({
 }) => {
   const [showResult, setShowResult] = useState(false);
   const wheelRef = useRef(null);
+  const [spinAngle, setSpinAngle] = useState(0);
+  
   const getIconComponent = (iconName) => {
     switch (iconName) {
       case 'coins': return Coins;
@@ -28,7 +28,7 @@ const SpinWheel = ({
     }
   };
   // Map API rewards to component format
-  const mappedRewards = rewards.map(reward => ({
+  const mappedRewards = rewards.filter(r => r.isActive).map(reward => ({
     label: reward.name,
     value: reward.value,
     type: reward.rewardType,
@@ -39,7 +39,32 @@ const SpinWheel = ({
 
 
 
-  // Show result when lastResult changes
+  // Calculate the final rotation angle based on the wheel position
+  const calculateFinalRotation = (position) => {
+    // Get the number of active rewards
+    const numRewards = mappedRewards.length;
+    if (numRewards === 0) return 0;
+    
+    // Calculate the angle per segment
+    const anglePerSegment = 360 / numRewards;
+    
+    // Calculate the center angle of the target segment
+    // We need to add extra rotations for visual effect
+    const extraRotations = 360 * 8; // 8 full rotations
+    
+    // Calculate the final position
+    // We need to adjust the angle so the pointer points to the center of the segment
+    const segmentIndex = position;
+    const targetAngle = segmentIndex * anglePerSegment;
+    
+    // Add a small random offset for natural feel (-5 to +5 degrees)
+    const randomOffset = (Math.random() * 10) - 5;
+    
+    // Return the final rotation angle
+    return extraRotations + targetAngle + randomOffset;
+  };
+
+  // Show result when lastResult changes and spinning stops
   useEffect(() => {
     if (lastResult && !spinning) {
       setShowResult(true);
@@ -52,22 +77,25 @@ const SpinWheel = ({
     setShowResult(false);
     
     // Call the onSpin function which will handle the API call
-    if (onSpin) {
-      onSpin();
-    }
+    onSpin();
   };
 
   // Handle wheel animation when spinning starts
   useEffect(() => {
     if (spinning && wheelRef.current && mappedRewards.length > 0) {
-      // Random rotation for visual effect
-      const randomRotation = Math.random() * 360;
-      const extraSpins = 360 * 8; // 8 full rotations
-      const finalRotation = randomRotation + extraSpins;
-      
-      wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+      // If we have a last result, use its wheel position to calculate the rotation
+      if (lastResult && lastResult.wheelPosition !== undefined) {
+        const finalRotation = calculateFinalRotation(lastResult.wheelPosition);
+        setSpinAngle(finalRotation);
+        wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+      } else {
+        // Fallback to random rotation if no position is available
+        const randomRotation = Math.random() * 360 + (360 * 8);
+        setSpinAngle(randomRotation);
+        wheelRef.current.style.transform = `rotate(${randomRotation}deg)`;
+      }
     }
-  }, [spinning, mappedRewards.length]);
+  }, [spinning, mappedRewards.length, lastResult]);
 
   // Reset wheel rotation when not spinning
   useEffect(() => {
@@ -200,9 +228,7 @@ const SpinWheel = ({
               <div
                 ref={wheelRef}
                 className="relative w-full h-full rounded-full border-8 border-yellow-400 shadow-2xl transition-transform duration-4000 ease-out overflow-hidden"
-                style={{
-                  background: `conic-gradient(from 0deg, ${mappedRewards.map(() => '#f59e0b').join(', ')})`,
-                }}
+                style={{ transition: "transform 4s cubic-bezier(0.23, 1, 0.32, 1)" }}
               >
                 {mappedRewards.map((reward, index) => {
                   const angle = (360 / mappedRewards.length) * index;

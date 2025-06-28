@@ -185,10 +185,44 @@ const RewardManagement = () => {
       {totalProbability !== 100 && (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
           <div className="flex items-center space-x-2">
-            <Zap className="w-5 h-5 text-orange-600" />
-            <span className="text-orange-800 font-medium">
-              Warning: Total probability is {totalProbability}%. It should equal 100% for proper distribution.
-            </span>
+            <div className="flex-shrink-0">
+              <Zap className="w-5 h-5 text-orange-600" />
+            </div>
+            <div className="flex-grow">
+              <span className="text-orange-800 font-medium">
+                Warning: Total probability is {totalProbability}%. It should equal 100% for proper distribution.
+              </span>
+              <p className="text-orange-700 text-sm mt-1">
+                The system will automatically normalize probabilities during spins, but it's best to manually adjust them to total 100%.
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <button
+                onClick={() => {
+                  // Calculate how to distribute remaining probability
+                  const activeRewards = rewards.filter(r => r.isActive);
+                  if (activeRewards.length === 0) return;
+                  
+                  const remaining = 100 - totalProbability;
+                  const perReward = remaining / activeRewards.length;
+                  
+                  // Update each reward
+                  activeRewards.forEach(reward => {
+                    const newProbability = Math.max(0, Math.round(reward.probability + perReward));
+                    dispatch(updateReward({ 
+                      id: reward._id, 
+                      probability: newProbability 
+                    }));
+                  });
+                  
+                  // Reload after a short delay
+                  setTimeout(() => dispatch(getAdminRewards()), 500);
+                }}
+                className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-orange-600 transition-colors"
+              >
+                Auto-Fix
+              </button>
+            </div>
           </div>
         </div>
       )}

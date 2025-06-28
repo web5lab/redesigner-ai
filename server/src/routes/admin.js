@@ -533,16 +533,42 @@ router.get('/referrals', authenticateAdmin, checkPermission('referrals', 'read')
 router.get('/spin-board', authenticateAdmin, checkPermission('spin_board', 'read'), async (req, res) => {
   try {
     const rewards = await Reward.find().sort({ position: 1 });
-    
+
     // Calculate total probability
     const totalProbability = rewards.reduce((sum, reward) => sum + (reward.isActive ? reward.probability : 0), 0);
-    
+
+    // Get statistics about reward distribution
+    const rewardStats = await SpinResult.aggregate([
+      {
+        $group: {
+          _id: '$rewardType',
+          count: { $sum: 1 },
+          totalWinnings: { $sum: '$winAmount' }
+        }
+      }
+    ]);
+
+    // Get most common rewards
+    const popularRewards = await SpinResult.aggregate([
+      {
+        $group: {
+          _id: '$rewardId',
+          count: { $sum: 1 },
+          name: { $first: '$rewardName' }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ]);
+
     res.json({
       success: true,
       data: { 
         rewards,
         totalProbability,
-        isValid: totalProbability === 100
+        isValid: totalProbability === 100,
+        rewardStats,
+        popularRewards
       }
     });
   } catch (error) {

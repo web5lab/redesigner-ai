@@ -41,6 +41,21 @@ export const createReferral = createAsyncThunk(
   }
 );
 
+export const createReferral = createAsyncThunk(
+  'referral/create',
+  async ({ referralCode, referredWalletAddress }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/referral/create', {
+        referralCode,
+        referredWalletAddress
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create referral');
+    }
+  }
+);
+
 export const claimReferralReward = createAsyncThunk(
   'referral/claimReward',
   async (referralId, { rejectWithValue }) => {
@@ -106,6 +121,20 @@ const referralSlice = createSlice({
       })
       
       // Create Referral
+      .addCase(createReferral.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createReferral.fulfilled, (state, action) => {
+        state.loading = false;
+        // Referral created successfully
+      })
+      .addCase(createReferral.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Claim Reward
       .addCase(createReferral.pending, (state) => {
         state.loading = true;
         state.error = null;

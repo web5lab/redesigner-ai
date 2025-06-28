@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUsers } from '../../store/adminSlice';
-import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy } from 'lucide-react';
+import { getUsers, addSpinsToUser } from '../../store/adminSlice';
+import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy, RotateCcw, Plus, Gift } from 'lucide-react';
 
 const UserTracking = () => {
   const dispatch = useDispatch();
@@ -11,6 +11,10 @@ const UserTracking = () => {
   const [sortBy, setSortBy] = useState('totalSpent');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
+  const [showAddSpinModal, setShowAddSpinModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [spinAmount, setSpinAmount] = useState(1);
+  const [spinReason, setSpinReason] = useState('');
 
   // Load users on component mount and when filters change
   useEffect(() => {
@@ -61,6 +65,43 @@ const UserTracking = () => {
     a.download = 'user_analytics.csv';
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleAddSpin = (user) => {
+    setSelectedUser(user);
+    setSpinAmount(1);
+    setSpinReason('');
+    setShowAddSpinModal(true);
+  };
+
+  const submitAddSpin = async () => {
+    try {
+      await dispatch(addSpinsToUser({
+        userId: selectedUser.id,
+        spinAmount,
+        reason: spinReason
+      })).unwrap();
+      
+      alert(`Successfully added ${spinAmount} spin(s) to user ${selectedUser.walletAddress}`);
+      
+      // Close modal and reset form
+      setShowAddSpinModal(false);
+      setSelectedUser(null);
+      setSpinAmount(1);
+      setSpinReason('');
+      
+      // Refresh user list
+      dispatch(getUsers({ 
+        page, 
+        limit: 20, 
+        search: searchTerm, 
+        sortBy, 
+        sortOrder 
+      }));
+    } catch (error) {
+      console.error('Error adding spins:', error);
+      alert('Failed to add spins. Please try again.');
+    }
   };
 
   // Calculate total stats from current users
@@ -214,6 +255,7 @@ const UserTracking = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Win Rate</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -224,7 +266,7 @@ const UserTracking = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center">
-                          <Wallet className="w-4 h-4 text-white" />
+                          <Wallet className="w-4 h-4 text-white" /> 
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{formatAddress(user.walletAddress)}</div>
@@ -263,6 +305,17 @@ const UserTracking = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDateTime(user.lastActivityDate)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleAddSpin(user)}
+                          className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-lg text-xs font-medium flex items-center space-x-1"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          <span>Add Spins</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -416,6 +469,89 @@ const UserTracking = () => {
           </div>
         </div>
       </div>
+      
+      {/* Add Spin Modal */}
+      {showAddSpinModal && selectedUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <RotateCcw className="w-5 h-5 text-indigo-600 mr-2" />
+              Add Spins to User
+            </h3>
+            
+            <div className="mb-4 bg-indigo-50 p-4 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">User: {formatAddress(selectedUser.walletAddress)}</p>
+                  <p className="text-xs text-gray-600">Current Spins: {selectedUser.totalSpins || 0}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Spins to Add</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={spinAmount}
+                  onChange={(e) => setSpinAmount(parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reason (optional)</label>
+                <select
+                  value={spinReason}
+                  onChange={(e) => setSpinReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  <option value="">Select a reason...</option>
+                  <option value="bonus">Bonus Reward</option>
+                  <option value="compensation">Compensation</option>
+                  <option value="promotion">Promotion</option>
+                  <option value="testing">Testing</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-sm text-yellow-800">
+                <div className="flex items-start space-x-2">
+                  <Gift className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Important Note</p>
+                    <p className="mt-1">Adding spins will increase the user's total spin count and allow them to play without using tickets. This action cannot be undone.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={submitAddSpin}
+                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all flex items-center justify-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add {spinAmount} Spin{spinAmount !== 1 ? 's' : ''}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAddSpinModal(false);
+                    setSelectedUser(null);
+                  }}
+                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

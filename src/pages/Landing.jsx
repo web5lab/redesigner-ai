@@ -11,6 +11,7 @@ import EnhancedApiSection from '../components/apiInfoSection';
 import TemplateShowcase from '../components/Template';
 import { useDispatch } from 'react-redux';
 import { getPublicTemplates } from '../store/global.Action';
+import BlogsSection from '../components/BlogsSection';
 
 const Landing = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const Landing = () => {
         <Features />
         <TemplateShowcase />
         {/* <PowerfulEditor /> */}
+        <BlogsSection />
         {/* <Testimonials /> */}
         <Pricing />
         <FAQ />

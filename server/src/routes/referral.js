@@ -32,15 +32,24 @@ router.get('/stats', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
     
+    // Get user first
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get referrals where this user is the referrer
     const referrals = await ReferralSystem.find({ referrerId: userId });
+    
     const totalReferrals = referrals.length;
-    const completedReferrals = referrals.filter(r => r.status === 'completed').length;
+    const completedReferrals = referrals.filter(r => r.status === 'completed' || r.status === 'active').length;
     const pendingReferrals = referrals.filter(r => r.status === 'pending').length;
     const totalRewardsEarned = referrals
       .filter(r => r.rewardStatus.referrerClaimed)
       .reduce((sum, r) => sum + r.rewards.referrer.tokens, 0);
-
-    const user = await User.findById(userId);
 
     res.json({
       success: true,
@@ -123,6 +132,14 @@ router.post('/create', async (req, res) => {
       });
     }
 
+    // Check if user is trying to refer themselves
+    if (referrer._id.toString() === referredUser._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot refer yourself'
+      });
+    }
+
     // Check if referral already exists
     const existingReferral = await ReferralSystem.findOne({
       referrerId: referrer._id,
@@ -144,7 +161,8 @@ router.post('/create', async (req, res) => {
       referredId: referredUser._id,
       referredAddress: referredUser.walletAddress,
       ipAddress: req.ip || '127.0.0.1',
-      userAgent: req.headers['user-agent'] || 'Unknown'
+      userAgent: req.headers['user-agent'] || 'Unknown',
+      status: 'active' // Auto-activate for demo
     });
 
     await referral.save();
@@ -153,6 +171,12 @@ router.post('/create', async (req, res) => {
     referrer.totalReferrals += 1;
     await referrer.save();
 
+    // Update referred user
+    if (!referredUser.referredBy) {
+      referredUser.referredBy = referrer._id;
+      await referredUser.save();
+    }
+
     res.json({
       success: true,
       message: 'Referral created successfully',
@@ -160,6 +184,75 @@ router.post('/create', async (req, res) => {
     });
   } catch (error) {
     console.error('Create referral error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Claim referral reward
+router.post('/claim/:referralId', authenticateToken, async (req, res) => {
+  try {
+    const { referralId } = req.params;
+    const userId = req.user.userId;
+
+    const referral = await ReferralSystem.findById(referralId);
+    if (!referral) {
+      return res.status(404).json({
+        success: false,
+        message: 'Referral not found'
+      });
+    }
+
+    // Check if user is the referrer
+    if (referral.referrerId.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to claim this reward'
+      });
+    }
+
+    // Check if already claimed
+    if (referral.rewardStatus.referrerClaimed) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reward already claimed'
+      });
+    }
+
+    // Check if referral is active
+    if (referral.status !== 'active') {
+      return res.status(400).json({
+        success: false,
+        message: 'Referral not eligible for reward'
+      });
+    }
+
+    // Get user and update balance
+    const user = await User.findById(userId);
+    const currentBalance = parseFloat(user.tokenBalances.xxxhub);
+    const rewardAmount = referral.rewards.referrer.tokens;
+
+    user.tokenBalances.xxxhub = (currentBalance + rewardAmount).toString();
+    user.referralRewardsEarned += rewardAmount;
+    await user.save();
+
+    // Mark reward as claimed
+    referral.rewardStatus.referrerClaimed = true;
+    referral.rewardStatus.referrerClaimedAt = new Date();
+    await referral.save();
+
+    res.json({
+      success: true,
+      message: 'Reward claimed successfully',
+      data: {
+        rewardAmount,
+        newBalance: user.tokenBalances.xxxhub
+      }
+    });
+  } catch (error) {
+    console.error('Claim referral reward error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

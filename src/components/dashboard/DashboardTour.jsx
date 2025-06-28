@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Check, Zap, LayoutDashboard, FileText, Image, Sparkles, MessageSquare } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Zap, LayoutDashboard, FileText, Image, Sparkles, MessageSquare, Users } from 'lucide-react';
 
 const DashboardTour = ({ isOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);

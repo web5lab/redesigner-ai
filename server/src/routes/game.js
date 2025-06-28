@@ -137,7 +137,7 @@ router.post('/spin', authenticateToken, async (req, res) => {
     // Generate random result based on probabilities
     const getRandomReward = () => {
       // Filter active rewards
-      const activeRewards = rewards.filter(r => r.isActive);
+      const activeRewards = rewards.filter(r => r.isActive).sort((a, b) => a.position - b.position);
       
       if (activeRewards.length === 0) {
         throw new Error('No active rewards available');
@@ -149,8 +149,8 @@ router.post('/spin', authenticateToken, async (req, res) => {
       // Normalize probabilities if they don't add up to 100
       const normalizationFactor = totalProbability > 0 ? 100 / totalProbability : 1;
       
-      // Generate random number between 0-100
-      const random = Math.random() * 100;
+      // Generate a more secure random number between 0-100
+      const random = (Math.random() * 100).toFixed(6);
       
       // Select reward based on probability
       let cumulativeProbability = 0;
@@ -174,7 +174,7 @@ router.post('/spin', authenticateToken, async (req, res) => {
     // Create spin result
     const spinResult = new SpinResult({
       userId: user._id,
-      spinId: `spin_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+      spinId: `spin_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
       walletAddress: user.walletAddress,
       rewardId: selectedReward._id,
       rewardName: selectedReward.name,
@@ -206,7 +206,16 @@ router.post('/spin', authenticateToken, async (req, res) => {
     // Update reward claim count
     selectedReward.currentClaims += 1;
     selectedReward.totalClaimed += 1;
-    selectedReward.totalValue += selectedReward.value;
+    selectedReward.totalValue += selectedReward.value || 0;
+    selectedReward.lastWon = new Date();
+    
+    // Update win rate
+    const totalClaims = selectedReward.totalClaimed || 0;
+    const allSpins = await SpinResult.countDocuments();
+    if (allSpins > 0) {
+      selectedReward.winRate = (totalClaims / allSpins) * 100;
+    }
+    
     await selectedReward.save();
 
     res.json({
@@ -219,7 +228,8 @@ router.post('/spin', authenticateToken, async (req, res) => {
           rewardType: selectedReward.rewardType,
           winAmount: selectedReward.value,
           wheelPosition: selectedReward.position,
-          timestamp: spinResult.spinTimestamp
+          timestamp: spinResult.spinTimestamp,
+          id: spinResult.spinId
         },
         userStats: {
           currentTickets: user.currentTickets,
@@ -263,7 +273,8 @@ router.get('/spin-history', authenticateToken, async (req, res) => {
           type: spin.rewardType,
           winAmount: spin.winAmount,
           timestamp: spin.spinTimestamp,
-          wheelPosition: spin.wheelPosition
+          wheelPosition: spin.wheelPosition,
+          id: spin.spinId
         })),
         pagination: {
           page,

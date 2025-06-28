@@ -89,11 +89,7 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
             
-            // Check if admin has permission for this section
-            const hasPermission = admin?.role === 'super_admin' || 
-              admin?.permissions?.some(p => p.module === item.id && p.actions.includes('read'));
-            
-            if (!hasPermission) return null;
+        
             
             return (
               <button

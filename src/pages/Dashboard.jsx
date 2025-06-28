@@ -13,7 +13,6 @@ import { addWebsitePage, createBlogApi, createDocApi, GetUserData, GetWebsite, r
 import { useDispatch, useSelector } from 'react-redux';
 import { UserSelector, websiteSelector } from '../store/global.Selctor';
 import { toast } from "react-hot-toast";
-import CodeAnimation from '../components/CodeAnimation';
 import NewWebsiteModal from '../components/NewWebsiteModal';
 import { logOutUser, setEditiorPage } from '../store/global.Slice';
 import WebsiteCard from '../components/WebsiteCard';
@@ -48,7 +47,6 @@ const Dashboard = () => {
   const [showAddWebpageModal, setShowAddWebpageModal] = useState(false);
   const [newPagePrompt, setNewPagePrompt] = useState('');
   const [newPageData, setNewPageData] = useState(null);
-  const [showProcessAnimation, setShowProcessAnimation] = useState(false);
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8); // Adjust this number based on your preference
@@ -74,11 +72,8 @@ const Dashboard = () => {
     if (token) {
       // Always show tour on first visit, or if user has opted to see it again
       const dashboardTourDontShow = localStorage.getItem('dashboardTourDontShow') === 'true';
-      const hasVisitedBefore = localStorage.getItem('hasVisitedDashboard') === 'true';
-      
-      if (!dashboardTourDontShow && !hasVisitedBefore) {
+      if (!dashboardTourDontShow) {
         setShowTourModal(true);
-        localStorage.setItem('hasVisitedDashboard', 'true');
       }
       
       dispatch(GetUserData(token));
@@ -110,7 +105,7 @@ const Dashboard = () => {
     }
 
     setIsNewWebsiteModalOpen(false);
-    setShowProcessAnimation(true);
+    setShowAnimation(true);
 
     try {
       let webdata;
@@ -135,7 +130,7 @@ const Dashboard = () => {
       toast.error(error.message || 'Failed to start website creation.');
     }
 
-    setShowProcessAnimation(false);
+    setShowAnimation(false);
   };
 
   const handleRemixTemplate = async (remixData) => {
@@ -143,7 +138,7 @@ const Dashboard = () => {
       toast.error('Insufficient credits. Please upgrade your plan.');
       return;
     }
-    setShowProcessAnimation(true);
+    setShowAnimation(true);
     try {
       const webdata = await remixWebsite({ data: remixData });
       setActiveTab('websites');
@@ -159,7 +154,7 @@ const Dashboard = () => {
       console.error('Error remixing template:', error);
       toast.error(error.message || 'Failed to remix template.');
     }
-    setShowProcessAnimation(false);
+    setShowAnimation(false);
   };
 
   const handlePreview = (website) => {
@@ -493,21 +488,8 @@ const Dashboard = () => {
       <DashboardTour 
         isOpen={showTourModal}
         onClose={() => setShowTourModal(false)}
-        setActiveTab={(tab) => {
-          setActiveTab(tab);
-          setShowTourModal(false);
-        }}
+        setActiveTab={setActiveTab}
       />
-
-      {showProcessAnimation && (
-        <CodeAnimation 
-          onClose={() => setShowProcessAnimation(false)} 
-          onComplete={() => {
-            setShowProcessAnimation(false);
-            toast.success("Your website has been created successfully!");
-          }} 
-        />
-      )}
 
       <ReferAndEarnPopup
         isOpen={isReferralPopupOpen}

@@ -12,6 +12,7 @@ const DashboardSidebar = ({
   activeTab, // 👈 New prop
   setActiveTab,
   isMobileSidebarOpen,
+  setShowTourModal,
   closeMobileSidebar,
   setShowTourModal,
   setShowBilling,

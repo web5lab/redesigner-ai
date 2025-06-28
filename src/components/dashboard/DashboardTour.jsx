@@ -5,7 +5,7 @@ import {
   PlusCircle, Wand2, Download, Share2, Layers, Palette
 } from 'lucide-react';
 
-const DashboardTour = ({ isOpen, onClose }) => {
+const DashboardTour = ({ isOpen, onClose, setActiveTab }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showAgain, setShowAgain] = useState(false);
   
@@ -43,50 +43,68 @@ const DashboardTour = ({ isOpen, onClose }) => {
     onClose();
   };
 
+  const handleTabChange = (tab) => {
+    if (setActiveTab) {
+      setActiveTab(tab);
+    }
+    handleNext();
+  };
+
   const steps = [
     {
       title: "Welcome to redesignr.ai",
       description: "Let's take a quick tour of your dashboard to help you get started with our AI-powered website builder. We'll show you all the powerful features available to you.",
-      icon: <Sparkles className="h-8 w-8 text-indigo-400" />
+      icon: <Sparkles className="h-8 w-8 text-indigo-400" />,
+      action: null
     },
     {
       title: "Create New Websites",
       description: "Click the 'New Website' button to start creating. You can redesign existing sites, create blogs, documentation sites, or build from scratch with AI assistance.",
-      icon: <PlusCircle className="h-8 w-8 text-indigo-400" />
+      icon: <PlusCircle className="h-8 w-8 text-indigo-400" />,
+      action: null
     },
     {
       title: "GitHub Documentation",
       description: "Transform any GitHub repository into beautiful, searchable documentation. Just paste your repo URL or README content and our AI will do the rest.",
-      icon: <Github className="h-8 w-8 text-indigo-400" />
+      icon: <Github className="h-8 w-8 text-indigo-400" />,
+      action: null
     },
     {
       title: "Blog Creation",
       description: "Generate SEO-optimized blog sites with just a topic. Our AI creates engaging content, proper structure, and responsive design automatically.",
-      icon: <Newspaper className="h-8 w-8 text-indigo-400" />
+      icon: <Newspaper className="h-8 w-8 text-indigo-400" />,
+      action: null
     },
     {
       title: "Website Management",
       description: "View and manage all your created websites. Preview designs, export code, add new pages, and share your creations with others.",
-      icon: <LayoutDashboard className="h-8 w-8 text-indigo-400" />
+      icon: <LayoutDashboard className="h-8 w-8 text-indigo-400" />,
+      action: () => handleTabChange('websites')
     },
     {
       title: "Template Gallery",
       description: "Browse our collection of 1600+ professional templates. Remix any template with your own content or apply it to an existing website.",
-      icon: <Layers className="h-8 w-8 text-indigo-400" />
+      icon: <Layers className="h-8 w-8 text-indigo-400" />,
+      action: () => handleTabChange('templates')
     },
     {
       title: "Image to Website",
       description: "Upload any design image or mockup and our AI will convert it into a fully functional, responsive website with clean code.",
-      icon: <Image className="h-8 w-8 text-indigo-400" />
+      icon: <Image className="h-8 w-8 text-indigo-400" />,
+      action: null
     },
     {
       title: "Export & Share",
       description: "Export your website's code for self-hosting or share a live preview link with clients and colleagues. Your creations are always accessible.",
-      icon: <Download className="h-8 w-8 text-indigo-400" />
+      icon: <Download className="h-8 w-8 text-indigo-400" />,
+      action: null
     }
   ];
 
   if (!isOpen) return null;
+
+  const currentStep1Based = currentStep;
+  const currentStepData = steps[currentStep1Based - 1];
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
@@ -95,7 +113,7 @@ const DashboardTour = ({ isOpen, onClose }) => {
         <div className="h-1.5 bg-slate-700 rounded-t-xl overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300"
-            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            style={{ width: `${(currentStep1Based / totalSteps) * 100}%` }}
           ></div>
         </div>
         
@@ -112,14 +130,14 @@ const DashboardTour = ({ isOpen, onClose }) => {
           <div className="text-center mb-6">
             <div className="flex justify-center mb-6">
               <div className="p-4 bg-indigo-500/20 rounded-full">
-                {steps[currentStep - 1].icon}
+                {currentStepData.icon}
               </div>
             </div>
             <h3 className="text-xl font-bold text-white mb-3">
-              {steps[currentStep - 1].title}
+              {currentStepData.title}
             </h3>
             <p className="text-slate-300 leading-relaxed">
-              {steps[currentStep - 1].description}
+              {currentStepData.description}
             </p>
           </div>
           
@@ -129,9 +147,9 @@ const DashboardTour = ({ isOpen, onClose }) => {
               <div 
                 key={index} 
                 className={`w-2 h-2 rounded-full mx-1 transition-all duration-300 ${
-                  currentStep === index + 1 
+                  currentStep1Based === index + 1 
                     ? 'bg-indigo-500 scale-125' 
-                    : currentStep > index + 1 
+                    : currentStep1Based > index + 1 
                       ? 'bg-indigo-400/70' 
                       : 'bg-slate-600'
                 }`}
@@ -156,9 +174,9 @@ const DashboardTour = ({ isOpen, onClose }) => {
           <div className="flex justify-between items-center">
             <button
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={currentStep1Based === 1}
               className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
-                currentStep === 1
+                currentStep1Based === 1
                   ? 'text-slate-500 cursor-not-allowed'
                   : 'text-slate-300 hover:bg-slate-700'
               }`}
@@ -167,22 +185,32 @@ const DashboardTour = ({ isOpen, onClose }) => {
               Previous
             </button>
             
-            <button
-              onClick={handleNext}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all font-medium"
-            >
-              {currentStep === totalSteps ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Get Started
-                </>
-              ) : (
-                <>
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </>
-              )}
-            </button>
+            {currentStepData.action ? (
+              <button
+                onClick={currentStepData.action}
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all font-medium"
+              >
+                Try It Now
+                <Zap className="h-4 w-4" />
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all font-medium"
+              >
+                {currentStep1Based === totalSteps ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Get Started
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>

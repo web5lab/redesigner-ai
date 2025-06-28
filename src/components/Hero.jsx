@@ -9,6 +9,8 @@ const Hero = () => {
   const [formData, setFormData] = useState({
     url: '',
     repoUrl: '',
+   docsSource: 'repo',
+   readmeContent: '',
     topic: '',
     instructions: '',
     theme: 'auto'
@@ -51,7 +53,11 @@ const Hero = () => {
       return formData.url.trim() && /^https?:\/\/.+\..+/.test(formData.url.trim());
     }
     if (activeTab === 'docs') {
-      return formData.repoUrl.trim() && /^https?:\/\/github\.com\/.+\/.+/.test(formData.repoUrl.trim());
+     if (formData.docsSource === 'repo') {
+       return formData.repoUrl.trim() && /^https?:\/\/github\.com\/.+\/.+/.test(formData.repoUrl.trim());
+     } else {
+       return formData.readmeContent.trim();
+     }
     }
     if (activeTab === 'blog') {
       return formData.topic.trim();
@@ -204,6 +210,36 @@ const Hero = () => {
                 {/* GitHub Docs Tab */}
                 {activeTab === 'docs' && (
                   <div className="space-y-4">
+                   {/* Source Selection */}
+                   <div className="flex bg-slate-700/30 rounded-lg p-1 mb-4">
+                     <button
+                       type="button"
+                       onClick={() => handleInputChange('docsSource', 'repo')}
+                       className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                         (formData.docsSource || 'repo') === 'repo'
+                           ? 'bg-indigo-500 text-white'
+                           : 'text-slate-300 hover:text-white'
+                       }`}
+                     >
+                       <Github className="h-4 w-4" />
+                       From Repository
+                     </button>
+                     <button
+                       type="button"
+                       onClick={() => handleInputChange('docsSource', 'readme')}
+                       className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                         formData.docsSource === 'readme'
+                           ? 'bg-indigo-500 text-white'
+                           : 'text-slate-300 hover:text-white'
+                       }`}
+                     >
+                       <FileText className="h-4 w-4" />
+                       From README
+                     </button>
+                   </div>
+
+                   {/* Repository URL Input */}
+                   {(formData.docsSource || 'repo') === 'repo' && (
                     <div>
                       <label htmlFor="repoUrl" className="block text-white font-medium mb-2">
                         GitHub Repository URL
@@ -220,6 +256,28 @@ const Hero = () => {
                         We'll analyze your repository and create beautiful documentation
                       </p>
                     </div>
+                   )}
+
+                   {/* README Content Input */}
+                   {formData.docsSource === 'readme' && (
+                     <div>
+                       <label htmlFor="readmeContent" className="block text-white font-medium mb-2">
+                         README Content
+                       </label>
+                       <textarea
+                         id="readmeContent"
+                         value={formData.readmeContent}
+                         onChange={(e) => handleInputChange('readmeContent', e.target.value)}
+                         rows={8}
+                         placeholder="Paste your README.md content here..."
+                         className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono text-sm"
+                       />
+                       <p className="text-slate-400 text-sm mt-2">
+                         Paste your README.md content and we'll transform it into beautiful documentation
+                       </p>
+                     </div>
+                   )}
+
                     <div>
                       <label htmlFor="docsInstructions" className="block text-white font-medium mb-2">
                         Documentation Focus (Optional)

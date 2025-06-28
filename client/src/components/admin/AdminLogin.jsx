@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { adminLogin, clearError } from '../../store/adminSlice';
+import { adminLogin, clearError, setCredentials } from '../../store/adminSlice';
 import { Shield, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
 const AdminLogin = () => {
@@ -9,9 +9,21 @@ const AdminLogin = () => {
   
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  // Check for existing token on component mount
+  React.useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      // Try to auto-login with stored token
+      dispatch(setCredentials({ 
+        admin: { role: 'admin' }, // Minimal data until we fetch the full profile
+        token 
+      }));
+    }
+  }, [dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

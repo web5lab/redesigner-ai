@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import Landing from './pages/Landing';
 import BlogList from './pages/BlogList';
 import BlogPost from './components/BlogPost';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,6 +104,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/blog" element={<BlogList />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/auth-success" element={<AuthHandler />} />
         <Route path="/api" element={<ApiDocs />} />
         <Route path="/login" element={

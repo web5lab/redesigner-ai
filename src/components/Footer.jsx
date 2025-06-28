@@ -1,5 +1,6 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Disc2Icon, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logo from "../assets/logo.png"
 
 const Footer = () => {
@@ -31,7 +32,7 @@ const Footer = () => {
               </a>
               <p className="text-slate-400 mb-6 text-sm sm:text-base leading-relaxed">
                 Transform your website with{' '}
-                <span className="text-purple-400 font-medium">AI-powered redesigns</span>{' '}
+                <span className="text-purple-400 font-medium">AI-powered redesigns</span>{' '} 
                 that look amazing and convert better.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -104,8 +105,8 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-2 sm:space-y-0 text-sm">
-            <a href="#" className="text-slate-500 hover:text-purple-400 transition-colors duration-300">Privacy Policy</a>
-            <a href="#" className="text-slate-500 hover:text-indigo-400 transition-colors duration-300">Terms of Service</a>
+            <Link to="/privacy-policy" className="text-slate-500 hover:text-purple-400 transition-colors duration-300">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="text-slate-500 hover:text-indigo-400 transition-colors duration-300">Terms of Service</Link>
             <a href="#" className="text-slate-500 hover:text-blue-400 transition-colors duration-300">Cookies</a>
           </div>
         </div>

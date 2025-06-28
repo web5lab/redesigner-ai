@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, ChevronRight, ChevronLeft, Check, Zap, LayoutDashboard, 
   FileText, Image, Sparkles, MessageSquare, Github, Globe, 
-  Code, Palette, Layers, Share2, Download, ExternalLink
+  Code, Palette, Layers, Share2, Download, ExternalLink,
+  Eye, Users, Wand2, Search, Upload, Smartphone, Code2
 } from 'lucide-react';
 
 const DashboardTour = ({ isOpen, onClose }) => {
@@ -104,7 +105,7 @@ const DashboardTour = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const currentStep = steps[currentStep - 1];
+  const currentStepData = steps[currentStep - 1];
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
@@ -112,7 +113,7 @@ const DashboardTour = ({ isOpen, onClose }) => {
         {/* Progress bar */}
         <div className="h-1.5 bg-slate-700 overflow-hidden">
           <div 
-            className={`h-full bg-gradient-to-r ${currentStep.gradient} transition-all duration-300`}
+            className={`h-full bg-gradient-to-r ${currentStepData.gradient} transition-all duration-300`}
             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
           ></div>
         </div>
@@ -121,8 +122,8 @@ const DashboardTour = ({ isOpen, onClose }) => {
           {/* Image Section */}
           <div className="relative hidden md:block">
             <img 
-              src={currentStep.image} 
-              alt={currentStep.title}
+              src={currentStepData.image} 
+              alt={currentStepData.title}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent"></div>
@@ -159,15 +160,15 @@ const DashboardTour = ({ isOpen, onClose }) => {
             {/* Step content */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <div className={`p-3 bg-gradient-to-r ${currentStep.gradient} rounded-full`}>
-                  {currentStep.icon}
+                <div className={`p-3 bg-gradient-to-r ${currentStepData.gradient} rounded-full`}>
+                  {currentStepData.icon}
                 </div>
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                {currentStep.title}
+                {currentStepData.title}
               </h3>
               <p className="text-slate-300">
-                {currentStep.description}
+                {currentStepData.description}
               </p>
             </div>
             

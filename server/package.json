@@ -4,7 +4,10 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"nodemon server.js"
+    "dev":"nodemon server.js",
+    "seed:rewards": "node src/seeders/rewards.js",
+    "seed:tasks": "node src/seeders/socialTasks.js",
+    "seed:all": "npm run seed:rewards && npm run seed:tasks"
   },
   "keywords": [],
   "author": "",

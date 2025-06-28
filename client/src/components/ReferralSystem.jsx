@@ -1,48 +1,19 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getReferralHistory } from '../store/referralSlice';
 import { Users, Copy, Gift, TrendingUp, Share2, CheckCircle, Clock, Star, Link, Award } from 'lucide-react';
 
 
 const ReferralSystem = ({ userAddress }) => {
-  console.log("test rende3rd");
-  const [referralStats] = useState({
-    totalReferrals: 12,
-    completedReferrals: 8,
-    pendingReferrals: 4,
-    totalRewardsEarned: 2400,
-    referralCode: 'SPIN' + userAddress.slice(-6).toUpperCase()
-  });
-
-  const [referrals] = useState([
-    {
-      id: '1',
-      referrerAddress: userAddress,
-      referredAddress: '0x8ba1f109551bD432803012645Hac136c0532925a',
-      status: 'completed',
-      rewardClaimed: true,
-      createdAt: '2024-01-18T10:00:00Z',
-      completedAt: '2024-01-18T15:30:00Z'
-    },
-    {
-      id: '2',
-      referrerAddress: userAddress,
-      referredAddress: '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
-      status: 'completed',
-      rewardClaimed: true,
-      createdAt: '2024-01-19T14:20:00Z',
-      completedAt: '2024-01-19T18:45:00Z'
-    },
-    {
-      id: '3',
-      referrerAddress: userAddress,
-      referredAddress: '0x9f8e7d6c5b4a3928374650192837465019283746',
-      status: 'pending',
-      rewardClaimed: false,
-      createdAt: '2024-01-20T09:15:00Z'
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { stats, history } = useSelector((state) => state.referral);
 
   const [copied, setCopied] = useState(false);
-  const referralLink = `https://xxxgaminghub.app/ref/${referralStats.referralCode}`;
+  const referralLink = stats.referralLink || `https://xxxgaminghub.app/ref/${stats.referralCode}`;
+
+  React.useEffect(() => {
+    dispatch(getReferralHistory());
+  }, [dispatch]);
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -51,7 +22,7 @@ const ReferralSystem = ({ userAddress }) => {
   };
 
   const shareOnSocial = (platform) => {
-    const text = `🎰 Join me on XXX Gaming Hub - the ultimate Web3 gaming platform! Use my referral code ${referralStats.referralCode} and get bonus rewards! 🎁`;
+    const text = `🎰 Join me on XXX Gaming Hub - the ultimate Web3 gaming platform! Use my referral code ${stats.referralCode} and get bonus rewards! 🎁`;
     const url = referralLink;
     
     let shareUrl = '';
@@ -92,7 +63,7 @@ const ReferralSystem = ({ userAddress }) => {
             <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center">
               <Users className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{referralStats.totalReferrals}</span>
+            <span className="text-2xl font-bold text-gray-900">{stats.totalReferrals}</span>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Referrals</h3>
           <p className="text-sm text-gray-600">Friends invited</p>
@@ -103,7 +74,7 @@ const ReferralSystem = ({ userAddress }) => {
             <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-xl flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{referralStats.completedReferrals}</span>
+            <span className="text-2xl font-bold text-gray-900">{stats.completedReferrals}</span>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Active Referrals</h3>
           <p className="text-sm text-gray-600">Friends playing</p>
@@ -114,7 +85,7 @@ const ReferralSystem = ({ userAddress }) => {
             <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{referralStats.pendingReferrals}</span>
+            <span className="text-2xl font-bold text-gray-900">{stats.pendingReferrals}</span>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Pending</h3>
           <p className="text-sm text-gray-600">Awaiting signup</p>
@@ -125,7 +96,7 @@ const ReferralSystem = ({ userAddress }) => {
             <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl flex items-center justify-center">
               <Gift className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{referralStats.totalRewardsEarned.toLocaleString()}</span>
+            <span className="text-2xl font-bold text-gray-900">{stats.totalRewardsEarned.toLocaleString()}</span>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">Rewards Earned</h3>
           <p className="text-sm text-gray-600">XXX tokens</p>
@@ -140,7 +111,7 @@ const ReferralSystem = ({ userAddress }) => {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <p className="text-sm text-gray-600 mb-1">Referral Code</p>
-              <p className="text-2xl font-bold text-purple-600">{referralStats.referralCode}</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.referralCode}</p>
             </div>
             <button
               onClick={copyReferralLink}
@@ -280,7 +251,7 @@ const ReferralSystem = ({ userAddress }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {referrals.map((referral) => (
+              {history.map((referral) => (
                 <tr key={referral.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
@@ -288,17 +259,17 @@ const ReferralSystem = ({ userAddress }) => {
                         <Users className="w-4 h-4 text-white" />
                       </div>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatAddress(referral.referredAddress)}
+                        {formatAddress(referral.referredAddress || 'Unknown')}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      referral.status === 'completed' 
+                      referral.status === 'active' || referral.status === 'completed'
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {referral.status === 'completed' ? 'Active' : 'Pending'}
+                      {referral.status === 'active' || referral.status === 'completed' ? 'Active' : 'Pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -307,7 +278,7 @@ const ReferralSystem = ({ userAddress }) => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {referral.rewardClaimed ? (
                       <span className="text-green-600 font-semibold text-sm">200 XXX Claimed</span>
-                    ) : referral.status === 'completed' ? (
+                    ) : referral.status === 'active' || referral.status === 'completed' ? (
                       <button className="text-blue-600 hover:text-blue-800 font-semibold text-sm">
                         Claim 200 XXX
                       </button>

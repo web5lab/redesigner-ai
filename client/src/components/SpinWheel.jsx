@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { RotateCcw, Gift, Zap, Trophy, Star, Ticket, Coins, Gem, Crown, Sparkles, Wallet } from 'lucide-react';
 
 

@@ -135,12 +135,13 @@ spinResultSchema.index({ transactionHash: 1 });
 spinResultSchema.index({ spinTimestamp: -1 });
 
 // Pre-save middleware to generate spin ID
-spinResultSchema.pre('save', function(next) {
-  if (this.isNew && !this.spinId) {
-    this.spinId = `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-  next();
-});
+// Commented out as we're now setting spinId explicitly in the route handler
+// spinResultSchema.pre('save', function(next) {
+//   if (this.isNew && !this.spinId) {
+//     this.spinId = `spin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+//   }
+//   next();
+// });
 
 // Methods
 spinResultSchema.methods.markAsClaimed = function(transactionHash) {

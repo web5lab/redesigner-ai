@@ -150,6 +150,7 @@ router.post('/spin', authenticateToken, async (req, res) => {
     // Create spin result
     const spinResult = new SpinResult({
       userId: user._id,
+      spinId: `spin_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
       walletAddress: user.walletAddress,
       rewardId: selectedReward._id,
       rewardName: selectedReward.name,
@@ -159,7 +160,7 @@ router.post('/spin', authenticateToken, async (req, res) => {
       randomSeed: Math.random().toString(36).substring(2, 15),
       ipAddress: req.ip || '127.0.0.1',
       userAgent: req.headers['user-agent'] || 'Unknown',
-      sessionId: `session_${Date.now()}`
+      sessionId: `session_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`
     });
 
     await spinResult.save();

@@ -25,6 +25,23 @@ This request will not trigger a blockchain transaction or cost any gas fees.`;
       throw new Error('MetaMask is not installed');
     }
 
+    // Check if we already have a valid token for this address
+    const existingToken = localStorage.getItem('token');
+    if (existingToken) {
+      try {
+        // Decode token to check if it's for the same address
+        const payload = JSON.parse(atob(existingToken.split('.')[1]));
+        if (payload.walletAddress && payload.walletAddress.toLowerCase() === walletAddress.toLowerCase()) {
+          // Check if token is not expired
+          if (payload.exp && payload.exp * 1000 > Date.now()) {
+            console.log('Using existing valid token');
+            return null; // Signal that we don't need to sign again
+          }
+        }
+      } catch (error) {
+        console.log('Invalid existing token, will sign new message');
+      }
+    }
     try {
       const timestamp = Date.now();
       const message = this.generateAuthMessage(walletAddress, timestamp);
@@ -55,6 +72,40 @@ This request will not trigger a blockchain transaction or cost any gas fees.`;
       throw new Error('MetaMask is not installed. Please install MetaMask to continue.');
     }
 
+    // Check if we already have a valid connection
+    const existingToken = localStorage.getItem('token');
+    if (existingToken) {
+      try {
+        const payload = JSON.parse(atob(existingToken.split('.')[1]));
+        if (payload.exp && payload.exp * 1000 > Date.now()) {
+          // Get current account to verify it matches
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0 && accounts[0].toLowerCase() === payload.walletAddress?.toLowerCase()) {
+            console.log('Using existing wallet connection');
+            this.account = accounts[0];
+            this.web3 = new Web3(window.ethereum);
+            
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            const balance = await window.ethereum.request({
+              method: 'eth_getBalance',
+              params: [this.account, 'latest'],
+            });
+            const balanceInEth = parseInt(balance, 16) / Math.pow(10, 18);
+            
+            return {
+              connected: true,
+              address: this.account,
+              balance: balanceInEth.toFixed(4),
+              network: this.getNetworkName(chainId),
+              chainId,
+              existingConnection: true
+            };
+          }
+        }
+      } catch (error) {
+        console.log('Invalid existing token, will request new connection');
+      }
+    }
     try {
       // Request account access
       const accounts = await window.ethereum.request({

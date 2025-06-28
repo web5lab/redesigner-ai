@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { connectWallet } from '../store/authSlice';
+import { connectWallet, setAuthenticatedFromToken, getUserProfile } from '../store/authSlice';
 import { createReferral } from '../store/referralSlice';
 import { web3Service } from '../utils/web3Utils';
+import axiosInstance from '../api/axiosInstance';
 import { 
   Trophy, 
   Users, 
@@ -29,6 +30,7 @@ const ReferralLanding = () => {
   
   const [referralProcessed, setReferralProcessed] = useState(false);
   const [referralError, setReferralError] = useState(null);
+  const [isProcessingReferral, setIsProcessingReferral] = useState(false);
 
   // Handle wallet authentication with referral
   const handleWalletAuth = async () => {
@@ -36,51 +38,107 @@ const ReferralLanding = () => {
       return;
     }
 
+    // Check if user is already authenticated
+    if (isAuthenticated) {
+      // If authenticated but referral not processed, process it
+      if (referralCode && !referralProcessed && !isProcessingReferral) {
+        await processReferral();
+      }
+      return;
+    }
+
     try {
-      // Sign authentication message
+      // Check if we need to sign a message
       const authData = await web3Service.signAuthMessage(wallet.address);
       
-      // Dispatch login with signature
-      await dispatch(connectWallet({
-        walletAddress: wallet.address,
-        signature: authData.signature,
-        message: authData.message,
-        timestamp: authData.timestamp,
-        walletProvider: 'metamask',
-        network: 'BSC'
-      })).unwrap();
-
-      // Process referral after successful authentication
-      if (referralCode && !referralProcessed) {
+      // If authData is null, it means we already have a valid token
+      if (authData === null) {
+        // Try to get user profile with existing token
         try {
-          await dispatch(createReferral({
-            referralCode: referralCode.toUpperCase(),
-            referredWalletAddress: wallet.address
-          })).unwrap();
-          
-          setReferralProcessed(true);
-          toast.success('🎉 Referral bonus activated! You and your friend will receive rewards!');
+          await dispatch(getUserProfile()).unwrap();
         } catch (error) {
-          console.error('Referral processing error:', error);
-          setReferralError(error);
-          // Don't show error toast for already existing referrals
-          if (!error.includes('already exists')) {
-            toast.error(error || 'Failed to process referral');
+          console.error('Failed to get profile with existing token:', error);
+          // Clear invalid token and retry
+          localStorage.removeItem('token');
+          delete axiosInstance.defaults.headers.common['Authorization'];
+          // Retry authentication
+          const newAuthData = await web3Service.signAuthMessage(wallet.address);
+          if (newAuthData) {
+            await dispatch(connectWallet({
+              walletAddress: wallet.address,
+              signature: newAuthData.signature,
+              message: newAuthData.message,
+              timestamp: newAuthData.timestamp,
+              walletProvider: 'metamask',
+              network: 'BSC'
+            })).unwrap();
           }
         }
+      } else {
+        // Dispatch login with signature
+        await dispatch(connectWallet({
+          walletAddress: wallet.address,
+          signature: authData.signature,
+          message: authData.message,
+          timestamp: authData.timestamp,
+          walletProvider: 'metamask',
+          network: 'BSC'
+        })).unwrap();
       }
+
     } catch (error) {
       console.error('Authentication failed:', error);
       toast.error('Failed to connect wallet');
     }
   };
 
+  // Separate function to process referral
+  const processReferral = async () => {
+    if (!referralCode || referralProcessed || isProcessingReferral || !wallet.address) {
+      return;
+    }
+
+    setIsProcessingReferral(true);
+    
+    try {
+      await dispatch(createReferral({
+        referralCode: referralCode.toUpperCase(),
+        referredWalletAddress: wallet.address
+      })).unwrap();
+      
+      setReferralProcessed(true);
+      toast.success('🎉 Referral bonus activated! You and your friend will receive rewards!');
+    } catch (error) {
+      console.error('Referral processing error:', error);
+      setReferralError(error);
+      // Don't show error toast for already existing referrals
+      if (!error.includes('already exists')) {
+        toast.error(error || 'Failed to process referral');
+      }
+    } finally {
+      setIsProcessingReferral(false);
+    }
+  };
   // Auto-authenticate when wallet is connected
   useEffect(() => {
+    // Check if we have a token and set authenticated state
+    const token = localStorage.getItem('token');
+    if (token && !isAuthenticated) {
+      dispatch(setAuthenticatedFromToken());
+      return;
+    }
+
     if (wallet.isConnected && wallet.address && !isAuthenticated && !loading) {
       handleWalletAuth();
     }
-  }, [wallet.isConnected, wallet.address, isAuthenticated, loading]);
+  }, [wallet.isConnected, wallet.address, isAuthenticated, loading, dispatch]);
+
+  // Process referral when authenticated
+  useEffect(() => {
+    if (isAuthenticated && wallet.address && referralCode && !referralProcessed && !isProcessingReferral) {
+      processReferral();
+    }
+  }, [isAuthenticated, wallet.address, referralCode, referralProcessed, isProcessingReferral]);
 
   // Navigate to game when authenticated
   useEffect(() => {

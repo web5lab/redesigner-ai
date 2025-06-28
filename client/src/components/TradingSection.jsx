@@ -722,7 +722,7 @@ const TradingSection = () => {
                         onChange={(e) => setTradeForm(prev => ({ ...prev, fromToken: e.target.value }))}
                         className="bg-gray-100 rounded-lg px-3 py-2 font-semibold"
                       >
-                        <option value="BNB">XXX</option>
+                        <option value="BNB">BNB</option>
                         <option value="USDT">USDT</option>
                       </select>
                     </div>
@@ -769,14 +769,15 @@ const TradingSection = () => {
                         className="bg-gray-100 rounded-lg px-3 py-2 font-semibold"
                       >
                         <option value="USDT">USDT</option>
-                        <option value="BNB">XXX</option>
+                        <option value="BNB">BNB</option>
+                        <option value="SPINWIN">SPINWIN</option>
                       </select>
                     </div>
                     <div className="text-sm text-gray-500">
                       Balance: {
                         tradeForm.toToken === 'BNB' ? tokenBalances.bnb :
                         tradeForm.toToken === 'USDT' ? tokenBalances.usdt :
-                        tokenBalances.xxx
+                        tokenBalances.spinwin
                       }
                     </div>
                   </div>

@@ -105,8 +105,9 @@ export const CONTRACTS = {
   WBNB: '0xbb4CdB9CBd36B01bD1cBaeBF2De08d9173bc095c',
   USDT: '0x55d398326f99059fF775485246999027B3197955',
   BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-  // Add your custom token address here
-  XXX_TOKEN: '0x0000000000000000000000000000000000000000' // Replace with actual token address
+  // Custom token addresses - using BUSD as placeholder for XXX token
+  XXX_TOKEN: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // Using BUSD as placeholder
+  SPINWIN_TOKEN: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56' // Using BUSD as placeholder for SpinWin token
 };
 
 export const BSC_CHAIN_ID = '0x38'; // 56 in hex

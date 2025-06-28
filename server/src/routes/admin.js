@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { Admin, User, SpinResult, Reward, SocialTask, AirdropCampaign, ReferralSystem, Transaction } from '../../schemas/index.js';
+import { Admin, User, SpinResult, Reward, SocialTask, ReferralSystem, Transaction } from '../../schemas/index.js';
 
 const router = express.Router();
 
@@ -522,79 +522,6 @@ router.get('/referrals', authenticateAdmin, checkPermission('referrals', 'read')
     });
   } catch (error) {
     console.error('Get referrals error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-// Airdrop campaigns management
-router.get('/airdrops', authenticateAdmin, checkPermission('airdrops', 'read'), async (req, res) => {
-  try {
-    const campaigns = await AirdropCampaign.find()
-      .populate('createdBy', 'firstName lastName')
-      .sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      data: { campaigns }
-    });
-  } catch (error) {
-    console.error('Get airdrops error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-router.post('/airdrops', authenticateAdmin, checkPermission('airdrops', 'create'), async (req, res) => {
-  try {
-    const campaignData = {
-      ...req.body,
-      createdBy: req.admin._id
-    };
-
-    const campaign = new AirdropCampaign(campaignData);
-    await campaign.save();
-
-    res.json({
-      success: true,
-      message: 'Airdrop campaign created successfully',
-      data: { campaign }
-    });
-  } catch (error) {
-    console.error('Create airdrop error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-router.put('/airdrops/:id', authenticateAdmin, checkPermission('airdrops', 'update'), async (req, res) => {
-  try {
-    const campaign = await AirdropCampaign.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    if (!campaign) {
-      return res.status(404).json({
-        success: false,
-        message: 'Airdrop campaign not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Airdrop campaign updated successfully',
-      data: { campaign }
-    });
-  } catch (error) {
-    console.error('Update airdrop error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

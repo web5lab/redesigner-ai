@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gift, DollarSign, Users, Send, Trophy, BarChart3, UserPlus, CheckSquare, RotateCcw, Settings, LogOut } from 'lucide-react';
+import { Gift, DollarSign, Users, Trophy, BarChart3, UserPlus, CheckSquare, RotateCcw, Settings, LogOut } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { adminLogout } from '../../store/adminSlice';
 import { useNavigate } from 'react-router-dom';
@@ -34,12 +34,6 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
       label: 'User Tracking',
       icon: Users,
       description: 'Monitor user activity'
-    },
-    {
-      id: 'airdrops',
-      label: 'Airdrop Integration',
-      icon: Send,
-      description: 'Manage token airdrops'
     },
     {
       id: 'referrals',

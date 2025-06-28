@@ -4,7 +4,6 @@ import SpinResult from './SpinResult.js';
 import Reward from './Reward.js';
 import Transaction from './Transaction.js';
 import SocialTask from './SocialTask.js';
-import AirdropCampaign from './AirdropCampaign.js';
 import ReferralSystem from './ReferralSystem.js';
 import Admin from './Admin.js';
 import GameSession from './GameSession.js';
@@ -15,7 +14,6 @@ export {
   Reward,
   Transaction,
   SocialTask,
-  AirdropCampaign,
   ReferralSystem,
   Admin,
   GameSession

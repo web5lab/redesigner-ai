@@ -8,7 +8,6 @@ import AdminSidebar from '../components/admin/AdminSidebar';
 import RewardManagement from '../components/admin/RewardManagement';
 import PricingControl from '../components/admin/PricingControl';
 import UserTracking from '../components/admin/UserTracking';
-import AirdropIntegration from '../components/admin/AirdropIntegration';
 import ReferralManagement from '../components/admin/ReferralManagement';
 import SocialTasksManagement from '../components/admin/SocialTasksManagement';
 import SpinBoardManagement from '../components/admin/SpinBoardManagement';
@@ -50,8 +49,6 @@ const AdminPage = () => {
         return <PricingControl />;
       case 'users':
         return <UserTracking />;
-      case 'airdrops':
-        return <AirdropIntegration />; 
       case 'referrals':
         return <ReferralManagement />;
       case 'social-tasks':

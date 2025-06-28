@@ -165,42 +165,6 @@ export const getAdminReferrals = createAsyncThunk(
   }
 );
 
-export const getAirdrops = createAsyncThunk(
-  'admin/getAirdrops',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.get('/admin/airdrops');
-      return response.data.data.campaigns;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to get airdrops');
-    }
-  }
-);
-
-export const createAirdrop = createAsyncThunk(
-  'admin/createAirdrop',
-  async (airdropData, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.post('/admin/airdrops', airdropData);
-      return response.data.data.campaign;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create airdrop');
-    }
-  }
-);
-
-export const updateAirdrop = createAsyncThunk(
-  'admin/updateAirdrop',
-  async ({ id, ...airdropData }, { rejectWithValue }) => {
-    try {
-      const response = await adminInstance.put(`/admin/airdrops/${id}`, airdropData);
-      return response.data.data.campaign;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update airdrop');
-    }
-  }
-);
-
 export const getSpinBoard = createAsyncThunk(
   'admin/getSpinBoard',
   async (_, { rejectWithValue }) => {
@@ -305,9 +269,6 @@ const initialState = {
   // Referrals data
   referrals: [],
   referralStats: [],
-  
-  // Airdrops data
-  airdrops: [],
   
   // Spin board data
   spinBoardRewards: [],
@@ -431,20 +392,6 @@ const adminSlice = createSlice({
       .addCase(getAdminReferrals.fulfilled, (state, action) => {
         state.referrals = action.payload.referrals;
         state.referralStats = action.payload.stats;
-      })
-      
-      // Airdrops
-      .addCase(getAirdrops.fulfilled, (state, action) => {
-        state.airdrops = action.payload;
-      })
-      .addCase(createAirdrop.fulfilled, (state, action) => {
-        state.airdrops.push(action.payload);
-      })
-      .addCase(updateAirdrop.fulfilled, (state, action) => {
-        const index = state.airdrops.findIndex(a => a._id === action.payload._id);
-        if (index !== -1) {
-          state.airdrops[index] = action.payload;
-        }
       })
       
       // Spin Board

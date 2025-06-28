@@ -4,81 +4,102 @@ import { RotateCcw, Gift, Zap, Trophy, Star, Ticket, Coins, Gem, Crown, Sparkles
 
 
 const SpinWheel = ({ 
-  tickets = 5, 
-  onSpin = () => {}, 
+  tickets = 0, 
+  onSpin, 
   wallet,
-  tokenBalance = 0 
+  tokenBalance = 0,
+  rewards = [],
+  spinning = false,
+  lastResult = null
 }) => {
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [lastResult, setLastResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [currentTickets, setCurrentTickets] = useState(tickets);
   const wheelRef = useRef(null);
 
-  const rewards = [
-    { label: '500 COINS', value: 500, type: 'tokens', color: 'from-yellow-400 via-yellow-500 to-amber-600', icon: Coins, glow: 'shadow-yellow-500/50' },
-    { label: 'NOTHING', value: 0, type: 'nothing', color: 'from-gray-600 via-gray-700 to-gray-800', icon: Star, glow: 'shadow-gray-500/30' },
-    { label: '1,000 COINS', value: 1000, type: 'tokens', color: 'from-green-400 via-emerald-500 to-green-600', icon: Coins, glow: 'shadow-green-500/50' },
-    { label: 'BONUS SPIN', value: 0, type: 'bonus', color: 'from-purple-500 via-violet-600 to-purple-700', icon: Gift, glow: 'shadow-purple-500/50' },
-    { label: '250 COINS', value: 250, type: 'tokens', color: 'from-orange-400 via-orange-500 to-red-500', icon: Coins, glow: 'shadow-orange-500/50' },
-    { label: 'RARE NFT', value: 0, type: 'nft', color: 'from-pink-500 via-rose-600 to-pink-700', icon: Gem, glow: 'shadow-pink-500/50' },
-    { label: '5,000 COINS', value: 5000, type: 'jackpot', color: 'from-cyan-400 via-blue-500 to-indigo-600', icon: Crown, glow: 'shadow-blue-500/50' },
-    { label: '2X MULTIPLIER', value: 0, type: 'multiplier', color: 'from-emerald-400 via-teal-500 to-cyan-600', icon: Sparkles, glow: 'shadow-teal-500/50' },
-  ];
+  // Map API rewards to component format
+  const mappedRewards = rewards.map(reward => ({
+    label: reward.name,
+    value: reward.value,
+    type: reward.rewardType,
+    color: reward.color,
+    icon: getIconComponent(reward.icon),
+    glow: reward.glowEffect || 'shadow-yellow-500/50'
+  }));
+
+  const getIconComponent = (iconName) => {
+    switch (iconName) {
+      case 'coins': return Coins;
+      case 'trophy': return Trophy;
+      case 'gift': return Gift;
+      case 'zap': return Zap;
+      case 'crown': return Crown;
+      case 'sparkles': return Sparkles;
+      case 'gem': return Gem;
+      case 'star': return Star;
+      default: return Coins;
+    }
+  };
+
+  // Show result when lastResult changes
+  useEffect(() => {
+    if (lastResult && !spinning) {
+      setShowResult(true);
+    }
+  }, [lastResult, spinning]);
 
   const handleSpin = () => {
-    if (currentTickets <= 0 || isSpinning) return;
+    if (tickets <= 0 || spinning) return;
 
-    setIsSpinning(true);
     setShowResult(false);
-    setCurrentTickets(prev => prev - 1);
-
-    // Random result
-    const randomIndex = Math.floor(Math.random() * rewards.length);
-    const selectedReward = rewards[randomIndex];
     
-    // Calculate rotation
-    const degreesPerSection = 360 / rewards.length;
-    const targetDegree = (360 - (randomIndex * degreesPerSection)) + (degreesPerSection / 2);
-    const extraSpins = 360 * 8; // 8 full rotations for drama
-    const finalRotation = targetDegree + extraSpins;
+    // Call the onSpin function which will handle the API call
+    if (onSpin) {
+      onSpin();
+    }
+  };
 
-    // Apply rotation
-    if (wheelRef.current) {
+  // Handle wheel animation when spinning starts
+  useEffect(() => {
+    if (spinning && wheelRef.current && mappedRewards.length > 0) {
+      // Random rotation for visual effect
+      const randomRotation = Math.random() * 360;
+      const extraSpins = 360 * 8; // 8 full rotations
+      const finalRotation = randomRotation + extraSpins;
+      
       wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
     }
+  }, [spinning, mappedRewards.length]);
 
-    // Create result
-    const result = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      reward: selectedReward.label,
-      winAmount: selectedReward.value,
-      type: selectedReward.type ,
-    };
-
-    // Show result after animation
-    setTimeout(() => {
-      setIsSpinning(false);
-      setLastResult(result);
-      setShowResult(true);
-      onSpin(result);
-    }, 4000);
-  };
-
-  const resetWheel = () => {
-    if (wheelRef.current) {
-      wheelRef.current.style.transform = 'rotate(0deg)';
-      wheelRef.current.style.transition = 'none';
+  // Reset wheel rotation when not spinning
+  useEffect(() => {
+    if (!spinning && wheelRef.current) {
       setTimeout(() => {
         if (wheelRef.current) {
-          wheelRef.current.style.transition = 'transform 4s cubic-bezier(0.23, 1, 0.32, 1)';
+          wheelRef.current.style.transition = 'none';
+          wheelRef.current.style.transform = 'rotate(0deg)';
+          setTimeout(() => {
+            if (wheelRef.current) {
+              wheelRef.current.style.transition = 'transform 4s cubic-bezier(0.23, 1, 0.32, 1)';
+            }
+          }, 100);
         }
-      }, 100);
+      }, 1000);
     }
+  }, [spinning]);
+
+  const resetWheel = () => {
     setShowResult(false);
-    setLastResult(null);
   };
+
+  if (mappedRewards.length === 0) {
+    return (
+      <div className="min-h-full bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 relative overflow-hidden rounded-2xl flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Loading rewards...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 relative overflow-hidden rounded-2xl">
@@ -107,7 +128,7 @@ const SpinWheel = ({
           <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-xl rounded-2xl px-6 py-3 border-2 border-yellow-400/30 shadow-2xl shadow-yellow-500/25">
             <Ticket className="w-6 h-6 text-yellow-400 animate-pulse" />
             <span className="text-xl font-bold text-yellow-300">
-              TICKETS: {currentTickets}
+              TICKETS: {tickets}
             </span>
           </div>
           
@@ -180,11 +201,11 @@ const SpinWheel = ({
                 ref={wheelRef}
                 className="relative w-full h-full rounded-full border-8 border-yellow-400 shadow-2xl transition-transform duration-4000 ease-out overflow-hidden"
                 style={{
-                  background: 'conic-gradient(from 0deg, #f59e0b, #ef4444, #8b5cf6, #10b981, #f59e0b, #ef4444, #8b5cf6, #10b981)',
+                  background: `conic-gradient(from 0deg, ${mappedRewards.map(() => '#f59e0b').join(', ')})`,
                 }}
               >
-                {rewards.map((reward, index) => {
-                  const angle = (360 / rewards.length) * index;
+                {mappedRewards.map((reward, index) => {
+                  const angle = (360 / mappedRewards.length) * index;
                   const Icon = reward.icon;
                   
                   return (
@@ -193,7 +214,7 @@ const SpinWheel = ({
                       className="absolute w-full h-full"
                       style={{
                         transform: `rotate(${angle}deg)`,
-                        clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((2 * Math.PI) / rewards.length)}% ${50 - 50 * Math.sin((2 * Math.PI) / rewards.length)}%)`,
+                        clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((2 * Math.PI) / mappedRewards.length)}% ${50 - 50 * Math.sin((2 * Math.PI) / mappedRewards.length)}%)`,
                       }}
                     >
                       <div className={`relative w-full h-full bg-gradient-to-br ${reward.color} shadow-inner`}>
@@ -204,7 +225,7 @@ const SpinWheel = ({
                         <div className="relative flex items-center justify-center h-full">
                           <div 
                             className="text-center text-white transform translate-y-8"
-                            style={{ transform: `rotate(${90 - (360 / rewards.length) / 2}deg) translateY(-60px)` }}
+                            style={{ transform: `rotate(${90 - (360 / mappedRewards.length) / 2}deg) translateY(-60px)` }}
                           >
                             <Icon className="w-8 h-8 mx-auto mb-2 drop-shadow-lg" />
                             <p className="text-sm font-black drop-shadow-lg tracking-wide">{reward.label}</p>
@@ -247,27 +268,27 @@ const SpinWheel = ({
         <div className="text-center mb-8">
           <button
             onClick={handleSpin}
-            disabled={currentTickets <= 0 || isSpinning}
+            disabled={tickets <= 0 || spinning}
             className={`relative px-12 py-6 rounded-2xl font-black text-2xl transition-all transform ${
-              currentTickets <= 0 
+              tickets <= 0 
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : isSpinning
+                : spinning
                 ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white cursor-not-allowed scale-95'
                 : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:to-red-600 hover:scale-110 active:scale-95 shadow-2xl shadow-orange-500/50'
-            } ${isSpinning ? 'animate-pulse' : 'animate-bounce'}`}
+            } ${spinning ? 'animate-pulse' : 'animate-bounce'}`}
           >
             {/* Button Glow */}
-            {!isSpinning && currentTickets > 0 && (
+            {!spinning && tickets > 0 && (
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-red-500 rounded-2xl blur-lg opacity-75 animate-pulse"></div>
             )}
             
             <div className="relative">
-              {isSpinning ? (
+              {spinning ? (
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span className="text-white text-shadow">SPINNING...</span>
                 </div>
-              ) : currentTickets <= 0 ? (
+              ) : tickets <= 0 ? (
                 <span>NO TICKETS!</span>
               ) : (
                 <div className="flex items-center space-x-3">
@@ -278,7 +299,7 @@ const SpinWheel = ({
             </div>
           </button>
           
-          {currentTickets <= 0 && (
+          {tickets <= 0 && (
             <p className="text-red-400 mt-4 text-lg font-bold animate-pulse">
               🎫 Buy more tickets to continue playing! 🎫
             </p>
@@ -344,7 +365,7 @@ const SpinWheel = ({
                       🎰 SPIN AGAIN ({currentTickets} left)
                     </button>
                   )}
-                </div>
+                    {tickets > 0 && (
               </div>
             </div>
           </div>
@@ -357,9 +378,7 @@ const SpinWheel = ({
           </h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {rewards.filter((reward, index, arr) => 
-              arr.findIndex(r => r.label === reward.label) === index
-            ).map((reward, index) => {
+            {mappedRewards.map((reward, index) => {
               const Icon = reward.icon;
               return (
                 <div key={index} className={`relative bg-gradient-to-br ${reward.color} rounded-xl p-4 text-white text-center shadow-xl ${reward.glow} border-2 border-white/20 hover:scale-105 transition-transform`}>
@@ -367,7 +386,7 @@ const SpinWheel = ({
                   <div className="relative">
                     <Icon className="w-8 h-8 mx-auto mb-2 drop-shadow-lg" />
                     <p className="font-black text-sm tracking-wide drop-shadow-lg">{reward.label}</p>
-                    {reward.value > 0 && (
+                        🎰 SPIN AGAIN ({tickets} left)
                       <p className="text-xs opacity-90 font-bold mt-1">💰 {reward.value.toLocaleString()}</p>
                     )}
                   </div>
@@ -382,12 +401,12 @@ const SpinWheel = ({
           <div className="inline-flex items-center space-x-6 bg-gradient-to-r from-gray-800/50 to-purple-800/50 backdrop-blur-xl rounded-2xl px-8 py-4 border border-purple-400/30">
             <div className="text-center">
               <p className="text-yellow-400 font-bold text-sm">TOTAL SPINS</p>
-              <p className="text-white font-black text-2xl">{tickets - currentTickets}</p>
+              <p className="text-white font-black text-2xl">0</p>
             </div>
             <div className="w-px h-8 bg-purple-400/30"></div>
             <div className="text-center">
               <p className="text-green-400 font-bold text-sm">TICKETS LEFT</p>
-              <p className="text-white font-black text-2xl">{currentTickets}</p>
+              <p className="text-white font-black text-2xl">{tickets}</p>
             </div>
           </div>
         </div>

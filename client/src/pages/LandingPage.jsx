@@ -1,5 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
+import { connectWallet } from '../store/authSlice';
 import { 
   Trophy, 
   Zap, 
@@ -24,6 +27,27 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const LandingPage= () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const wallet = useAccount();
+  const { isAuthenticated, loading } = useSelector((state) => state.auth);
+
+  // Auto-connect when wallet is connected
+  React.useEffect(() => {
+    if (wallet.isConnected && wallet.address && !isAuthenticated) {
+      dispatch(connectWallet({
+        walletAddress: wallet.address,
+        walletProvider: 'metamask',
+        network: 'BSC'
+      }));
+    }
+  }, [wallet.isConnected, wallet.address, isAuthenticated, dispatch]);
+
+  // Navigate to game when authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/game');
+    }
+  }, [isAuthenticated, navigate]);
 
   const features = [
     {
@@ -263,11 +287,31 @@ const LandingPage= () => {
               </p>
               
               <button
-                onClick={() => navigate('/game')}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    navigate('/game');
+                  } else if (wallet.isConnected) {
+                    dispatch(connectWallet({
+                      walletAddress: wallet.address,
+                      walletProvider: 'metamask',
+                      network: 'BSC'
+                    }));
+                  }
+                }}
+                  if (isAuthenticated) {
+                    navigate('/game');
+                  } else if (wallet.isConnected) {
+                    dispatch(connectWallet({
+                      walletAddress: wallet.address,
+                      walletProvider: 'metamask',
+                      network: 'BSC'
+                    }));
+                  }
+                }}
                 className="bg-white text-gray-900 px-10 py-4 rounded-xl font-bold text-xl hover:bg-gray-100 transition-all transform hover:scale-110 shadow-xl flex items-center space-x-3 mx-auto"
               >
                 <Trophy className="w-6 h-6" />
-                <span>Launch Game</span>
+                <span>{loading ? 'Connecting...' : isAuthenticated ? 'Enter Game' : 'Launch Game'}</span>
                 <ArrowRight className="w-6 h-6" />
               </button>
             </div>

@@ -1,62 +1,13 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitTask, claimTaskReward } from '../store/socialSlice';
 import { CheckSquare, Twitter, MessageCircle, Users, Youtube, Instagram, ExternalLink, Gift, Clock, CheckCircle, Star, Zap } from 'lucide-react';
 
 
 
 const SocialTasks= ({ userAddress, onTaskComplete }) => {
-  const [tasks] = useState([
-    {
-      id: '1',
-      title: 'Follow SpinWin on Twitter',
-      description: 'Follow our official Twitter account for updates and announcements',
-      platform: 'twitter',
-      action: 'follow',
-      url: 'https://twitter.com/spinwin_official',
-      reward: { type: 'tokens', amount: 100 },
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '2',
-      title: 'Join Telegram Community',
-      description: 'Join our Telegram group to chat with other players',
-      platform: 'telegram',
-      action: 'join',
-      url: 'https://t.me/spinwin_community',
-      reward: { type: 'spins', amount: 3 },
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '3',
-      title: 'Like Latest Tweet',
-      description: 'Like our latest announcement tweet',
-      platform: 'twitter',
-      action: 'like',
-      url: 'https://twitter.com/spinwin_official/status/123456789',
-      reward: { type: 'tickets', amount: 2 },
-      isActive: true,
-      createdAt: '2024-01-16T14:30:00Z'
-    }
-  ]);
-
-  const [completions, setCompletions] = useState([
-    {
-      id: '1',
-      userAddress,
-      taskId: '1',
-      status: 'completed',
-      completedAt: '2024-01-18T12:00:00Z',
-      verifiedAt: '2024-01-18T12:05:00Z'
-    },
-    {
-      id: '2',
-      userAddress,
-      taskId: '3',
-      status: 'pending',
-      completedAt: '2024-01-20T10:30:00Z'
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { tasks, submitting, claiming } = useSelector((state) => state.social);
 
   const getPlatformIcon = (platform) => {
     switch (platform) {
@@ -98,49 +49,44 @@ const SocialTasks= ({ userAddress, onTaskComplete }) => {
     }
   };
 
-  const getTaskStatus = (taskId) => {
-    const completion = completions.find(c => c.taskId === taskId);
-    if (!completion) return 'available';
-    if (completion.status === 'completed') return 'completed';
-    if (completion.status === 'pending') return 'pending';
-    return 'available';
-  };
-
-  const handleTaskAction = (task) => {
-    const status = getTaskStatus(task.id);
+  const handleTaskAction = async (task) => {
+    const status = task.status;
     
-    if (status === 'completed') return;
+    if (status === 'verified' && task.rewardClaimed) return;
     
-    if (status === 'pending') {
-      // Simulate verification
-      setCompletions(prev => prev.map(c => 
-        c.taskId === task.id 
-          ? { ...c, status: 'completed', verifiedAt: new Date().toISOString() }
-          : c
-      ));
-      onTaskComplete(task.reward);
+    if (status === 'verified' && !task.rewardClaimed) {
+      // Claim reward
+      try {
+        const result = await dispatch(claimTaskReward(task.id)).unwrap();
+        if (onTaskComplete) {
+          onTaskComplete(result.reward);
+        }
+      } catch (error) {
+        console.error('Failed to claim reward:', error);
+      }
       return;
     }
 
     // Open task URL
     window.open(task.url, '_blank');
     
-    // Mark as pending
-    const newCompletion= {
-      id: Date.now().toString(),
-      userAddress,
-      taskId: task.id,
-      status: 'pending',
-      completedAt: new Date().toISOString()
-    };
-    
-    setCompletions(prev => [...prev, newCompletion]);
+    // Submit task completion
+    if (status === 'available') {
+      try {
+        await dispatch(submitTask({ 
+          taskId: task.id, 
+          proof: `Completed ${task.action} on ${task.platform}` 
+        })).unwrap();
+      } catch (error) {
+        console.error('Failed to submit task:', error);
+      }
+    }
   };
 
-  const completedTasks = completions.filter(c => c.status === 'completed').length;
-  const pendingTasks = completions.filter(c => c.status === 'pending').length;
+  const completedTasks = tasks.filter(t => t.status === 'verified').length;
+  const pendingTasks = tasks.filter(t => t.status === 'pending').length;
   const totalRewards = tasks
-    .filter(task => getTaskStatus(task.id) === 'completed')
+    .filter(task => task.status === 'verified' && task.rewardClaimed)
     .reduce((sum, task) => {
       if (task.reward.type === 'tokens') return sum + task.reward.amount;
       return sum;
@@ -209,7 +155,7 @@ const SocialTasks= ({ userAddress, onTaskComplete }) => {
         {tasks.map((task) => {
           const PlatformIcon = getPlatformIcon(task.platform);
           const RewardIcon = getRewardIcon(task.reward.type);
-          const status = getTaskStatus(task.id);
+          const status = task.status;
           const platformColor = getPlatformColor(task.platform);
           const rewardColor = getRewardColor(task.reward.type);
           
@@ -217,8 +163,10 @@ const SocialTasks= ({ userAddress, onTaskComplete }) => {
             <div
               key={task.id}
               className={`bg-white/80 backdrop-blur-lg rounded-xl p-6 shadow-lg border transition-all transform hover:scale-105 ${
-                status === 'completed' 
+                status === 'verified' && task.rewardClaimed
                   ? 'border-green-300 bg-green-50/50' 
+                : status === 'verified'
+                  ? 'border-blue-300 bg-blue-50/50'
                   : status === 'pending'
                   ? 'border-orange-300 bg-orange-50/50'
                   : 'border-yellow-200 hover:border-yellow-300'
@@ -229,9 +177,15 @@ const SocialTasks= ({ userAddress, onTaskComplete }) => {
                   <PlatformIcon className="w-6 h-6 text-white" />
                 </div>
                 
-                {status === 'completed' && (
+                {status === 'verified' && task.rewardClaimed && (
                   <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                     Completed
+                  </div>
+                )}
+                
+                {status === 'verified' && !task.rewardClaimed && (
+                  <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Ready to Claim
                   </div>
                 )}
                 
@@ -259,24 +213,36 @@ const SocialTasks= ({ userAddress, onTaskComplete }) => {
 
               <button
                 onClick={() => handleTaskAction(task)}
-                disabled={status === 'completed'}
+                disabled={status === 'verified' && task.rewardClaimed || submitting || claiming}
                 className={`w-full py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center space-x-2 ${
-                  status === 'completed'
+                  status === 'verified' && task.rewardClaimed
                     ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                    : status === 'verified' && !task.rewardClaimed
+                    ? 'bg-blue-500 text-white hover:bg-blue-600'
                     : status === 'pending'
                     ? 'bg-orange-500 text-white hover:bg-orange-600'
                     : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transform hover:scale-105'
-                }`}
+                } ${(submitting || claiming) ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {status === 'completed' ? (
+                {submitting || claiming ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Processing...</span>
+                  </>
+                ) : status === 'verified' && task.rewardClaimed ? (
                   <>
                     <CheckCircle className="w-4 h-4" />
                     <span>Completed</span>
                   </>
+                ) : status === 'verified' && !task.rewardClaimed ? (
+                  <>
+                    <Gift className="w-4 h-4" />
+                    <span>Claim Reward</span>
+                  </>
                 ) : status === 'pending' ? (
                   <>
                     <Clock className="w-4 h-4" />
-                    <span>Verify & Claim</span>
+                    <span>Pending Verification</span>
                   </>
                 ) : (
                   <>

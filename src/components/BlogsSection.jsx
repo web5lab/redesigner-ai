@@ -275,7 +275,6 @@ const BlogsSection = () => {
                     <span className="text-slate-400 text-xs">{blog.author}</span>
                   </div>
                   
-                  <button className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors group/btn">
                   <Link 
                     to={`/blog/${blog.slug}`}
                     className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors group/btn"

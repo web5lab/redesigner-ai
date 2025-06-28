@@ -44,7 +44,7 @@ export function CodeViewer({ id, onClose, multiDesignlist, multiDesign, setPrevi
     const currentPlan = user?.currentPlan || 'Free';
     if (currentPlan === 'Free' || currentPlan === 'free') {
       setTimeout(() => {
-        toast.success("This feature is not available in free plan.", {
+        toast.success("Oops! This feature is part of our premium plan. Upgrade to unlock it!", {
           duration: 5000,
           position: 'top-center',
           style: {

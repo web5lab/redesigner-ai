@@ -1,10 +1,10 @@
-import { Code2Icon, Edit3, Eye, LayoutGrid, Sparkles, Wand2, X, Plus, FileEdit,  Share2Icon, CodeIcon, LayoutDashboard } from 'lucide-react';
+import { Code2Icon, Edit3, Eye, LayoutGrid, Sparkles, Wand2, X, Plus, FileEdit, Share2Icon, CodeIcon, LayoutDashboard } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { UserSelector } from '../store/global.Selctor';
 
-function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup , setSharePopup,openNewWebsiteModal }) {
+function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup, setSharePopup, openNewWebsiteModal }) {
     const [timeLeft, setTimeLeft] = useState('');
     const mainContentAnimation = "opacity-0 animate-fadeInUp";
     const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -16,7 +16,7 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
         const interval = setInterval(() => {
             const created = new Date(website.createdAt);
             const now = new Date();
-            const end = new Date(created.getTime() + 10 * 60 * 1000); // 10 mins from createdAt
+            const end = new Date(created.getTime() + 10 * 60 * 400); // 10 mins from createdAt
             const diff = end - now;
 
             if (diff <= 0) {
@@ -72,40 +72,40 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
     const handleFormatSelect = async () => {
         const currentPlan = user?.currentPlan || 'Free';
         if (currentPlan === 'Free' || currentPlan === 'free') {
-          setTimeout(() => {
-            toast.success("This feature is not available in free plan.", {
-              duration: 5000,
-              position: 'top-center',
-              style: {
-                background: 'linear-gradient(to right, #6366f1, #8b5cf6)',
-                color: '#fff',
-                padding: '16px',
-                borderRadius: '10px',
-                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2), 0 20px 40px -20px rgba(0,0,0,0.3)',
-                border: '1px solid rgba(255,255,255,0.1)'
-              },
-              icon: <Sparkles className="text-yellow-300" />,
-            });
-          }, 300);
-          return;
+            setTimeout(() => {
+                toast.success("Oops! This feature is part of our premium plan. Upgrade to unlock it!", {
+                    duration: 5000,
+                    position: 'top-center',
+                    style: {
+                        background: 'linear-gradient(to right, #6366f1, #8b5cf6)',
+                        color: '#fff',
+                        padding: '16px',
+                        borderRadius: '10px',
+                        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2), 0 20px 40px -20px rgba(0,0,0,0.3)',
+                        border: '1px solid rgba(255,255,255,0.1)'
+                    },
+                    icon: <Sparkles className="text-yellow-300" />,
+                });
+            }, 300);
+            return;
         }
 
         // const htmlUrl = designs[currentDesign] // Not used directly here
-     
-          try {
+
+        try {
             const designToDownload = website?.uuid;
             if (!designToDownload) {
-              toast.error("No design selected to download.");
-              return;
+                toast.error("No design selected to download.");
+                return;
             }
             const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/download-page/${designToDownload}/zip`);
             if (!response.ok) {
-              throw new Error('Zip download failed');
+                throw new Error('Zip download failed');
             }
-    
+
             const blob = await response.blob();
             const downloadUrl = URL.createObjectURL(blob);
-    
+
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.download = `website.zip`;
@@ -114,12 +114,12 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
             document.body.removeChild(link);
             URL.revokeObjectURL(downloadUrl);
             toast.success("Download started!");
-          } catch (error) {
+        } catch (error) {
             console.error('Error downloading HTML:', error);
             toast.error("Failed to download HTML file.");
-          } 
-     
-      };
+        }
+
+    };
 
     const handleCardClick = () => {
         if (website.status === 'completed') {
@@ -273,6 +273,14 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
                     {website.status === 'completed' && (
                         <>
                             <button
+                                onClick={handleFormatSelect}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex w-full items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 sm:px-3 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+                            >
+                                <CodeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Export Code
+                            </button>
+                            {/* <button
                                 onClick={() => handleOpenEditDesignPopup(website)}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -280,7 +288,7 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
                                 className="flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 sm:px-3 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
                             >
                                 <Code2Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Deploy {'(Coming Soon)'}
-                            </button>
+                            </button> */}
                             <button
                                 onClick={() => handlePreview(website)}
                                 target="_blank"
@@ -290,7 +298,7 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
                                 <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Preview
                             </button>
                             <button
-                                onClick={() =>{
+                                onClick={() => {
                                     openNewWebsiteModal(website);
                                 }}
                                 target="_blank"
@@ -300,7 +308,7 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
                                 <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Add Page
                             </button>
                             <button
-                                onClick={() => setSharePopup({isOpen: true, website})}
+                                onClick={() => setSharePopup({ isOpen: true, website })}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 sm:px-3 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
@@ -321,14 +329,14 @@ function WebsiteCard({ website, index, handlePreview, handleOpenEditDesignPopup 
                         </div>
                     )}
                 </div>
-                <button
+                {/* <button
                     onClick={handleFormatSelect}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex w-full items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 sm:px-3 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
                 >
                     <CodeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Export Code
-                </button>
+                </button> */}
             </div>
         </div>
     );

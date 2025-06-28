@@ -117,7 +117,7 @@ const BillingPlans = ({ isOpen, onClose }) => {
       features: [
         { text: "15 AI credits", included: true },
         { text: "Export HTML code", included: false },
-        { text: "1600 + templates", included: true },
+        { text: "1600 + templates", included: false },
       ],
       isPopular: false,
       productId: ""

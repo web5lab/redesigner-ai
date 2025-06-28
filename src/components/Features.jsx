@@ -1,18 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { 
-  Code, 
-  FileText, 
-  Globe, 
-  Palette, 
-  Github, 
+  FileText,
+  Palette,
   BookOpen, 
-  User, 
-  Zap,
-  ArrowRight,
-  CheckCircle,
+  User,
   Clock,
-  TrendingUp,
-  Users,
   Sparkles
 } from 'lucide-react';
 import web5labNew from '../assets/web5labDark.png';
@@ -107,7 +99,6 @@ const ProblemSolution = () => {
   return (
     <section ref={sectionRef} className="py-20 md:py-28 relative overflow-hidden">
       {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
       <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30 animate-blob"></div>
       <div className="absolute bottom-1/2 right-1/2 w-96 h-96 bg-blue-600/20 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       
@@ -120,8 +111,8 @@ const ProblemSolution = () => {
             </span>
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-4">
-            From <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Outdated</span> to{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Outstanding</span>
+            From <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">Outdated</span> to{' '}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">Outstanding</span>
           </h2>
           <p className="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">
             Whether it's a website redesign, portfolio creation, documentation, or instant blogging - 

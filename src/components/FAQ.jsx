@@ -1,31 +1,50 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Sparkles, Code, FileText, Zap } from 'lucide-react';
 
-const FAQItem = ({ question, answer }) => {
+const FAQItem = ({ question, answer, icon: Icon, index }) => {
   const [isOpen, setIsOpen] = useState(false);
   
   // Split answer into paragraphs if it contains \n
   const answerParagraphs = typeof answer === 'string' ? answer.split('\n') : [answer];
 
   return (
-    <div className="border-b border-slate-700/50 px-4 last:border-b-0">
+    <div className="group border-b border-slate-700/30 px-6 last:border-b-0 hover:bg-slate-800/30 transition-all duration-300">
       <button
-        className="flex justify-between items-center w-full py-4 text-left"
+        className="flex justify-between items-center w-full py-6 text-left"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <h3 className="text-lg font-medium text-white">{question}</h3>
+        <div className="flex items-center gap-4">
+          <div className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br ${
+            index % 4 === 0 ? 'from-purple-500/20 to-indigo-500/20 border border-purple-500/30' :
+            index % 4 === 1 ? 'from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30' :
+            index % 4 === 2 ? 'from-yellow-500/20 to-orange-500/20 border border-yellow-500/30' :
+            'from-pink-500/20 to-purple-500/20 border border-pink-500/30'
+          } flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+            <Icon className={`h-5 w-5 ${
+              index % 4 === 0 ? 'text-purple-400' :
+              index % 4 === 1 ? 'text-emerald-400' :
+              index % 4 === 2 ? 'text-yellow-400' :
+              'text-pink-400'
+            }`} />
+          </div>
+          <h3 className="text-lg font-semibold text-white group-hover:text-purple-300 transition-colors duration-300">
+            {question}
+          </h3>
+        </div>
         <span className="ml-6 flex-shrink-0">
           {isOpen ? (
-            <ChevronUp className="h-5 w-5 text-slate-400" />
+            <ChevronUp className="h-5 w-5 text-slate-400 group-hover:text-purple-400 transition-colors duration-300" />
           ) : (
-            <ChevronDown className="h-5 w-5 text-slate-400" />
+            <ChevronDown className="h-5 w-5 text-slate-400 group-hover:text-purple-400 transition-colors duration-300" />
           )}
         </span>
       </button>
       {isOpen && (
-        <div className="pb-4 text-slate-300 space-y-2">
-          {answerParagraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
+        <div className="pb-6 text-slate-300 space-y-3 ml-14 animate-fadeIn">
+          {answerParagraphs.map((paragraph, pIndex) => (
+            <p key={pIndex} className="leading-relaxed text-slate-300">
+              {paragraph}
+            </p>
           ))}
         </div>
       )}
@@ -36,80 +55,122 @@ const FAQItem = ({ question, answer }) => {
 const FAQ = () => {
   const faqs = [
     {
-      question: "How does redesignr.ai work?",
-      answer: "redesignr.ai is your AI-powered web creation assistant. It uses advanced artificial intelligence to understand your requirements, whether you're building from scratch, creating content, redesigning an existing site, or using a template. Our AI applies modern design principles and best practices to generate beautiful, functional web content and exportable code (React or HTML/CSS)."
+      question: "How does the AI Frontend Engineer work?",
+      answer: "Our AI Frontend Engineer is your intelligent web creation assistant that understands modern design principles and coding best practices. Simply provide a URL, GitHub repository, idea, or Markdown file, and it instantly generates production-ready HTML, CSS, and React code. The AI analyzes your requirements and applies cutting-edge design patterns to create stunning, functional websites without you writing a single line of code.",
+      icon: Sparkles
     },
     {
-      question: "What types of web content can I create?",
-      answer: `You can create a variety of web content with redesignr.ai:
-      - **New Landing Pages:** Describe your ideal page, and our AI will build it.
-      - **Blogs:** Define a topic, optionally provide a context URL and theme color, and AI crafts blog posts and layouts.
-      - **Documentation Sites:** Generate documentation from a GitHub repository URL or by uploading a Markdown file (e.g., README.md).
-      - **Website Redesigns:** Input an existing URL to get AI-powered redesign suggestions (Multi-Design or Manual Mode).
-      - **Template-Based Sites (Remix):** Choose from professional templates and apply them to an existing URL or customize them with your specific instructions.`
+      question: "What can I build with this AI assistant?",
+      answer: `Transform any idea into a professional website in minutes:\n• **SEO-Friendly Blogs:** Generate optimized blog layouts with your content and branding\n• **GitHub Documentation:** Convert repositories into beautiful, searchable documentation sites\n• **Landing Pages:** Create high-converting marketing pages from your specifications\n• **Website Redesigns:** Upload any URL and get modern, responsive redesigns\n• **Template Customization:** Apply professional templates to your existing content\n• **Marketing Pages:** Build conversion-focused pages with AI-optimized layouts`,
+      icon: Code
     },
     {
-      question: "How do I start creating a new landing page or blog?",
-      answer: `For a **new landing page** (using "Build New" mode), you'll describe the purpose, target audience, and key features of the page you envision. The more detail you provide, the better the AI can match your needs.
-      For a **new blog** (using "Create Blog" mode), you'll define the main topic for your blog. You can optionally provide your existing website URL for style context, choose a theme color, and add custom instructions for tone or specific content points.`
+      question: "How do I create documentation from my GitHub repository?",
+      answer: "Creating professional documentation is incredibly simple! Just paste your public GitHub repository URL, and our AI will analyze your README, code structure, and project files to generate a complete documentation website. The AI understands code patterns, API structures, and technical writing best practices to create searchable, well-organized docs that make your project shine. You can also upload Markdown files directly for custom documentation needs.",
+      icon: FileText
     },
     {
-      question: "Can I generate documentation for my software projects?",
-      answer: "Yes! In the \"Create Docs\" mode, you have two primary options: \n1. Provide the URL of your public GitHub repository. Our AI will analyze its content (like the README) to structure your documentation site. \n2. Upload a Markdown file directly (e.g., your project's README.md or other technical documents). \nYou can also add custom instructions to guide the generation process, like focusing on specific sections or API endpoints."
+      question: "What makes this different from other website builders?",
+      answer: "Unlike traditional drag-and-drop builders, our AI Frontend Engineer thinks like a professional developer and designer. It doesn't just arrange blocks—it understands your content, analyzes modern design trends, and generates clean, semantic code that's actually maintainable. You get production-ready React components and HTML/CSS that you can deploy anywhere, modify, or hand off to developers. Plus, it specializes in technical content like GitHub docs and SEO-optimized blogs.",
+      icon: Zap
     },
     {
-      question: "What options do I have for redesigning an existing website or using templates?",
-      answer: `When **redesigning from a URL** ("From URL" mode), you can choose:
-      - **Multi-Design:** AI generates three unique design variations of your page.
-      - **Manual Mode:** You select a theme (Light, Dark, AI Choice) for a single, focused redesign.
-      When **using templates** ("Use Templates" / "Remix" mode), you first select a template. Then you can:
-      - **Apply to Existing Page:** Provide your website URL, and AI will adapt the template's style to your site's content.
-      - **Customize Template:** Provide instructions on how you want the selected template to be modified (e.g., change colors, content sections, or overall purpose).`
+      question: "Can I customize the generated websites and export the code?",
+      answer: "Absolutely! Every website generated comes with complete, production-ready source code in both React.js and HTML/CSS formats. The code is clean, well-structured, and follows modern web standards, making it easy for you or your developers to customize further. You own the code completely—deploy it on any platform, modify the design, add features, or integrate it into larger projects. No vendor lock-in, no limitations.",
+      icon: Code
     },
     {
-      question: "Can I customize the AI-generated output?",
-      answer: "Absolutely. While our AI aims to get it right, you can guide it with custom instructions for most creation modes. After generation, you'll receive production-ready code (React.js and HTML/CSS). This code is clean and well-structured, allowing you or your developers to make further customizations and deploy it anywhere."
+      question: "How does the AI handle SEO and performance optimization?",
+      answer: "Our AI Frontend Engineer automatically implements SEO best practices and performance optimizations in every generated website. This includes semantic HTML structure, proper meta tags, optimized images, fast loading times, mobile responsiveness, and clean URL structures. For blogs, it generates SEO-friendly content layouts with proper heading hierarchies and schema markup. Your sites are built to rank well and load fast from day one.",
+      icon: Sparkles
     },
     {
-      question: "What code formats can I export?",
-      answer: "We provide complete, production-ready source code in two popular formats: \n- **React.js:** Often utilizing Tailwind CSS for styling, perfect for modern web applications. \n- **HTML/CSS:** Standard, semantic HTML and CSS for broader compatibility and ease of use. \nThis gives you the flexibility to choose the format that best suits your technical stack and deployment needs."
+      question: "Can I redesign existing websites or work with templates?",
+      answer: "Yes! Paste any website URL and choose from multiple redesign options—get three unique design variations or specify your preferred theme (light, dark, or let AI choose). You can also start with professional templates and either apply them to your existing site's content or customize them with specific instructions. The AI understands how to preserve your content while applying modern design patterns and improved user experience.",
+      icon: Zap
     }
   ];
 
   return (
-    <section id="faq" className="py-20 bg-slate-800 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900"></div>
+    <section id="faq" className="py-24 relative overflow-hidden">
+      {/* Background gradients matching hero */}
+      
+      {/* Animated background elements */}
+      <div className="absolute top-1/4 right-1/6 w-72 h-72 bg-purple-600/10 rounded-full filter blur-3xl opacity-40 animate-pulse"></div>
+      <div className="absolute bottom-1/3 left-1/6 w-80 h-80 bg-emerald-600/10 rounded-full filter blur-3xl opacity-40 animate-pulse" style={{animationDelay: '3s'}}></div>
+      <div className="absolute top-1/2 right-1/2 w-64 h-64 bg-indigo-600/10 rounded-full filter blur-3xl opacity-40 animate-pulse" style={{animationDelay: '6s'}}></div>
+      
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-purple-400/40 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-40 right-20 w-1.5 h-1.5 bg-emerald-400/50 rounded-full animate-bounce" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-32 left-1/4 w-1 h-1 bg-indigo-400/45 rounded-full animate-bounce" style={{animationDelay: '7s'}}></div>
+        <div className="absolute top-1/3 right-1/5 w-1.5 h-1.5 bg-yellow-400/40 rounded-full animate-bounce" style={{animationDelay: '2s'}}></div>
+      </div>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-white">Frequently Asked Questions</h2>
-            <p className="text-slate-300 text-lg">
-              Got questions about using our AI web creation platform? Find answers to the most common questions below.
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-20">
+            {/* Badge */}
+            <div className="inline-block px-4 py-2 mb-6 bg-slate-800/80 rounded-full backdrop-blur-sm border border-slate-700 shadow-lg hover:shadow-purple-500/20 transition-all duration-300">
+              <span className="text-purple-400 text-sm font-medium">
+                🤖 AI Frontend Engineer FAQ
+              </span>
+            </div>
+            
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              Frequently Asked{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400">
+                Questions
+              </span>
+            </h2>
+            <p className="text-slate-300 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
+              Everything you need to know about building stunning websites, GitHub docs, and SEO blogs with your{' '}
+              <span className="text-purple-400 font-medium">AI Frontend Engineer</span>
+              . Get instant answers about features, customization, and code export.
             </p>
           </div>
           
-          <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-xl overflow-hidden">
+          <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden shadow-2xl">
             {faqs.map((faq, index) => (
               <FAQItem 
                 key={index} 
                 question={faq.question} 
-                answer={faq.answer} 
+                answer={faq.answer}
+                icon={faq.icon}
+                index={index}
               />
             ))}
           </div>
           
-          <div className="text-center mt-10">
-            <p className="text-slate-300 mb-4">Still have questions?</p>
-            <a 
-              href="#" // Replace with actual contact link or modal trigger
-              className="inline-flex items-center bg-white/10 backdrop-blur-sm text-white px-6 py-3 rounded-lg hover:bg-white/20 transition-colors"
-            >
-              Contact Support
-            </a>
+          <div className="text-center mt-12">
+            <p className="text-slate-300 mb-6 text-lg">
+              Ready to build something amazing with AI?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="group relative px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  🚀 Start Building Now
+                </span>
+              </button>
+              
+              <button className="group px-8 py-3 border border-slate-600 text-slate-300 font-semibold rounded-lg hover:border-purple-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
+                <span className="flex items-center gap-2">
+                  💬 Contact Support
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-slate-900 to-transparent"></div>
+
     </section>
   );
 };

@@ -62,7 +62,7 @@ const TemplateShowcase = () => {
     return (
         <>
             {selectedTemplate && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="fixed  z-50 flex items-center justify-center p-4">
                     <div className="bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-800/50">
@@ -108,7 +108,7 @@ const TemplateShowcase = () => {
                 </div>
             )}
 
-            <section ref={sectionRef} className="relative py-20 md:py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+            <section ref={sectionRef} className="relative py-20 md:py-28  overflow-hidden">
                 <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30 animate-blob"></div>
                 <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
                 <div className="absolute bottom-1/2 right-1/2 w-96 h-96 bg-blue-600/20 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
@@ -120,9 +120,9 @@ const TemplateShowcase = () => {
                             <span className="text-sm font-medium text-indigo-300">1600+ Prebuilt AI Themes</span>
                         </div>
 
-                        <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-6">
+                        <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400 mb-6">
                             Choose Your Perfect
-                            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
                                 Design Template
                             </span>
                         </h2>

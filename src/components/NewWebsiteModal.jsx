@@ -493,8 +493,8 @@ const NewWebsiteModal = ({ isOpen, onClose, onSubmit, showAnimation, allTemplate
                                   </label>
                                  <textarea
                                    id="blogCustomInstructions"
-                                   value={customInstructions}
-                                   onChange={(e) => handleInstructionsChange(e.target.value)}
+                                   value={readmeText}
+                                   onChange={(e) => setreadmeText(e.target.value)}
                                    placeholder="e.g., 'Target audience: tech enthusiasts', 'Tone: informal and engaging', 'Include a call to action for newsletter signup'"
                                    rows={3}
                                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"

@@ -244,6 +244,7 @@ const Dashboard = () => {
     <div className="flex min-h-screen bg-slate-900 text-slate-100 font-sans">
       <DashboardSidebar
         user={user}
+        activeTab={activeTab}
         setActiveTab={setActiveTab}
         isMobileSidebarOpen={isMobileSidebarOpen}
         closeMobileSidebar={closeMobileSidebar}

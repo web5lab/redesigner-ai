@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { Admin, User, SpinResult, Reward, SocialTask, AirdropCampaign, ReferralSystem } from '../../schemas/index.js';
+import { Admin, User, SpinResult, Reward, SocialTask, AirdropCampaign, ReferralSystem, Transaction } from '../../schemas/index.js';
 
 const router = express.Router();
 
@@ -17,10 +17,9 @@ const authenticateAdmin = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-    console.log('Decoded admin token:', decoded);
     const admin = await Admin.findById(decoded.adminId);
 
-    if (!admin) {
+    if (!admin || !admin.isActive) {
       return res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -37,6 +36,23 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
+// Permission check middleware
+const checkPermission = (module, action) => {
+  return (req, res, next) => {
+    if (req.admin.role === 'super_admin') {
+      return next();
+    }
+    
+    if (!req.admin.hasPermission(module, action)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions'
+      });
+    }
+    
+    next();
+  };
+};
 
 // Admin login
 router.post('/login', async (req, res) => {
@@ -161,7 +177,7 @@ router.get('/dashboard/stats', authenticateAdmin, async (req, res) => {
 });
 
 // User management routes
-router.get('/users', authenticateAdmin, async (req, res) => {
+router.get('/users', authenticateAdmin, checkPermission('users', 'read'), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -195,7 +211,9 @@ router.get('/users', authenticateAdmin, async (req, res) => {
           currentTickets: user.currentTickets,
           isVip: user.isVip,
           joinDate: user.joinDate,
-          lastActivityDate: user.lastActivityDate
+          lastActivityDate: user.lastActivityDate,
+          winRate: user.winRate,
+          profitLoss: user.profitLoss
         })),
         pagination: {
           page,
@@ -215,7 +233,7 @@ router.get('/users', authenticateAdmin, async (req, res) => {
 });
 
 // Reward management routes
-router.get('/rewards', authenticateAdmin, async (req, res) => {
+router.get('/rewards', authenticateAdmin, checkPermission('rewards', 'read'), async (req, res) => {
   try {
     const rewards = await Reward.find().sort({ position: 1 });
     res.json({
@@ -231,7 +249,7 @@ router.get('/rewards', authenticateAdmin, async (req, res) => {
   }
 });
 
-router.post('/rewards', authenticateAdmin, async (req, res) => {
+router.post('/rewards', authenticateAdmin, checkPermission('rewards', 'create'), async (req, res) => {
   try {
     const rewardData = {
       ...req.body,
@@ -255,7 +273,7 @@ router.post('/rewards', authenticateAdmin, async (req, res) => {
   }
 });
 
-router.put('/rewards/:id', authenticateAdmin,async (req, res) => {
+router.put('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'update'), async (req, res) => {
   try {
     const reward = await Reward.findByIdAndUpdate(
       req.params.id,
@@ -284,7 +302,7 @@ router.put('/rewards/:id', authenticateAdmin,async (req, res) => {
   }
 });
 
-router.delete('/rewards/:id', authenticateAdmin, async (req, res) => {
+router.delete('/rewards/:id', authenticateAdmin, checkPermission('rewards', 'delete'), async (req, res) => {
   try {
     const reward = await Reward.findByIdAndDelete(req.params.id);
 
@@ -308,8 +326,67 @@ router.delete('/rewards/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Pricing control routes
+router.get('/pricing', authenticateAdmin, checkPermission('pricing', 'read'), async (req, res) => {
+  try {
+    // For now, return static pricing data since we don't have a pricing schema
+    // In production, you'd want to create a PricingRule schema
+    const pricingRules = [
+      {
+        id: '1',
+        minTickets: 10,
+        maxTickets: 49,
+        discountPercentage: 5,
+        isActive: true
+      },
+      {
+        id: '2',
+        minTickets: 50,
+        maxTickets: 99,
+        discountPercentage: 10,
+        isActive: true
+      },
+      {
+        id: '3',
+        minTickets: 100,
+        maxTickets: 499,
+        discountPercentage: 15,
+        isActive: true
+      },
+      {
+        id: '4',
+        minTickets: 500,
+        maxTickets: 999,
+        discountPercentage: 20,
+        isActive: true
+      },
+      {
+        id: '5',
+        minTickets: 1000,
+        maxTickets: 9999,
+        discountPercentage: 25,
+        isActive: true
+      }
+    ];
+
+    res.json({
+      success: true,
+      data: { 
+        basePrice: 10,
+        pricingRules 
+      }
+    });
+  } catch (error) {
+    console.error('Get pricing error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Social tasks management
-router.get('/social-tasks', authenticateAdmin, async (req, res) => {
+router.get('/social-tasks', authenticateAdmin, checkPermission('social_tasks', 'read'), async (req, res) => {
   try {
     const tasks = await SocialTask.find().sort({ createdAt: -1 });
     res.json({
@@ -325,7 +402,7 @@ router.get('/social-tasks', authenticateAdmin, async (req, res) => {
   }
 });
 
-router.post('/social-tasks', authenticateAdmin, async (req, res) => {
+router.post('/social-tasks', authenticateAdmin, checkPermission('social_tasks', 'create'), async (req, res) => {
   try {
     const taskData = {
       ...req.body,
@@ -349,7 +426,7 @@ router.post('/social-tasks', authenticateAdmin, async (req, res) => {
   }
 });
 
-router.put('/social-tasks/:id', authenticateAdmin, async (req, res) => {
+router.put('/social-tasks/:id', authenticateAdmin, checkPermission('social_tasks', 'update'), async (req, res) => {
   try {
     const task = await SocialTask.findByIdAndUpdate(
       req.params.id,
@@ -378,8 +455,32 @@ router.put('/social-tasks/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+router.delete('/social-tasks/:id', authenticateAdmin, checkPermission('social_tasks', 'delete'), async (req, res) => {
+  try {
+    const task = await SocialTask.findByIdAndDelete(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Social task not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Social task deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete social task error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Referral system management
-router.get('/referrals', authenticateAdmin, async (req, res) => {
+router.get('/referrals', authenticateAdmin, checkPermission('referrals', 'read'), async (req, res) => {
   try {
     const referrals = await ReferralSystem.find()
       .populate('referrerId', 'walletAddress')
@@ -428,8 +529,128 @@ router.get('/referrals', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Airdrop campaigns management
+router.get('/airdrops', authenticateAdmin, checkPermission('airdrops', 'read'), async (req, res) => {
+  try {
+    const campaigns = await AirdropCampaign.find()
+      .populate('createdBy', 'firstName lastName')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: { campaigns }
+    });
+  } catch (error) {
+    console.error('Get airdrops error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+router.post('/airdrops', authenticateAdmin, checkPermission('airdrops', 'create'), async (req, res) => {
+  try {
+    const campaignData = {
+      ...req.body,
+      createdBy: req.admin._id
+    };
+
+    const campaign = new AirdropCampaign(campaignData);
+    await campaign.save();
+
+    res.json({
+      success: true,
+      message: 'Airdrop campaign created successfully',
+      data: { campaign }
+    });
+  } catch (error) {
+    console.error('Create airdrop error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+router.put('/airdrops/:id', authenticateAdmin, checkPermission('airdrops', 'update'), async (req, res) => {
+  try {
+    const campaign = await AirdropCampaign.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!campaign) {
+      return res.status(404).json({
+        success: false,
+        message: 'Airdrop campaign not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Airdrop campaign updated successfully',
+      data: { campaign }
+    });
+  } catch (error) {
+    console.error('Update airdrop error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Spin board management (rewards with position focus)
+router.get('/spin-board', authenticateAdmin, checkPermission('spin_board', 'read'), async (req, res) => {
+  try {
+    const rewards = await Reward.find().sort({ position: 1 });
+    
+    // Calculate total probability
+    const totalProbability = rewards.reduce((sum, reward) => sum + (reward.isActive ? reward.probability : 0), 0);
+    
+    res.json({
+      success: true,
+      data: { 
+        rewards,
+        totalProbability,
+        isValid: totalProbability === 100
+      }
+    });
+  } catch (error) {
+    console.error('Get spin board error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+router.put('/spin-board/reorder', authenticateAdmin, checkPermission('spin_board', 'update'), async (req, res) => {
+  try {
+    const { rewardIds } = req.body; // Array of reward IDs in new order
+    
+    // Update positions
+    for (let i = 0; i < rewardIds.length; i++) {
+      await Reward.findByIdAndUpdate(rewardIds[i], { position: i });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Spin board reordered successfully'
+    });
+  } catch (error) {
+    console.error('Reorder spin board error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Analytics routes
-router.get('/analytics/overview', authenticateAdmin, async (req, res) => {
+router.get('/analytics/overview', authenticateAdmin, checkPermission('analytics', 'read'), async (req, res) => {
   try {
     const timeframe = parseInt(req.query.days) || 7;
     const startDate = new Date();
@@ -479,6 +700,64 @@ router.get('/analytics/overview', authenticateAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Analytics overview error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Transaction management
+router.get('/transactions', authenticateAdmin, checkPermission('transactions', 'read'), async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const type = req.query.type;
+    const status = req.query.status;
+
+    const query = {};
+    if (type) query.type = type;
+    if (status) query.status = status;
+
+    const transactions = await Transaction.find(query)
+      .populate('userId', 'walletAddress')
+      .sort({ transactionTimestamp: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await Transaction.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        transactions,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get transactions error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Admin logout
+router.post('/logout', authenticateAdmin, async (req, res) => {
+  try {
+    // In a real implementation, you might want to blacklist the token
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    console.error('Admin logout error:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

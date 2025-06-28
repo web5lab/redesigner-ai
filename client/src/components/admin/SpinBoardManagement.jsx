@@ -1,113 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSpinBoard, getAdminRewards, createReward, updateReward, deleteReward, reorderSpinBoard } from '../../store/adminSlice';
 import { RotateCcw, Plus, Edit, Trash2, Eye, EyeOff, Save, Coins, Gift, Zap, Star, Crown, Sparkles, Gem, Trophy } from 'lucide-react';
 
 const SpinBoardManagement = () => {
-  const [spinRewards, setSpinRewards] = useState([
-    {
-      id: '1',
-      name: '500 COINS',
-      icon: 'coins',
-      probability: 25,
-      rewardType: 'tokens',
-      value: 500,
-      description: 'Standard token reward',
-      color: 'from-yellow-400 via-yellow-500 to-amber-600',
-      isActive: true,
-      position: 0,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '2',
-      name: 'NOTHING',
-      icon: 'star',
-      probability: 20,
-      rewardType: 'nothing',
-      value: 0,
-      description: 'No reward',
-      color: 'from-gray-600 via-gray-700 to-gray-800',
-      isActive: true,
-      position: 1,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '3',
-      name: '1,000 COINS',
-      icon: 'coins',
-      probability: 20,
-      rewardType: 'tokens',
-      value: 1000,
-      description: 'Medium token reward',
-      color: 'from-green-400 via-emerald-500 to-green-600',
-      isActive: true,
-      position: 2,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '4',
-      name: 'BONUS SPIN',
-      icon: 'gift',
-      probability: 15,
-      rewardType: 'bonus',
-      value: 0,
-      description: 'Extra spin opportunity',
-      color: 'from-purple-500 via-violet-600 to-purple-700',
-      isActive: true,
-      position: 3,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '5',
-      name: '250 COINS',
-      icon: 'coins',
-      probability: 15,
-      rewardType: 'tokens',
-      value: 250,
-      description: 'Small token reward',
-      color: 'from-orange-400 via-orange-500 to-red-500',
-      isActive: true,
-      position: 4,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '6',
-      name: 'RARE NFT',
-      icon: 'gem',
-      probability: 3,
-      rewardType: 'nft',
-      value: 0,
-      description: 'Exclusive collectible NFT',
-      color: 'from-pink-500 via-rose-600 to-pink-700',
-      isActive: true,
-      position: 5,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '7',
-      name: '5,000 COINS',
-      icon: 'crown',
-      probability: 1,
-      rewardType: 'jackpot',
-      value: 5000,
-      description: 'Jackpot reward',
-      color: 'from-cyan-400 via-blue-500 to-indigo-600',
-      isActive: true,
-      position: 6,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '8',
-      name: '2X MULTIPLIER',
-      icon: 'sparkles',
-      probability: 1,
-      rewardType: 'multiplier',
-      value: 0,
-      description: 'Double next reward',
-      color: 'from-emerald-400 via-teal-500 to-cyan-600',
-      isActive: true,
-      position: 7,
-      createdAt: '2024-01-15T10:00:00Z'
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { spinBoardRewards, totalProbability, loading } = useSelector((state) => state.admin);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
@@ -115,12 +13,17 @@ const SpinBoardManagement = () => {
     name: '',
     icon: 'coins',
     probability: 10,
-    rewardType: 'tokens' ,
+    rewardType: 'tokens',
     value: 0,
     description: '',
     color: 'from-yellow-400 via-yellow-500 to-amber-600',
     position: 0
   });
+
+  // Load spin board data on component mount
+  useEffect(() => {
+    dispatch(getSpinBoard());
+  }, [dispatch]);
 
   const iconOptions = [
     { value: 'coins', label: 'Coins', icon: Coins },
@@ -150,37 +53,34 @@ const SpinBoardManagement = () => {
     return iconOption ? iconOption.icon : Coins;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (editingReward) {
-      setSpinRewards(prev => prev.map(reward => 
-        reward.id === editingReward.id 
-          ? { ...reward, ...formData }
-          : reward
-      ));
+    try {
+      if (editingReward) {
+        await dispatch(updateReward({ id: editingReward._id, ...formData })).unwrap();
+      } else {
+        await dispatch(createReward(formData)).unwrap();
+      }
+      
+      setFormData({
+        name: '',
+        icon: 'coins',
+        probability: 10,
+        rewardType: 'tokens',
+        value: 0,
+        description: '',
+        color: 'from-yellow-400 via-yellow-500 to-amber-600',
+        position: 0
+      });
+      setShowAddForm(false);
       setEditingReward(null);
-    } else {
-      const newReward = {
-        id: Date.now().toString(),
-        ...formData,
-        isActive: true,
-        createdAt: new Date().toISOString()
-      };
-      setSpinRewards(prev => [...prev, newReward]);
+      
+      // Reload spin board data
+      dispatch(getSpinBoard());
+    } catch (error) {
+      console.error('Error saving reward:', error);
     }
-    
-    setFormData({
-      name: '',
-      icon: 'coins',
-      probability: 10,
-      rewardType: 'tokens',
-      value: 0,
-      description: '',
-      color: 'from-yellow-400 via-yellow-500 to-amber-600',
-      position: 0
-    });
-    setShowAddForm(false);
   };
 
   const handleEdit = (reward) => {
@@ -198,38 +98,56 @@ const SpinBoardManagement = () => {
     setShowAddForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this reward?')) {
-      setSpinRewards(prev => prev.filter(reward => reward.id !== id));
+      try {
+        await dispatch(deleteReward(id)).unwrap();
+        dispatch(getSpinBoard());
+      } catch (error) {
+        console.error('Error deleting reward:', error);
+      }
     }
   };
 
-  const toggleActive = (id) => {
-    setSpinRewards(prev => prev.map(reward => 
-      reward.id === id 
-        ? { ...reward, isActive: !reward.isActive }
-        : reward
-    ));
+  const toggleActive = async (reward) => {
+    try {
+      await dispatch(updateReward({ id: reward._id, isActive: !reward.isActive })).unwrap();
+      dispatch(getSpinBoard());
+    } catch (error) {
+      console.error('Error toggling reward status:', error);
+    }
   };
 
-  const movePosition = (id, direction) => {
-    setSpinRewards(prev => {
-      const rewards = [...prev];
-      const index = rewards.findIndex(r => r.id === id);
-      if (index === -1) return prev;
-      
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= rewards.length) return prev;
-      
-      [rewards[index], rewards[newIndex]] = [rewards[newIndex], rewards[index]];
-      
-      // Update positions
-      return rewards.map((reward, idx) => ({ ...reward, position: idx }));
-    });
+  const movePosition = async (id, direction) => {
+    const rewards = [...spinBoardRewards];
+    const index = rewards.findIndex(r => r._id === id);
+    if (index === -1) return;
+    
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= rewards.length) return;
+    
+    [rewards[index], rewards[newIndex]] = [rewards[newIndex], rewards[index]];
+    
+    // Update positions and reorder
+    const reorderedIds = rewards.map(r => r._id);
+    
+    try {
+      await dispatch(reorderSpinBoard(reorderedIds)).unwrap();
+      dispatch(getSpinBoard());
+    } catch (error) {
+      console.error('Error reordering rewards:', error);
+    }
   };
 
-  const totalProbability = spinRewards.filter(r => r.isActive).reduce((sum, r) => sum + r.probability, 0);
-  const activeRewards = spinRewards.filter(r => r.isActive).length;
+  const activeRewards = spinBoardRewards.filter(r => r.isActive);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -254,7 +172,7 @@ const SpinBoardManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Rewards</p>
-              <p className="text-2xl font-bold text-gray-900">{spinRewards.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{spinBoardRewards.length}</p>
             </div>
             <RotateCcw className="w-8 h-8 text-blue-500" />
           </div>
@@ -264,7 +182,7 @@ const SpinBoardManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Rewards</p>
-              <p className="text-2xl font-bold text-green-600">{activeRewards}</p>
+              <p className="text-2xl font-bold text-green-600">{activeRewards.length}</p>
             </div>
             <Eye className="w-8 h-8 text-green-500" />
           </div>
@@ -287,7 +205,7 @@ const SpinBoardManagement = () => {
             <div>
               <p className="text-sm text-gray-600">Max Value</p>
               <p className="text-2xl font-bold text-purple-600">
-                {Math.max(...spinRewards.map(r => r.value)).toLocaleString()}
+                {spinBoardRewards.length > 0 ? Math.max(...spinBoardRewards.map(r => r.value)).toLocaleString() : 0}
               </p>
             </div>
             <Trophy className="w-8 h-8 text-purple-500" />
@@ -314,27 +232,26 @@ const SpinBoardManagement = () => {
         <div className="flex justify-center">
           <div className="relative w-80 h-80">
             <div className="absolute inset-0 rounded-full border-8 border-yellow-400 shadow-2xl overflow-hidden">
-              {spinRewards
-                .filter(r => r.isActive)
+              {activeRewards
                 .sort((a, b) => a.position - b.position)
                 .map((reward, index) => {
-                  const angle = (360 / activeRewards) * index;
+                  const angle = (360 / activeRewards.length) * index;
                   const Icon = getIconComponent(reward.icon);
                   
                   return (
                     <div
-                      key={reward.id}
+                      key={reward._id}
                       className="absolute w-full h-full"
                       style={{
                         transform: `rotate(${angle}deg)`,
-                        clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((2 * Math.PI) / activeRewards)}% ${50 - 50 * Math.sin((2 * Math.PI) / activeRewards)}%)`,
+                        clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((2 * Math.PI) / activeRewards.length)}% ${50 - 50 * Math.sin((2 * Math.PI) / activeRewards.length)}%)`,
                       }}
                     >
                       <div className={`relative w-full h-full bg-gradient-to-br ${reward.color}`}>
                         <div className="relative flex items-center justify-center h-full">
                           <div 
                             className="text-center text-white transform translate-y-8"
-                            style={{ transform: `rotate(${90 - (360 / activeRewards) / 2}deg) translateY(-60px)` }}
+                            style={{ transform: `rotate(${90 - (360 / activeRewards.length) / 2}deg) translateY(-60px)` }}
                           >
                             <Icon className="w-6 h-6 mx-auto mb-1 drop-shadow-lg" />
                             <p className="text-xs font-black drop-shadow-lg tracking-wide">{reward.name}</p>
@@ -374,27 +291,27 @@ const SpinBoardManagement = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {spinRewards
+              {spinBoardRewards
                 .sort((a, b) => a.position - b.position)
                 .map((reward, index) => {
                   const IconComponent = getIconComponent(reward.icon);
                   
                   return (
-                    <tr key={reward.id} className="hover:bg-gray-50">
+                    <tr key={reward._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
                           <span className="text-sm font-medium text-gray-900">#{reward.position + 1}</span>
                           <div className="flex flex-col space-y-1">
                             <button
-                              onClick={() => movePosition(reward.id, 'up')}
+                              onClick={() => movePosition(reward._id, 'up')}
                               disabled={index === 0}
                               className="text-xs text-blue-600 hover:text-blue-800 disabled:text-gray-400"
                             >
                               ↑
                             </button>
                             <button
-                              onClick={() => movePosition(reward.id, 'down')}
-                              disabled={index === spinRewards.length - 1}
+                              onClick={() => movePosition(reward._id, 'down')}
+                              disabled={index === spinBoardRewards.length - 1}
                               className="text-xs text-blue-600 hover:text-blue-800 disabled:text-gray-400"
                             >
                               ↓
@@ -433,7 +350,7 @@ const SpinBoardManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
-                          onClick={() => toggleActive(reward.id)}
+                          onClick={() => toggleActive(reward)}
                           className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${
                             reward.isActive 
                               ? 'bg-green-100 text-green-800' 
@@ -452,7 +369,7 @@ const SpinBoardManagement = () => {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(reward.id)}
+                          onClick={() => handleDelete(reward._id)}
                           className="text-red-600 hover:text-red-900 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -505,7 +422,7 @@ const SpinBoardManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Reward Type</label>
                   <select
                     value={formData.rewardType}
-                    onChange={(e) => setFormData(prev => ({ ...prev, rewardType: e.target.value  }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, rewardType: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="tokens">Tokens</option>
@@ -629,8 +546,11 @@ const SpinBoardManagement = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
             onClick={() => {
-              const balanced = spinRewards.map(reward => ({ ...reward, probability: Math.floor(100 / spinRewards.length) }));
-              setSpinRewards(balanced);
+              const balanced = spinBoardRewards.map(reward => ({ ...reward, probability: Math.floor(100 / spinBoardRewards.length) }));
+              balanced.forEach(reward => {
+                dispatch(updateReward({ id: reward._id, probability: reward.probability }));
+              });
+              setTimeout(() => dispatch(getSpinBoard()), 500);
             }}
             className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-all text-left"
           >
@@ -647,8 +567,11 @@ const SpinBoardManagement = () => {
 
           <button
             onClick={() => {
-              const shuffled = [...spinRewards].sort(() => Math.random() - 0.5);
-              setSpinRewards(shuffled.map((reward, index) => ({ ...reward, position: index })));
+              const reorderedIds = [...spinBoardRewards]
+                .sort(() => Math.random() - 0.5)
+                .map(reward => reward._id);
+              
+              dispatch(reorderSpinBoard(reorderedIds));
             }}
             className="p-4 bg-white border border-blue-200 rounded-lg hover:bg-blue-50 transition-all text-left"
           >
@@ -666,8 +589,11 @@ const SpinBoardManagement = () => {
           <button
             onClick={() => {
               if (confirm('This will reset all rewards to default values. Continue?')) {
-                // Reset to default rewards logic here
-                alert('Rewards reset to default configuration');
+                dispatch(getAdminRewards());
+                setTimeout(() => {
+                  alert('Rewards reset to default configuration');
+                  dispatch(getSpinBoard());
+                }, 500);
               }
             }}
             className="p-4 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-all text-left"

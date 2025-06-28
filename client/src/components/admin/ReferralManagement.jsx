@@ -1,95 +1,60 @@
-import React, { useState } from 'react';
-import { UserPlus, Edit, Save, TrendingUp, Users, Gift, Settings, Award, Target } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAdminReferrals } from '../../store/adminSlice';
+import { UserPlus, TrendingUp, Users, Gift, Target, Award } from 'lucide-react';
 
-const ReferralManagement= () => {
-  const [referralRewards, setReferralRewards] = useState([
-    {
-      id: '1',
-      type: 'tokens',
-      amount: 200,
-      description: 'Per successful referral',
-      isActive: true
-    },
-    {
-      id: '2',
-      type: 'spins',
-      amount: 5,
-      description: 'Bonus spins for referrer',
-      isActive: true
-    },
-    {
-      id: '3',
-      type: 'tokens',
-      amount: 100,
-      description: 'Welcome bonus for new user',
-      isActive: true
-    }
-  ]);
+const ReferralManagement = () => {
+  const dispatch = useDispatch();
+  const { referrals, referralStats, loading } = useSelector((state) => state.admin);
 
-  const [milestoneRewards, setMilestoneRewards] = useState([
+  // Load referral data on component mount
+  useEffect(() => {
+    dispatch(getAdminReferrals());
+  }, [dispatch]);
+
+  // Static milestone rewards for display
+  const milestoneRewards = [
     { referrals: 5, reward: 1500, type: 'tokens', description: 'First milestone bonus' },
     { referrals: 10, reward: 5000, type: 'tokens', description: 'Includes rare NFT' },
     { referrals: 25, reward: 15000, type: 'tokens', description: 'VIP status unlock' },
     { referrals: 50, reward: 50000, type: 'tokens', description: 'Ultimate reward tier' }
-  ]);
+  ];
 
-  const [referralStats] = useState({
-    totalReferrals: 1247,
-    activeReferrals: 892,
-    totalRewardsPaid: 248500,
-    conversionRate: 71.5
-  });
+  const formatAddress = (address) => `${address?.slice(0, 6)}...${address?.slice(-4)}`;
 
-  const [recentReferrals] = useState([
-    {
-      id: '1',
-      referrerAddress: '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
-      referredAddress: '0x8ba1f109551bD432803012645Hac136c0532925a',
-      status: 'completed',
-      rewardClaimed: true,
-      createdAt: '2024-01-20T10:30:00Z',
-      completedAt: '2024-01-20T15:45:00Z'
-    },
-    {
-      id: '2',
-      referrerAddress: '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
-      referredAddress: '0x9f8e7d6c5b4a3928374650192837465019283746',
-      status: 'pending',
-      rewardClaimed: false,
-      createdAt: '2024-01-20T14:20:00Z'
+  // Calculate stats from referrals data
+  const calculateStats = () => {
+    if (!referrals || referrals.length === 0) {
+      return {
+        totalReferrals: 0,
+        activeReferrals: 0,
+        totalRewardsPaid: 0,
+        conversionRate: 0
+      };
     }
-  ]);
 
-  const [editingReward, setEditingReward] = useState(null);
-  const [editForm, setEditForm] = useState({ type: 'tokens', amount: 0, description: '' });
+    const totalReferrals = referrals.length;
+    const activeReferrals = referrals.filter(r => r.status === 'active' || r.status === 'completed').length;
+    const totalRewardsPaid = referralStats?.reduce((sum, stat) => sum + (stat.totalRewards || 0), 0) || 0;
+    const conversionRate = totalReferrals > 0 ? ((activeReferrals / totalReferrals) * 100).toFixed(1) : 0;
 
-  const handleEditReward = (reward) => {
-    setEditingReward(reward.id);
-    setEditForm({
-      type: reward.type,
-      amount: reward.amount,
-      description: reward.description
-    });
+    return {
+      totalReferrals,
+      activeReferrals,
+      totalRewardsPaid,
+      conversionRate
+    };
   };
 
-  const handleSaveReward = (id) => {
-    setReferralRewards(prev => prev.map(reward => 
-      reward.id === id 
-        ? { ...reward, ...editForm }
-        : reward
-    ));
-    setEditingReward(null);
-  };
+  const stats = calculateStats();
 
-  const toggleRewardActive = (id) => {
-    setReferralRewards(prev => prev.map(reward => 
-      reward.id === id 
-        ? { ...reward, isActive: !reward.isActive }
-        : reward
-    ));
-  };
-
-  const formatAddress = (address) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -111,7 +76,7 @@ const ReferralManagement= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Referrals</p>
-              <p className="text-2xl font-bold text-blue-600">{referralStats.totalReferrals.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.totalReferrals}</p>
             </div>
             <Users className="w-8 h-8 text-blue-500" />
           </div>
@@ -121,7 +86,7 @@ const ReferralManagement= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Referrals</p>
-              <p className="text-2xl font-bold text-green-600">{referralStats.activeReferrals.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.activeReferrals}</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -131,7 +96,7 @@ const ReferralManagement= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Rewards Paid</p>
-              <p className="text-2xl font-bold text-purple-600">{referralStats.totalRewardsPaid.toLocaleString()} XXX</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.totalRewardsPaid} XXX</p>
             </div>
             <Gift className="w-8 h-8 text-purple-500" />
           </div>
@@ -141,7 +106,7 @@ const ReferralManagement= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Conversion Rate</p>
-              <p className="text-2xl font-bold text-orange-600">{referralStats.conversionRate}%</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.conversionRate}%</p>
             </div>
             <Target className="w-8 h-8 text-orange-500" />
           </div>
@@ -151,92 +116,60 @@ const ReferralManagement= () => {
       {/* Referral Rewards Configuration */}
       <div className="bg-white/80 backdrop-blur-lg rounded-xl border border-gray-200 shadow-lg overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Referral Rewards Configuration</h2>
-            <Settings className="w-5 h-5 text-gray-500" />
-          </div>
+          <h2 className="text-xl font-semibold text-gray-900">Referral Rewards Configuration</h2>
         </div>
         
         <div className="p-6">
-          <div className="space-y-4">
-            {referralRewards.map((reward) => (
-              <div key={reward.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex-1">
-                  {editingReward === reward.id ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <select
-                        value={editForm.type}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, type: e.target.value }))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="tokens">Tokens</option>
-                        <option value="tickets">Tickets</option>
-                        <option value="spins">Spins</option>
-                      </select>
-                      
-                      <input
-                        type="number"
-                        value={editForm.amount}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, amount: parseInt(e.target.value) }))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Amount"
-                      />
-                      
-                      <input
-                        type="text"
-                        value={editForm.description}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Description"
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-center space-x-3">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          reward.type === 'tokens' ? 'bg-green-100 text-green-800' :
-                          reward.type === 'tickets' ? 'bg-blue-100 text-blue-800' :
-                          'bg-purple-100 text-purple-800'
-                        }`}>
-                          {reward.type.toUpperCase()}
-                        </span>
-                        <span className="font-semibold text-gray-900">{reward.amount}</span>
-                        <span className="text-gray-600">{reward.description}</span>
-                      </div>
-                    </div>
-                  )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+              <h3 className="font-semibold text-blue-900 mb-2">Per Referral Reward</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-blue-700">Referrer gets:</span>
+                  <span className="font-bold text-blue-900">200 XXX + 5 Spins</span>
                 </div>
-                
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => toggleRewardActive(reward.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      reward.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {reward.isActive ? 'Active' : 'Inactive'}
-                  </button>
-                  
-                  {editingReward === reward.id ? (
-                    <button
-                      onClick={() => handleSaveReward(reward.id)}
-                      className="text-green-600 hover:text-green-800 transition-colors"
-                    >
-                      <Save className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleEditReward(reward)}
-                      className="text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  )}
+                <div className="flex justify-between">
+                  <span className="text-blue-700">Referred gets:</span>
+                  <span className="font-bold text-blue-900">100 XXX + 3 Spins</span>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+              <h3 className="font-semibold text-green-900 mb-2">Qualification Rules</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-green-700">Min Spins:</span>
+                  <span className="font-bold text-green-900">1</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Min Spent:</span>
+                  <span className="font-bold text-green-900">10 XXX</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-700">Time Limit:</span>
+                  <span className="font-bold text-green-900">30 days</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+              <h3 className="font-semibold text-purple-900 mb-2">System Settings</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-purple-700">Auto-approve:</span>
+                  <span className="font-bold text-purple-900">Enabled</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-purple-700">Code Length:</span>
+                  <span className="font-bold text-purple-900">6 chars</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-purple-700">Notifications:</span>
+                  <span className="font-bold text-purple-900">Disabled</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -281,7 +214,7 @@ const ReferralManagement= () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {recentReferrals.map((referral) => (
+              {referrals.map((referral) => (
                 <tr key={referral.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
@@ -298,11 +231,11 @@ const ReferralManagement= () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      referral.status === 'completed' 
+                      referral.status === 'completed' || referral.status === 'active'
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {referral.status === 'completed' ? 'Active' : 'Pending'}
+                      {referral.status === 'completed' || referral.status === 'active' ? 'Active' : 'Pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -311,7 +244,7 @@ const ReferralManagement= () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {referral.rewardClaimed ? (
                       <span className="text-green-600 font-semibold text-sm">Claimed</span>
-                    ) : referral.status === 'completed' ? (
+                    ) : referral.status === 'completed' || referral.status === 'active' ? (
                       <span className="text-blue-600 font-semibold text-sm">Ready to Claim</span>
                     ) : (
                       <span className="text-gray-500 text-sm">Pending</span>

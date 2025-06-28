@@ -1,46 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPricingRules } from '../../store/adminSlice';
 import { DollarSign, Plus, Edit, Trash2, Save, TrendingUp, Percent } from 'lucide-react';
 
-const PricingControl= () => {
-  const [basePrice, setBasePrice] = useState(10);
-  const [pricingRules, setPricingRules] = useState([
-    {
-      id: '1',
-      minTickets: 10,
-      maxTickets: 49,
-      discountPercentage: 5,
-      isActive: true
-    },
-    {
-      id: '2',
-      minTickets: 50,
-      maxTickets: 99,
-      discountPercentage: 10,
-      isActive: true
-    },
-    {
-      id: '3',
-      minTickets: 100,
-      maxTickets: 499,
-      discountPercentage: 15,
-      isActive: true
-    },
-    {
-      id: '4',
-      minTickets: 500,
-      maxTickets: 999,
-      discountPercentage: 20,
-      isActive: true
-    },
-    {
-      id: '5',
-      minTickets: 1000,
-      maxTickets: 9999,
-      discountPercentage: 25,
-      isActive: true
-    }
-  ]);
-
+const PricingControl = () => {
+  const dispatch = useDispatch();
+  const { pricingRules, basePrice, loading } = useSelector((state) => state.admin);
+  
+  const [localBasePrice, setLocalBasePrice] = useState(basePrice);
+  const [localPricingRules, setLocalPricingRules] = useState(pricingRules);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [formData, setFormData] = useState({
@@ -49,11 +17,22 @@ const PricingControl= () => {
     discountPercentage: 5
   });
 
+  // Load pricing data on component mount
+  useEffect(() => {
+    dispatch(getPricingRules());
+  }, [dispatch]);
+
+  // Update local state when Redux state changes
+  useEffect(() => {
+    setLocalBasePrice(basePrice);
+    setLocalPricingRules(pricingRules);
+  }, [basePrice, pricingRules]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (editingRule) {
-      setPricingRules(prev => prev.map(rule => 
+      setLocalPricingRules(prev => prev.map(rule => 
         rule.id === editingRule.id 
           ? { ...rule, ...formData }
           : rule
@@ -65,7 +44,7 @@ const PricingControl= () => {
         ...formData,
         isActive: true
       };
-      setPricingRules(prev => [...prev, newRule]);
+      setLocalPricingRules(prev => [...prev, newRule]);
     }
     
     setFormData({
@@ -88,12 +67,12 @@ const PricingControl= () => {
 
   const handleDelete = (id) => {
     if (confirm('Are you sure you want to delete this pricing rule?')) {
-      setPricingRules(prev => prev.filter(rule => rule.id !== id));
+      setLocalPricingRules(prev => prev.filter(rule => rule.id !== id));
     }
   };
 
   const toggleActive = (id) => {
-    setPricingRules(prev => prev.map(rule => 
+    setLocalPricingRules(prev => prev.map(rule => 
       rule.id === id 
         ? { ...rule, isActive: !rule.isActive }
         : rule
@@ -101,19 +80,27 @@ const PricingControl= () => {
   };
 
   const calculatePrice = (tickets) => {
-    const activeRule = pricingRules
+    const activeRule = localPricingRules
       .filter(rule => rule.isActive)
       .find(rule => tickets >= rule.minTickets && tickets <= rule.maxTickets);
     
     if (activeRule) {
-      const discountedPrice = basePrice * (1 - activeRule.discountPercentage / 100);
+      const discountedPrice = localBasePrice * (1 - activeRule.discountPercentage / 100);
       return discountedPrice;
     }
     
-    return basePrice;
+    return localBasePrice;
   };
 
   const exampleTickets = [1, 10, 50, 100, 500, 1000];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -148,8 +135,8 @@ const PricingControl= () => {
               type="number"
               min="0.1"
               step="0.1"
-              value={basePrice}
-              onChange={(e) => setBasePrice(parseFloat(e.target.value))}
+              value={localBasePrice}
+              onChange={(e) => setLocalBasePrice(parseFloat(e.target.value))}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-semibold"
             />
           </div>
@@ -170,7 +157,7 @@ const PricingControl= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Active Rules</p>
-              <p className="text-2xl font-bold text-green-600">{pricingRules.filter(r => r.isActive).length}</p>
+              <p className="text-2xl font-bold text-green-600">{localPricingRules.filter(r => r.isActive).length}</p>
             </div>
             <Percent className="w-8 h-8 text-green-500" />
           </div>
@@ -181,7 +168,9 @@ const PricingControl= () => {
             <div>
               <p className="text-sm text-gray-600">Max Discount</p>
               <p className="text-2xl font-bold text-blue-600">
-                {Math.max(...pricingRules.filter(r => r.isActive).map(r => r.discountPercentage))}%
+                {localPricingRules.filter(r => r.isActive).length > 0 
+                  ? Math.max(...localPricingRules.filter(r => r.isActive).map(r => r.discountPercentage))
+                  : 0}%
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-blue-500" />
@@ -192,7 +181,7 @@ const PricingControl= () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Base Price</p>
-              <p className="text-2xl font-bold text-purple-600">{basePrice} XXX</p>
+              <p className="text-2xl font-bold text-purple-600">{localBasePrice} XXX</p>
             </div>
             <DollarSign className="w-8 h-8 text-purple-500" />
           </div>
@@ -203,7 +192,9 @@ const PricingControl= () => {
             <div>
               <p className="text-sm text-gray-600">Lowest Price</p>
               <p className="text-2xl font-bold text-orange-600">
-                {(basePrice * (1 - Math.max(...pricingRules.filter(r => r.isActive).map(r => r.discountPercentage)) / 100)).toFixed(1)} XXX
+                {localPricingRules.filter(r => r.isActive).length > 0
+                  ? (localBasePrice * (1 - Math.max(...localPricingRules.filter(r => r.isActive).map(r => r.discountPercentage)) / 100)).toFixed(1)
+                  : localBasePrice} XXX
               </p>
             </div>
             <TrendingUp className="w-8 h-8 text-orange-500" />
@@ -229,8 +220,8 @@ const PricingControl= () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {pricingRules.map((rule) => {
-                const discountedPrice = basePrice * (1 - rule.discountPercentage / 100);
+              {localPricingRules.map((rule) => {
+                const discountedPrice = localBasePrice * (1 - rule.discountPercentage / 100);
                 return (
                   <tr key={rule.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -243,7 +234,7 @@ const PricingControl= () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className="font-semibold">{discountedPrice.toFixed(1)} XXX</span>
-                      <span className="text-gray-500 ml-2 line-through">{basePrice} XXX</span>
+                      <span className="text-gray-500 ml-2 line-through">{localBasePrice} XXX</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
@@ -288,7 +279,7 @@ const PricingControl= () => {
           {exampleTickets.map(tickets => {
             const price = calculatePrice(tickets);
             const totalCost = price * tickets;
-            const savings = (basePrice - price) * tickets;
+            const savings = (localBasePrice - price) * tickets;
             
             return (
               <div key={tickets} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">

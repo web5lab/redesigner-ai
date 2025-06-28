@@ -93,7 +93,19 @@ export const deleteReward = createAsyncThunk(
   }
 );
 
-export const getSocialTasks = createAsyncThunk(
+export const getPricingRules = createAsyncThunk(
+  'admin/getPricingRules',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.get('/admin/pricing');
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to get pricing rules');
+    }
+  }
+);
+
+export const getAdminSocialTasks = createAsyncThunk(
   'admin/getSocialTasks',
   async (_, { rejectWithValue }) => {
     try {
@@ -129,7 +141,19 @@ export const updateSocialTask = createAsyncThunk(
   }
 );
 
-export const getReferrals = createAsyncThunk(
+export const deleteSocialTask = createAsyncThunk(
+  'admin/deleteSocialTask',
+  async (id, { rejectWithValue }) => {
+    try {
+      await adminInstance.delete(`/admin/social-tasks/${id}`);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete social task');
+    }
+  }
+);
+
+export const getAdminReferrals = createAsyncThunk(
   'admin/getReferrals',
   async (_, { rejectWithValue }) => {
     try {
@@ -137,6 +161,66 @@ export const getReferrals = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to get referrals');
+    }
+  }
+);
+
+export const getAirdrops = createAsyncThunk(
+  'admin/getAirdrops',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.get('/admin/airdrops');
+      return response.data.data.campaigns;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to get airdrops');
+    }
+  }
+);
+
+export const createAirdrop = createAsyncThunk(
+  'admin/createAirdrop',
+  async (airdropData, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.post('/admin/airdrops', airdropData);
+      return response.data.data.campaign;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create airdrop');
+    }
+  }
+);
+
+export const updateAirdrop = createAsyncThunk(
+  'admin/updateAirdrop',
+  async ({ id, ...airdropData }, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.put(`/admin/airdrops/${id}`, airdropData);
+      return response.data.data.campaign;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update airdrop');
+    }
+  }
+);
+
+export const getSpinBoard = createAsyncThunk(
+  'admin/getSpinBoard',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.get('/admin/spin-board');
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to get spin board');
+    }
+  }
+);
+
+export const reorderSpinBoard = createAsyncThunk(
+  'admin/reorderSpinBoard',
+  async (rewardIds, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.put('/admin/spin-board/reorder', { rewardIds });
+      return rewardIds;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to reorder spin board');
     }
   }
 );
@@ -153,19 +237,39 @@ export const getAnalytics = createAsyncThunk(
   }
 );
 
+export const getTransactions = createAsyncThunk(
+  'admin/getTransactions',
+  async ({ page = 1, limit = 50, type = '', status = '' } = {}, { rejectWithValue }) => {
+    try {
+      const response = await adminInstance.get(`/admin/transactions?page=${page}&limit=${limit}&type=${type}&status=${status}`);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to get transactions');
+    }
+  }
+);
+
 export const adminLogout = createAsyncThunk(
   'admin/logout',
-  async () => {
-    localStorage.removeItem('adminToken');
-    delete adminInstance.defaults.headers.common['Authorization'];
-    return null;
+  async (_, { rejectWithValue }) => {
+    try {
+      await adminInstance.post('/admin/logout');
+      localStorage.removeItem('adminToken');
+      delete adminInstance.defaults.headers.common['Authorization'];
+      return null;
+    } catch (error) {
+      // Even if logout fails on server, clear local storage
+      localStorage.removeItem('adminToken');
+      delete adminInstance.defaults.headers.common['Authorization'];
+      return null;
+    }
   }
 );
 
 const initialState = {
   admin: null,
   token: localStorage.getItem('adminToken'),
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('adminToken'),
   loading: false,
   error: null,
   
@@ -191,12 +295,32 @@ const initialState = {
   // Rewards data
   rewards: [],
   
+  // Pricing data
+  pricingRules: [],
+  basePrice: 10,
+  
   // Social tasks data
   socialTasks: [],
   
   // Referrals data
   referrals: [],
   referralStats: [],
+  
+  // Airdrops data
+  airdrops: [],
+  
+  // Spin board data
+  spinBoardRewards: [],
+  totalProbability: 0,
+  
+  // Transactions data
+  transactions: [],
+  transactionsPagination: {
+    page: 1,
+    limit: 50,
+    total: 0,
+    pages: 0
+  },
   
   // Analytics data
   analytics: {
@@ -217,6 +341,19 @@ const adminSlice = createSlice({
       state.admin = action.payload.admin;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+    },
+    clearAdminData: (state) => {
+      state.admin = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.dashboardStats = initialState.dashboardStats;
+      state.users = [];
+      state.rewards = [];
+      state.socialTasks = [];
+      state.referrals = [];
+      state.airdrops = [];
+      state.transactions = [];
+      state.analytics = initialState.analytics;
     }
   },
   extraReducers: (builder) => {
@@ -267,8 +404,14 @@ const adminSlice = createSlice({
         state.rewards = state.rewards.filter(r => r._id !== action.payload);
       })
       
+      // Pricing
+      .addCase(getPricingRules.fulfilled, (state, action) => {
+        state.pricingRules = action.payload.pricingRules;
+        state.basePrice = action.payload.basePrice;
+      })
+      
       // Social Tasks
-      .addCase(getSocialTasks.fulfilled, (state, action) => {
+      .addCase(getAdminSocialTasks.fulfilled, (state, action) => {
         state.socialTasks = action.payload;
       })
       .addCase(createSocialTask.fulfilled, (state, action) => {
@@ -280,11 +423,48 @@ const adminSlice = createSlice({
           state.socialTasks[index] = action.payload;
         }
       })
+      .addCase(deleteSocialTask.fulfilled, (state, action) => {
+        state.socialTasks = state.socialTasks.filter(t => t._id !== action.payload);
+      })
       
       // Referrals
-      .addCase(getReferrals.fulfilled, (state, action) => {
+      .addCase(getAdminReferrals.fulfilled, (state, action) => {
         state.referrals = action.payload.referrals;
         state.referralStats = action.payload.stats;
+      })
+      
+      // Airdrops
+      .addCase(getAirdrops.fulfilled, (state, action) => {
+        state.airdrops = action.payload;
+      })
+      .addCase(createAirdrop.fulfilled, (state, action) => {
+        state.airdrops.push(action.payload);
+      })
+      .addCase(updateAirdrop.fulfilled, (state, action) => {
+        const index = state.airdrops.findIndex(a => a._id === action.payload._id);
+        if (index !== -1) {
+          state.airdrops[index] = action.payload;
+        }
+      })
+      
+      // Spin Board
+      .addCase(getSpinBoard.fulfilled, (state, action) => {
+        state.spinBoardRewards = action.payload.rewards;
+        state.totalProbability = action.payload.totalProbability;
+      })
+      .addCase(reorderSpinBoard.fulfilled, (state, action) => {
+        // Reorder rewards based on new order
+        const reorderedRewards = action.payload.map((id, index) => {
+          const reward = state.spinBoardRewards.find(r => r._id === id);
+          return { ...reward, position: index };
+        });
+        state.spinBoardRewards = reorderedRewards;
+      })
+      
+      // Transactions
+      .addCase(getTransactions.fulfilled, (state, action) => {
+        state.transactions = action.payload.transactions;
+        state.transactionsPagination = action.payload.pagination;
       })
       
       // Analytics
@@ -303,6 +483,6 @@ const adminSlice = createSlice({
   }
 });
 
-export const { clearError, setCredentials } = adminSlice.actions;
+export const { clearError, setCredentials, clearAdminData } = adminSlice.actions;
 
 export default adminSlice.reducer;

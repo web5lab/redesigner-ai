@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAdminRewards, createReward, updateReward, deleteReward } from '../../store/adminSlice';
 import { Plus, Edit, Trash2, Eye, EyeOff, Gift, Coins, Trophy, Zap, Crown, Sparkles } from 'lucide-react';
 
-const RewardManagement= () => {
+const RewardManagement = () => {
   const dispatch = useDispatch();
   const { rewards, loading } = useSelector((state) => state.admin);
 
@@ -13,13 +13,13 @@ const RewardManagement= () => {
     name: '',
     icon: 'coins',
     probability: 10,
-    rewardType: 'tokens' ,
+    rewardType: 'tokens',
     value: 0,
     description: ''
   });
 
   // Load rewards on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(getAdminRewards());
   }, [dispatch]);
 
@@ -48,25 +48,29 @@ const RewardManagement= () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (editingReward) {
-      dispatch(updateReward({ id: editingReward._id, ...formData }));
-      setEditingReward(null);
-    } else {
-      dispatch(createReward(formData));
+    try {
+      if (editingReward) {
+        await dispatch(updateReward({ id: editingReward._id, ...formData })).unwrap();
+        setEditingReward(null);
+      } else {
+        await dispatch(createReward(formData)).unwrap();
+      }
+      
+      setFormData({
+        name: '',
+        icon: 'coins',
+        probability: 10,
+        rewardType: 'tokens',
+        value: 0,
+        description: ''
+      });
+      setShowAddForm(false);
+    } catch (error) {
+      console.error('Error saving reward:', error);
     }
-    
-    setFormData({
-      name: '',
-      icon: 'coins',
-      probability: 10,
-      rewardType: 'tokens',
-      value: 0,
-      description: ''
-    });
-    setShowAddForm(false);
   };
 
   const handleEdit = (reward) => {
@@ -82,20 +86,36 @@ const RewardManagement= () => {
     setShowAddForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this reward?')) {
-      dispatch(deleteReward(id));
+      try {
+        await dispatch(deleteReward(id)).unwrap();
+      } catch (error) {
+        console.error('Error deleting reward:', error);
+      }
     }
   };
 
-  const toggleActive = (id) => {
+  const toggleActive = async (id) => {
     const reward = rewards.find(r => r._id === id);
     if (reward) {
-      dispatch(updateReward({ id, isActive: !reward.isActive }));
+      try {
+        await dispatch(updateReward({ id, isActive: !reward.isActive })).unwrap();
+      } catch (error) {
+        console.error('Error toggling reward status:', error);
+      }
     }
   };
 
   const totalProbability = rewards.filter(r => r.isActive).reduce((sum, r) => sum + r.probability, 0);
+
+  if (loading && rewards.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -153,7 +173,7 @@ const RewardManagement= () => {
             <div>
               <p className="text-sm text-gray-600">Avg. Value</p>
               <p className="text-2xl font-bold text-purple-600">
-                {Math.round(rewards.reduce((sum, r) => sum + r.value, 0) / rewards.length)}
+                {rewards.length > 0 ? Math.round(rewards.reduce((sum, r) => sum + r.value, 0) / rewards.length) : 0}
               </p>
             </div>
             <Trophy className="w-8 h-8 text-purple-500" />
@@ -298,6 +318,7 @@ const RewardManagement= () => {
                   <option value="bonus">Bonus</option>
                   <option value="multiplier">Multiplier</option>
                   <option value="jackpot">Jackpot</option>
+                  <option value="nothing">Nothing</option>
                 </select>
               </div>
               

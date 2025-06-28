@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { adminLogin, getDashboardStats } from '../store/adminSlice';
 import { Shield, Settings } from 'lucide-react';
 import AdminLogin from '../components/admin/AdminLogin';
 import AdminSidebar from '../components/admin/AdminSidebar';
@@ -18,12 +19,19 @@ const AdminPage = () => {
   const { isAuthenticated, admin, loading } = useSelector((state) => state.admin);
   const [activeSection, setActiveSection] = useState('rewards');
 
+  // Check if admin is authenticated on component mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getDashboardStats());
+    }
+  }, [dispatch, isAuthenticated]);
+
   // Show login if not authenticated
   if (!isAuthenticated) {
     return <AdminLogin />;
   }
 
-  if (loading) {
+  if (loading && !admin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
         <div className="text-center">

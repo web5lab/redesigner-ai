@@ -1,56 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAirdrops, createAirdrop, updateAirdrop } from '../../store/adminSlice';
 import { Send, Plus, Users, Coins, Gift, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 const AirdropIntegration = () => {
-  const [campaigns, setCampaigns] = useState([
-    {
-      id: '1',
-      name: 'New Year Bonus',
-      type: 'tokens',
-      amount: 1000,
-      recipients: [
-        '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
-        '0x8ba1f109551bD432803012645Hac136c0532925a',
-        '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t'
-      ],
-      status: 'completed',
-      createdAt: '2024-01-01T00:00:00Z',
-      completedAt: '2024-01-01T12:00:00Z'
-    },
-    {
-      id: '2',
-      name: 'VIP Player Rewards',
-      type: 'nft',
-      amount: 1,
-      recipients: [
-        '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
-        '0x5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b'
-      ],
-      status: 'active',
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '3',
-      name: 'Weekly Jackpot Winners',
-      type: 'tokens',
-      amount: 5000,
-      recipients: [
-        '0x9f8e7d6c5b4a3928374650192837465019283746'
-      ],
-      status: 'draft',
-      createdAt: '2024-01-20T14:00:00Z'
-    }
-  ]);
-
+  const dispatch = useDispatch();
+  const { airdrops, loading } = useSelector((state) => state.admin);
+  
+  const [campaigns, setCampaigns] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    type: 'tokens' ,
+    type: 'tokens',
     amount: 100,
     recipients: ''
   });
 
-  const handleSubmit = (e) => {
+  // Load airdrops on component mount
+  useEffect(() => {
+    dispatch(getAirdrops());
+  }, [dispatch]);
+
+  // Update local state when Redux state changes
+  useEffect(() => {
+    if (airdrops && airdrops.length > 0) {
+      setCampaigns(airdrops);
+    } else {
+      // Fallback to default data if API returns empty
+      setCampaigns([
+        {
+          id: '1',
+          name: 'New Year Bonus',
+          type: 'tokens',
+          amount: 1000,
+          recipients: [
+            '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
+            '0x8ba1f109551bD432803012645Hac136c0532925a',
+            '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t'
+          ],
+          status: 'completed',
+          createdAt: '2024-01-01T00:00:00Z',
+          completedAt: '2024-01-01T12:00:00Z'
+        },
+        {
+          id: '2',
+          name: 'VIP Player Rewards',
+          type: 'nft',
+          amount: 1,
+          recipients: [
+            '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
+            '0x5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b'
+          ],
+          status: 'active',
+          createdAt: '2024-01-15T10:00:00Z'
+        },
+        {
+          id: '3',
+          name: 'Weekly Jackpot Winners',
+          type: 'tokens',
+          amount: 5000,
+          recipients: [
+            '0x9f8e7d6c5b4a3928374650192837465019283746'
+          ],
+          status: 'draft',
+          createdAt: '2024-01-20T14:00:00Z'
+        }
+      ]);
+    }
+  }, [airdrops]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const recipientList = formData.recipients
@@ -58,37 +77,53 @@ const AirdropIntegration = () => {
       .map(addr => addr.trim())
       .filter(addr => addr.length > 0);
 
-    const newCampaign = {
-      id: Date.now().toString(),
+    const campaignData = {
       name: formData.name,
       type: formData.type,
-      amount: formData.amount,
-      recipients: recipientList,
+      tokenDetails: {
+        amount: formData.amount.toString(),
+        tokenSymbol: 'XXX'
+      },
+      recipients: recipientList.map(address => ({
+        walletAddress: address,
+        allocation: formData.amount.toString()
+      })),
       status: 'draft',
-      createdAt: new Date().toISOString()
+      distributionType: 'equal',
+      executionMethod: 'automatic'
     };
 
-    setCampaigns(prev => [...prev, newCampaign]);
-    setFormData({
-      name: '',
-      type: 'tokens',
-      amount: 100,
-      recipients: ''
-    });
-    setShowCreateForm(false);
+    try {
+      await dispatch(createAirdrop(campaignData)).unwrap();
+      dispatch(getAirdrops());
+      
+      setFormData({
+        name: '',
+        type: 'tokens',
+        amount: 100,
+        recipients: ''
+      });
+      setShowCreateForm(false);
+    } catch (error) {
+      console.error('Error creating airdrop campaign:', error);
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setCampaigns(prev => prev.map(campaign => {
-      if (campaign.id === id) {
-        const updated = { ...campaign, status: newStatus };
-        if (newStatus === 'completed') {
-          updated.completedAt = new Date().toISOString();
-        }
-        return updated;
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await dispatch(updateAirdrop({ id, status: newStatus })).unwrap();
+      
+      if (newStatus === 'completed') {
+        await dispatch(updateAirdrop({ 
+          id, 
+          completedAt: new Date().toISOString() 
+        })).unwrap();
       }
-      return campaign;
-    }));
+      
+      dispatch(getAirdrops());
+    } catch (error) {
+      console.error('Error updating campaign status:', error);
+    }
   };
 
   const getStatusIcon = (status) => {
@@ -113,10 +148,18 @@ const AirdropIntegration = () => {
     totalCampaigns: campaigns.length,
     activeCampaigns: campaigns.filter(c => c.status === 'active').length,
     completedCampaigns: campaigns.filter(c => c.status === 'completed').length,
-    totalRecipients: campaigns.reduce((sum, c) => sum + c.recipients.length, 0)
+    totalRecipients: campaigns.reduce((sum, c) => sum + (c.recipients?.length || 0), 0)
   };
 
   const formatAddress = (address) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -252,7 +295,7 @@ const AirdropIntegration = () => {
               {campaigns.map((campaign) => {
                 const StatusIcon = getStatusIcon(campaign.status);
                 return (
-                  <tr key={campaign.id} className="hover:bg-gray-50">
+                  <tr key={campaign.id || campaign._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 bg-gradient-to-br ${
@@ -265,7 +308,7 @@ const AirdropIntegration = () => {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
-                          <div className="text-xs text-gray-500">ID: {campaign.id}</div>
+                          <div className="text-xs text-gray-500">ID: {campaign.id || campaign._id}</div>
                         </div>
                       </div>
                     </td>
@@ -279,10 +322,12 @@ const AirdropIntegration = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {campaign.type === 'tokens' ? `${campaign.amount.toLocaleString()} XXX` : `${campaign.amount} NFT`}
+                      {campaign.type === 'tokens' ? 
+                        `${campaign.amount?.toLocaleString() || campaign.tokenDetails?.amount} XXX` : 
+                        `${campaign.amount || 1} NFT`}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {campaign.recipients.length} users
+                      {(campaign.recipients?.length || campaign.totalRecipients || 0)} users
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
@@ -297,7 +342,7 @@ const AirdropIntegration = () => {
                       <div className="flex space-x-2">
                         {campaign.status === 'draft' && (
                           <button
-                            onClick={() => handleStatusChange(campaign.id, 'active')}
+                            onClick={() => handleStatusChange(campaign.id || campaign._id, 'active')}
                             className="text-blue-600 hover:text-blue-900 transition-colors"
                           >
                             Activate
@@ -305,7 +350,7 @@ const AirdropIntegration = () => {
                         )}
                         {campaign.status === 'active' && (
                           <button
-                            onClick={() => handleStatusChange(campaign.id, 'completed')}
+                            onClick={() => handleStatusChange(campaign.id || campaign._id, 'completed')}
                             className="text-green-600 hover:text-green-900 transition-colors"
                           >
                             Complete
@@ -329,7 +374,7 @@ const AirdropIntegration = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Latest Campaign Recipients</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {campaigns[campaigns.length - 1].recipients.slice(0, 6).map((address, index) => (
+            {(campaigns[campaigns.length - 1].recipients || []).slice(0, 6).map((address, index) => (
               <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center">
                   <Users className="w-4 h-4 text-white" />
@@ -337,10 +382,10 @@ const AirdropIntegration = () => {
                 <span className="text-sm font-medium text-gray-900">{formatAddress(address)}</span>
               </div>
             ))}
-            {campaigns[campaigns.length - 1].recipients.length > 6 && (
+            {(campaigns[campaigns.length - 1].recipients || []).length > 6 && (
               <div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg">
                 <span className="text-sm text-gray-600">
-                  +{campaigns[campaigns.length - 1].recipients.length - 6} more recipients
+                  +{(campaigns[campaigns.length - 1].recipients || []).length - 6} more recipients
                 </span>
               </div>
             )}

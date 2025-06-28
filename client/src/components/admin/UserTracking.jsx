@@ -1,113 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUsers } from '../../store/adminSlice';
 import { Users, Download, Search, Filter, TrendingUp, Wallet, Calendar, Trophy } from 'lucide-react';
 
 const UserTracking = () => {
-  const [users] = useState([
-    {
-      id: '1',
-      walletAddress: '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
-      ticketsPurchased: 150,
-      totalSpent: 1500,
-      totalWinnings: 850,
-      lastActivity: '2024-01-20T14:30:00Z',
-      joinDate: '2024-01-10T09:00:00Z',
-      totalSpins: 145,
-      winRate: 58.6
-    },
-    {
-      id: '2',
-      walletAddress: '0x8ba1f109551bD432803012645Hac136c0532925a',
-      ticketsPurchased: 89,
-      totalSpent: 890,
-      totalWinnings: 420,
-      lastActivity: '2024-01-20T12:15:00Z',
-      joinDate: '2024-01-12T16:45:00Z',
-      totalSpins: 87,
-      winRate: 48.3
-    },
-    {
-      id: '3',
-      walletAddress: '0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
-      ticketsPurchased: 320,
-      totalSpent: 3200,
-      totalWinnings: 1950,
-      lastActivity: '2024-01-20T16:45:00Z',
-      joinDate: '2024-01-08T11:20:00Z',
-      totalSpins: 315,
-      winRate: 61.9
-    },
-    {
-      id: '4',
-      walletAddress: '0x9f8e7d6c5b4a3928374650192837465019283746',
-      ticketsPurchased: 45,
-      totalSpent: 450,
-      totalWinnings: 180,
-      lastActivity: '2024-01-19T20:30:00Z',
-      joinDate: '2024-01-15T14:10:00Z',
-      totalSpins: 43,
-      winRate: 41.9
-    },
-    {
-      id: '5',
-      walletAddress: '0x5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b',
-      ticketsPurchased: 200,
-      totalSpent: 2000,
-      totalWinnings: 1200,
-      lastActivity: '2024-01-20T18:20:00Z',
-      joinDate: '2024-01-05T08:30:00Z',
-      totalSpins: 195,
-      winRate: 61.5
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { users, usersPagination, loading } = useSelector((state) => state.admin);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('totalSpent');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [page, setPage] = useState(1);
+
+  // Load users on component mount and when filters change
+  useEffect(() => {
+    dispatch(getUsers({ 
+      page, 
+      limit: 20, 
+      search: searchTerm, 
+      sortBy, 
+      sortOrder 
+    }));
+  }, [dispatch, page, searchTerm, sortBy, sortOrder]);
 
   const formatAddress = (address) => `${address.slice(0, 6)}...${address.slice(-4)}`;
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString();
   const formatDateTime = (dateString) => new Date(dateString).toLocaleString();
 
-  const filteredUsers = users
-    .filter(user => 
-      user.walletAddress.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-      
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortOrder === 'asc' 
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-      
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-      }
-      
-      return 0;
-    });
-
-  const totalStats = {
-    totalUsers: users.length,
-    totalRevenue: users.reduce((sum, user) => sum + user.totalSpent, 0),
-    totalWinnings: users.reduce((sum, user) => sum + user.totalWinnings, 0),
-    avgWinRate: users.reduce((sum, user) => sum + user.winRate, 0) / users.length
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setPage(1); // Reset to first page on new search
+    dispatch(getUsers({ 
+      page: 1, 
+      limit: 20, 
+      search: searchTerm, 
+      sortBy, 
+      sortOrder 
+    }));
   };
 
   const handleExport = () => {
     const csvContent = [
       ['Wallet Address', 'Tickets Purchased', 'Total Spent', 'Total Winnings', 'Total Spins', 'Win Rate', 'Join Date', 'Last Activity'],
-      ...filteredUsers.map(user => [
+      ...users.map(user => [
         user.walletAddress,
-        user.ticketsPurchased,
+        user.ticketsPurchased || 0,
         user.totalSpent,
         user.totalWinnings,
         user.totalSpins,
         user.winRate,
         user.joinDate,
-        user.lastActivity
+        user.lastActivityDate
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -119,6 +62,24 @@ const UserTracking = () => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
+
+  // Calculate total stats from current users
+  const totalStats = {
+    totalUsers: usersPagination.total || 0,
+    totalRevenue: users.reduce((sum, user) => sum + (user.totalSpent || 0), 0),
+    totalWinnings: users.reduce((sum, user) => sum + (user.totalWinnings || 0), 0),
+    avgWinRate: users.length > 0 
+      ? users.reduce((sum, user) => sum + (user.winRate || 0), 0) / users.length 
+      : 0
+  };
+
+  if (loading && users.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -183,7 +144,7 @@ const UserTracking = () => {
       {/* Filters */}
       <div className="bg-white/80 backdrop-blur-lg rounded-xl p-6 border border-gray-200 shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-          <div className="flex items-center space-x-4">
+          <form onSubmit={handleSearch} className="flex items-center space-x-4">
             <div className="relative">
               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               <input
@@ -194,7 +155,13 @@ const UserTracking = () => {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64"
               />
             </div>
-          </div>
+            <button 
+              type="submit"
+              className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
+            >
+              Search
+            </button>
+          </form>
           
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -202,18 +169,24 @@ const UserTracking = () => {
               <span className="text-sm text-gray-600">Sort by:</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value )}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  setPage(1);
+                }}
                 className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="totalSpent">Total Spent</option>
                 <option value="totalWinnings">Total Winnings</option>
-                <option value="ticketsPurchased">Tickets Purchased</option>
+                <option value="totalSpins">Total Spins</option>
                 <option value="winRate">Win Rate</option>
-                <option value="lastActivity">Last Activity</option>
+                <option value="lastActivityDate">Last Activity</option>
                 <option value="joinDate">Join Date</option>
               </select>
               <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                onClick={() => {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                  setPage(1);
+                }}
                 className="text-purple-600 hover:text-purple-800 transition-colors"
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
@@ -226,7 +199,7 @@ const UserTracking = () => {
       {/* Users Table */}
       <div className="bg-white/80 backdrop-blur-lg rounded-xl border border-gray-200 shadow-lg overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">User Activity ({filteredUsers.length} users)</h2>
+          <h2 className="text-xl font-semibold text-gray-900">User Activity ({usersPagination.total || 0} users)</h2>
         </div>
         
         <div className="overflow-x-auto">
@@ -244,7 +217,7 @@ const UserTracking = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredUsers.map((user) => {
+              {users.map((user) => {
                 const profitLoss = user.totalWinnings - user.totalSpent;
                 return (
                   <tr key={user.id} className="hover:bg-gray-50">
@@ -260,36 +233,36 @@ const UserTracking = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.ticketsPurchased}
+                      {user.currentTickets || 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.totalSpent.toLocaleString()} XXX
+                      {user.totalSpent?.toLocaleString() || 0} XXX
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.totalWinnings.toLocaleString()} XXX</div>
+                      <div className="text-sm text-gray-900">{user.totalWinnings?.toLocaleString() || 0} XXX</div>
                       <div className={`text-xs ${profitLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {profitLoss >= 0 ? '+' : ''}{profitLoss.toLocaleString()} XXX
+                        {profitLoss >= 0 ? '+' : ''}{profitLoss?.toLocaleString() || 0} XXX
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.totalSpins}
+                      {user.totalSpins || 0}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                           <div 
                             className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full" 
-                            style={{ width: `${Math.min(user.winRate, 100)}%` }}
+                            style={{ width: `${Math.min(user.winRate || 0, 100)}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm text-gray-900">{user.winRate.toFixed(1)}%</span>
+                        <span className="text-sm text-gray-900">{(user.winRate || 0).toFixed(1)}%</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(user.joinDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDateTime(user.lastActivity)}
+                      {formatDateTime(user.lastActivityDate)}
                     </td>
                   </tr>
                 );
@@ -297,6 +270,92 @@ const UserTracking = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {usersPagination.pages > 1 && (
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setPage(Math.min(usersPagination.pages, page + 1))}
+                disabled={page === usersPagination.pages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(page - 1) * 20 + 1}</span> to <span className="font-medium">{Math.min(page * 20, usersPagination.total)}</span> of{' '}
+                  <span className="font-medium">{usersPagination.total}</span> results
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="sr-only">Previous</span>
+                    &larr;
+                  </button>
+                  
+                  {[...Array(Math.min(5, usersPagination.pages))].map((_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setPage(pageNum)}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                          page === pageNum
+                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  
+                  {usersPagination.pages > 5 && (
+                    <>
+                      <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        ...
+                      </span>
+                      <button
+                        onClick={() => setPage(usersPagination.pages)}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                          page === usersPagination.pages
+                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        {usersPagination.pages}
+                      </button>
+                    </>
+                  )}
+                  
+                  <button
+                    onClick={() => setPage(Math.min(usersPagination.pages, page + 1))}
+                    disabled={page === usersPagination.pages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span className="sr-only">Next</span>
+                    &rarr;
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Top Performers */}
@@ -322,7 +381,7 @@ const UserTracking = () => {
                     </span>
                   </div>
                   <span className="text-sm font-semibold text-green-600">
-                    {user.totalSpent.toLocaleString()} XXX
+                    {user.totalSpent?.toLocaleString() || 0} XXX
                   </span>
                 </div>
               ))}
@@ -333,7 +392,7 @@ const UserTracking = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Highest Win Rates</h3>
           <div className="space-y-3">
             {users
-              .sort((a, b) => b.winRate - a.winRate)
+              .sort((a, b) => (b.winRate || 0) - (a.winRate || 0))
               .slice(0, 5)
               .map((user, index) => (
                 <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -350,7 +409,7 @@ const UserTracking = () => {
                     </span>
                   </div>
                   <span className="text-sm font-semibold text-purple-600">
-                    {user.winRate.toFixed(1)}%
+                    {(user.winRate || 0).toFixed(1)}%
                   </span>
                 </div>
               ))}

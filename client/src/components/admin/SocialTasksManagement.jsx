@@ -1,72 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAdminSocialTasks, createSocialTask, updateSocialTask, deleteSocialTask } from '../../store/adminSlice';
 import { Plus, Edit, Trash2, Eye, EyeOff, CheckSquare, Twitter, MessageCircle, Users, Youtube, Instagram, ExternalLink } from 'lucide-react';
 
-const SocialTasksManagement= () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: '1',
-      title: 'Follow SpinWin on Twitter',
-      description: 'Follow our official Twitter account for updates',
-      platform: 'twitter',
-      action: 'follow',
-      url: 'https://twitter.com/spinwin_official',
-      reward: { type: 'tokens', amount: 100 },
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '2',
-      title: 'Join Telegram Community',
-      description: 'Join our Telegram group to chat with players',
-      platform: 'telegram',
-      action: 'join',
-      url: 'https://t.me/spinwin_community',
-      reward: { type: 'spins', amount: 3 },
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '3',
-      title: 'Subscribe to YouTube',
-      description: 'Subscribe to our YouTube channel',
-      platform: 'youtube',
-      action: 'subscribe',
-      url: 'https://youtube.com/@spinwin',
-      reward: { type: 'tokens', amount: 250 },
-      isActive: false,
-      createdAt: '2024-01-17T09:15:00Z'
-    }
-  ]);
-
-  const [completions] = useState([
-    {
-      id: '1',
-      userAddress: '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
-      taskId: '1',
-      status: 'completed',
-      completedAt: '2024-01-18T12:00:00Z',
-      verifiedAt: '2024-01-18T12:05:00Z'
-    },
-    {
-      id: '2',
-      userAddress: '0x8ba1f109551bD432803012645Hac136c0532925a',
-      taskId: '1',
-      status: 'pending',
-      completedAt: '2024-01-20T10:30:00Z'
-    }
-  ]);
+const SocialTasksManagement = () => {
+  const dispatch = useDispatch();
+  const { socialTasks, loading } = useSelector((state) => state.admin);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    platform: 'twitter' ,
-    action: 'follow' ,
+    platform: 'twitter',
+    action: 'follow',
     url: '',
-    rewardType: 'tokens' ,
+    rewardType: 'tokens',
     rewardAmount: 100
   });
+
+  // Load tasks on component mount
+  useEffect(() => {
+    dispatch(getAdminSocialTasks());
+  }, [dispatch]);
 
   const platformOptions = [
     { value: 'twitter', label: 'Twitter', icon: Twitter },
@@ -101,55 +57,42 @@ const SocialTasksManagement= () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (editingTask) {
-      setTasks(prev => prev.map(task => 
-        task.id === editingTask.id 
-          ? {
-              ...task,
-              title: formData.title,
-              description: formData.description,
-              platform: formData.platform,
-              action: formData.action,
-              url: formData.url,
-              reward: {
-                type: formData.rewardType,
-                amount: formData.rewardAmount
-              }
-            }
-          : task
-      ));
+    const taskData = {
+      title: formData.title,
+      description: formData.description,
+      platform: formData.platform,
+      action: formData.action,
+      url: formData.url,
+      reward: {
+        type: formData.rewardType,
+        amount: formData.rewardAmount
+      }
+    };
+
+    try {
+      if (editingTask) {
+        await dispatch(updateSocialTask({ id: editingTask._id, ...taskData })).unwrap();
+      } else {
+        await dispatch(createSocialTask(taskData)).unwrap();
+      }
+      
+      setFormData({
+        title: '',
+        description: '',
+        platform: 'twitter',
+        action: 'follow',
+        url: '',
+        rewardType: 'tokens',
+        rewardAmount: 100
+      });
+      setShowAddForm(false);
       setEditingTask(null);
-    } else {
-      const newTask= {
-        id: Date.now().toString(),
-        title: formData.title,
-        description: formData.description,
-        platform: formData.platform,
-        action: formData.action,
-        url: formData.url,
-        reward: {
-          type: formData.rewardType,
-          amount: formData.rewardAmount
-        },
-        isActive: true,
-        createdAt: new Date().toISOString()
-      };
-      setTasks(prev => [...prev, newTask]);
+    } catch (error) {
+      console.error('Error saving task:', error);
     }
-    
-    setFormData({
-      title: '',
-      description: '',
-      platform: 'twitter',
-      action: 'follow',
-      url: '',
-      rewardType: 'tokens',
-      rewardAmount: 100
-    });
-    setShowAddForm(false);
   };
 
   const handleEdit = (task) => {
@@ -166,30 +109,47 @@ const SocialTasksManagement= () => {
     setShowAddForm(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this task?')) {
-      setTasks(prev => prev.filter(task => task.id !== id));
+      try {
+        await dispatch(deleteSocialTask(id)).unwrap();
+      } catch (error) {
+        console.error('Error deleting task:', error);
+      }
     }
   };
 
-  const toggleActive = (id) => {
-    setTasks(prev => prev.map(task => 
-      task.id === id 
-        ? { ...task, isActive: !task.isActive }
-        : task
-    ));
+  const toggleActive = async (task) => {
+    try {
+      await dispatch(updateSocialTask({ 
+        id: task._id, 
+        isActive: !task.isActive 
+      })).unwrap();
+    } catch (error) {
+      console.error('Error toggling task status:', error);
+    }
   };
 
   const getTaskStats = () => {
-    const totalTasks = tasks.length;
-    const activeTasks = tasks.filter(t => t.isActive).length;
-    const totalCompletions = completions.filter(c => c.status === 'completed').length;
-    const pendingVerifications = completions.filter(c => c.status === 'pending').length;
+    const totalTasks = socialTasks.length;
+    const activeTasks = socialTasks.filter(t => t.isActive).length;
+    const totalCompletions = socialTasks.reduce((sum, t) => sum + (t.currentCompletions || 0), 0);
+    const pendingVerifications = socialTasks.reduce((sum, t) => {
+      return sum + (t.completions?.filter(c => c.status === 'pending').length || 0);
+    }, 0);
     
     return { totalTasks, activeTasks, totalCompletions, pendingVerifications };
   };
 
   const stats = getTaskStats();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -270,12 +230,12 @@ const SocialTasksManagement= () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {tasks.map((task) => {
+              {socialTasks.map((task) => {
                 const PlatformIcon = getPlatformIcon(task.platform);
                 const platformColor = getPlatformColor(task.platform);
                 
                 return (
-                  <tr key={task.id} className="hover:bg-gray-50">
+                  <tr key={task._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 bg-gradient-to-br ${platformColor} rounded-lg flex items-center justify-center`}>
@@ -302,7 +262,7 @@ const SocialTasksManagement= () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => toggleActive(task.id)}
+                        onClick={() => toggleActive(task)}
                         className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${
                           task.isActive 
                             ? 'bg-green-100 text-green-800' 
@@ -321,7 +281,7 @@ const SocialTasksManagement= () => {
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(task.id)}
+                        onClick={() => handleDelete(task._id)}
                         className="text-red-600 hover:text-red-900 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -332,70 +292,6 @@ const SocialTasksManagement= () => {
                       >
                         <ExternalLink className="w-4 h-4" />
                       </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Recent Completions */}
-      <div className="bg-white/80 backdrop-blur-lg rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Recent Task Completions</h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {completions.map((completion) => {
-                const task = tasks.find(t => t.id === completion.taskId);
-                if (!task) return null;
-                
-                return (
-                  <tr key={completion.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {completion.userAddress.slice(0, 6)}...{completion.userAddress.slice(-4)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {task.title}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        completion.status === 'completed' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {completion.status === 'completed' ? 'Verified' : 'Pending'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {completion.completedAt ? new Date(completion.completedAt).toLocaleDateString() : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {completion.status === 'pending' && (
-                        <button className="text-green-600 hover:text-green-900 transition-colors">
-                          Verify
-                        </button>
-                      )}
                     </td>
                   </tr>
                 );
@@ -441,7 +337,7 @@ const SocialTasksManagement= () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
                   <select
                     value={formData.platform}
-                    onChange={(e) => setFormData(prev => ({ ...prev, platform: e.target.value  }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, platform: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     {platformOptions.map(option => (
@@ -481,7 +377,7 @@ const SocialTasksManagement= () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Reward Type</label>
                   <select
                     value={formData.rewardType}
-                    onChange={(e) => setFormData(prev => ({ ...prev, rewardType: e.target.value  }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, rewardType: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="tokens">Tokens</option>

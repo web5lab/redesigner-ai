@@ -1,12 +1,20 @@
 import React from 'react';
-import { Gift, DollarSign, Users, Send, Trophy, BarChart3, UserPlus, CheckSquare, RotateCcw } from 'lucide-react';
+import { Gift, DollarSign, Users, Send, Trophy, BarChart3, UserPlus, CheckSquare, RotateCcw, Settings, LogOut } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-
-
+import { adminLogout } from '../../store/adminSlice';
+import { useNavigate } from 'react-router-dom';
 
 const AdminSidebar = ({ activeSection, onSectionChange }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { admin } = useSelector((state) => state.admin);
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to logout?')) {
+      await dispatch(adminLogout());
+      navigate('/admin');
+    }
+  };
 
   const menuItems = [
     {
@@ -28,6 +36,12 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
       description: 'Monitor user activity'
     },
     {
+      id: 'airdrops',
+      label: 'Airdrop Integration',
+      icon: Send,
+      description: 'Manage token airdrops'
+    },
+    {
       id: 'referrals',
       label: 'Referral System',
       icon: UserPlus,
@@ -45,6 +59,13 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
       icon: RotateCcw,
       description: 'Configure wheel rewards'
     }
+    // Uncomment if you want to add analytics section
+    // {
+    //   id: 'analytics',
+    //   label: 'Analytics',
+    //   icon: BarChart3,
+    //   description: 'View platform metrics'
+    // }
   ];
 
   return (
@@ -122,6 +143,20 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Admin Actions */}
+      <div className="mt-auto p-6 border-t border-gray-200">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-3 p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          <div>
+            <div className="font-medium">Logout</div>
+            <div className="text-sm text-red-500">Exit admin panel</div>
+          </div>
+        </button>
       </div>
     </aside>
   );

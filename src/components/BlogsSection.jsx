@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, User, Tag } from 'lucide-react';
 
 const BlogsSection = () => {
@@ -212,10 +213,13 @@ const BlogsSection = () => {
                         </div>
                       </div>
                     </div>
-                    <button className="flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition-colors group/btn">
+                    <Link 
+                      to={`/blog/${featuredBlog.slug}`}
+                      className="flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition-colors group/btn"
+                    >
                       Read More
                       <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -237,10 +241,13 @@ const BlogsSection = () => {
                   className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3">
-                  <span className="bg-slate-900/80 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+                <Link 
+                  to={`/blog/${blog.slug}`}
+                  className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors group/btn"
+                >
                     {blog.category}
                   </span>
-                </div>
+                </Link>
               </div>
               
               <div className="p-6">
@@ -295,13 +302,16 @@ const BlogsSection = () => {
 
         {/* View All Blogs CTA */}
         <div className="text-center">
-          <button className="group relative px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 overflow-hidden">
+          <Link 
+            to="/blog"
+            className="group relative inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 overflow-hidden"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <span className="relative z-10 flex items-center gap-2">
               View All Articles
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </span>
-          </button>
+          </Link>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { connectWallet } from '../store/authSlice';
+import { web3Service } from '../utils/web3Utils';
 import { 
   Trophy, 
   Zap, 
@@ -31,16 +32,36 @@ const LandingPage= () => {
   const wallet = useAccount();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
-  // Auto-connect when wallet is connected
-  React.useEffect(() => {
-    if (wallet.isConnected && wallet.address && !isAuthenticated) {
-      dispatch(connectWallet({
+  // Handle wallet authentication with signature
+  const handleWalletAuth = async () => {
+    if (!wallet.isConnected || !wallet.address) {
+      return;
+    }
+
+    try {
+      // Sign authentication message
+      const authData = await web3Service.signAuthMessage(wallet.address);
+      
+      // Dispatch login with signature
+      await dispatch(connectWallet({
         walletAddress: wallet.address,
+        signature: authData.signature,
+        message: authData.message,
+        timestamp: authData.timestamp,
         walletProvider: 'metamask',
         network: 'BSC'
-      }));
+      })).unwrap();
+    } catch (error) {
+      console.error('Authentication failed:', error);
     }
-  }, [wallet.isConnected, wallet.address, isAuthenticated, dispatch]);
+  };
+
+  // Auto-authenticate when wallet is connected
+  React.useEffect(() => {
+    if (wallet.isConnected && wallet.address && !isAuthenticated && !loading) {
+      handleWalletAuth();
+    }
+  }, [wallet.isConnected, wallet.address, isAuthenticated, loading]);
 
   // Navigate to game when authenticated
   React.useEffect(() => {
@@ -290,12 +311,8 @@ const LandingPage= () => {
                 onClick={() => {
                   if (isAuthenticated) {
                     navigate('/game');
-                  } else if (wallet.isConnected) {
-                    dispatch(connectWallet({
-                      walletAddress: wallet.address,
-                      walletProvider: 'metamask',
-                      network: 'BSC'
-                    }));
+                  } else if (wallet.isConnected && wallet.address) {
+                    handleWalletAuth();
                   }
                 }}
                 className="bg-white text-gray-900 px-10 py-4 rounded-xl font-bold text-xl hover:bg-gray-100 transition-all transform hover:scale-110 shadow-xl flex items-center space-x-3 mx-auto"

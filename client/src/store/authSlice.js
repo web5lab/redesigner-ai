@@ -4,9 +4,16 @@ import axiosInstance from '../api/axiosInstance';
 // Async thunks
 export const connectWallet = createAsyncThunk(
   'auth/connectWallet',
-  async (walletData, { rejectWithValue }) => {
+  async ({ walletAddress, signature, message, timestamp, walletProvider, network }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/auth/connect-wallet', walletData);
+      const response = await axiosInstance.post('/auth/connect-wallet', {
+        walletAddress,
+        signature,
+        message,
+        timestamp,
+        walletProvider,
+        network
+      });
       
       // Store token in localStorage
       if (response.data.data.token) {

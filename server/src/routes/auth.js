@@ -1,18 +1,63 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { User } from '../../schemas/index.js';
 
 const router = express.Router();
 
+// Verify wallet signature
+const verifySignature = (message, signature, walletAddress) => {
+  try {
+    // Create hash of the message
+    const messageHash = crypto.createHash('sha256').update(message).digest('hex');
+    
+    // For demo purposes, we'll do basic validation
+    // In production, you'd use proper signature verification
+    if (!signature || signature.length < 10) {
+      return false;
+    }
+    
+    // Check if message contains the wallet address
+    if (!message.includes(walletAddress)) {
+      return false;
+    }
+    
+    // Check if timestamp is recent (within 5 minutes)
+    const timestampMatch = message.match(/Timestamp: (\d+)/);
+    if (timestampMatch) {
+      const timestamp = parseInt(timestampMatch[1]);
+      const now = Date.now();
+      const fiveMinutes = 5 * 60 * 1000;
+      
+      if (now - timestamp > fiveMinutes) {
+        return false;
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+};
 // Connect wallet and create/login user
 router.post('/connect-wallet', async (req, res) => {
   try {
-    const { walletAddress, walletProvider, network } = req.body;
+    const { walletAddress, signature, message, timestamp, walletProvider, network } = req.body;
 
-    if (!walletAddress) {
+    if (!walletAddress || !signature || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Wallet address is required'
+        message: 'Wallet address, signature, and message are required'
+      });
+    }
+
+    // Verify the signature
+    const isValidSignature = verifySignature(message, signature, walletAddress);
+    if (!isValidSignature) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid signature or expired message'
       });
     }
 

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { connectWallet } from '../store/authSlice';
+import { web3Service } from '../utils/web3Utils';
 import { Wallet, Shield, Smartphone, Link } from 'lucide-react';
 
 
 
 const WalletConnection= ({ onConnect }) => {
+  const dispatch = useDispatch();
   const [isConnecting, setIsConnecting] = useState(null);
 
   const walletProviders = [
@@ -33,17 +37,37 @@ const WalletConnection= ({ onConnect }) => {
   const handleConnect = async (providerId) => {
     setIsConnecting(providerId);
     
-    // Simulate connection process
-    setTimeout(() => {
-      const wallet = {
-        address: '0x742d35Cc6634C0532925a3b8D96698b0C03C4532',
-        provider: providerId ,
-        network: 'BSC',
-      };
+    try {
+      // Connect to wallet
+      const walletInfo = await web3Service.connectWallet();
       
-      onConnect(wallet);
+      if (walletInfo.connected) {
+        // Sign authentication message
+        const authData = await web3Service.signAuthMessage(walletInfo.address);
+        
+        // Authenticate with backend
+        await dispatch(connectWallet({
+          walletAddress: walletInfo.address,
+          signature: authData.signature,
+          message: authData.message,
+          timestamp: authData.timestamp,
+          walletProvider: providerId,
+          network: walletInfo.network
+        })).unwrap();
+        
+        // Call onConnect callback
+        onConnect({
+          address: walletInfo.address,
+          provider: providerId,
+          network: walletInfo.network,
+        });
+      }
+    } catch (error) {
+      console.error('Wallet connection failed:', error);
+      alert(error.message || 'Failed to connect wallet');
+    } finally {
       setIsConnecting(null);
-    }, 2000);
+    }
   };
 
   return (

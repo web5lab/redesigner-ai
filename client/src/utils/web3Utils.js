@@ -7,6 +7,49 @@ export class Web3Service {
     this.account = '';
   }
 
+  // Generate authentication message
+  generateAuthMessage(walletAddress, timestamp) {
+    return `Welcome to XXX Gaming Hub!
+
+Please sign this message to authenticate your wallet.
+
+Wallet: ${walletAddress}
+Timestamp: ${timestamp}
+
+This request will not trigger a blockchain transaction or cost any gas fees.`;
+  }
+
+  // Sign authentication message
+  async signAuthMessage(walletAddress) {
+    if (typeof window.ethereum === 'undefined') {
+      throw new Error('MetaMask is not installed');
+    }
+
+    try {
+      const timestamp = Date.now();
+      const message = this.generateAuthMessage(walletAddress, timestamp);
+      
+      // Sign the message
+      const signature = await window.ethereum.request({
+        method: 'personal_sign',
+        params: [message, walletAddress],
+      });
+
+      return {
+        message,
+        signature,
+        timestamp,
+        walletAddress
+      };
+    } catch (error) {
+      console.error('Error signing message:', error);
+      if (error.code === 4001) {
+        throw new Error('User rejected the signature request');
+      }
+      throw new Error('Failed to sign authentication message');
+    }
+  }
+
   async connectWallet() {
     if (typeof window.ethereum === 'undefined') {
       throw new Error('MetaMask is not installed. Please install MetaMask to continue.');

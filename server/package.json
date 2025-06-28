@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "seed:rewards": "node src/seeders/rewards.js",
     "seed:tasks": "node src/seeders/socialTasks.js",
-    "seed:all": "npm run seed:rewards && npm run seed:tasks"
+    "seed:admin": "node src/seeders/admin.js",
+    "seed:all": "npm run seed:rewards && npm run seed:tasks && npm run seed:admin"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Shield, Settings } from 'lucide-react';
+import AdminLogin from '../components/admin/AdminLogin';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import RewardManagement from '../components/admin/RewardManagement';
 import PricingControl from '../components/admin/PricingControl';
@@ -10,7 +13,26 @@ import SocialTasksManagement from '../components/admin/SocialTasksManagement';
 import SpinBoardManagement from '../components/admin/SpinBoardManagement';
 
 const AdminPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, admin, loading } = useSelector((state) => state.admin);
   const [activeSection, setActiveSection] = useState('rewards');
+
+  // Show login if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLogin />;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (activeSection) {
@@ -46,7 +68,7 @@ const AdminPage = () => {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
-                  <p className="text-sm text-gray-600">XXX Gaming Hub Management Panel</p>
+                  <p className="text-sm text-gray-600">Welcome, {admin?.firstName} {admin?.lastName}</p>
                 </div>
               </div>
             </div>
@@ -54,6 +76,9 @@ const AdminPage = () => {
             <div className="flex items-center space-x-4">
               <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                 System Online
+              </div>
+              <div className="text-sm text-gray-600">
+                Role: {admin?.role}
               </div>
               <Settings className="w-5 h-5 text-gray-600" />
             </div>
@@ -66,6 +91,7 @@ const AdminPage = () => {
         <AdminSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
+          admin={admin}
         />
 
         {/* Main Content */}

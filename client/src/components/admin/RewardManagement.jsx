@@ -1,53 +1,11 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAdminRewards, createReward, updateReward, deleteReward } from '../../store/adminSlice';
 import { Plus, Edit, Trash2, Eye, EyeOff, Gift, Coins, Trophy, Zap, Crown, Sparkles } from 'lucide-react';
 
 const RewardManagement= () => {
-  const [rewards, setRewards] = useState([
-    {
-      id: '1',
-      name: '500 Coins',
-      icon: 'coins',
-      probability: 25,
-      rewardType: 'tokens',
-      value: 500,
-      description: 'Standard token reward',
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '2',
-      name: 'Rare NFT',
-      icon: 'trophy',
-      probability: 5,
-      rewardType: 'nft',
-      value: 0,
-      description: 'Exclusive collectible NFT',
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '3',
-      name: 'Bonus Spin',
-      icon: 'gift',
-      probability: 15,
-      rewardType: 'bonus',
-      value: 0,
-      description: 'Extra spin opportunity',
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '4',
-      name: 'Jackpot',
-      icon: 'crown',
-      probability: 1,
-      rewardType: 'jackpot',
-      value: 10000,
-      description: 'Maximum prize reward',
-      isActive: true,
-      createdAt: '2024-01-15T10:00:00Z'
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { rewards, loading } = useSelector((state) => state.admin);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
@@ -59,6 +17,11 @@ const RewardManagement= () => {
     value: 0,
     description: ''
   });
+
+  // Load rewards on component mount
+  React.useEffect(() => {
+    dispatch(getAdminRewards());
+  }, [dispatch]);
 
   const iconOptions = [
     { value: 'coins', label: 'Coins', icon: Coins },
@@ -89,20 +52,10 @@ const RewardManagement= () => {
     e.preventDefault();
     
     if (editingReward) {
-      setRewards(prev => prev.map(reward => 
-        reward.id === editingReward.id 
-          ? { ...reward, ...formData }
-          : reward
-      ));
+      dispatch(updateReward({ id: editingReward._id, ...formData }));
       setEditingReward(null);
     } else {
-      const newReward= {
-        id: Date.now().toString(),
-        ...formData,
-        isActive: true,
-        createdAt: new Date().toISOString()
-      };
-      setRewards(prev => [...prev, newReward]);
+      dispatch(createReward(formData));
     }
     
     setFormData({
@@ -131,16 +84,15 @@ const RewardManagement= () => {
 
   const handleDelete = (id) => {
     if (confirm('Are you sure you want to delete this reward?')) {
-      setRewards(prev => prev.filter(reward => reward.id !== id));
+      dispatch(deleteReward(id));
     }
   };
 
   const toggleActive = (id) => {
-    setRewards(prev => prev.map(reward => 
-      reward.id === id 
-        ? { ...reward, isActive: !reward.isActive }
-        : reward
-    ));
+    const reward = rewards.find(r => r._id === id);
+    if (reward) {
+      dispatch(updateReward({ id, isActive: !reward.isActive }));
+    }
   };
 
   const totalProbability = rewards.filter(r => r.isActive).reduce((sum, r) => sum + r.probability, 0);
@@ -243,7 +195,7 @@ const RewardManagement= () => {
               {rewards.map((reward) => {
                 const IconComponent = getIconComponent(reward.icon);
                 return (
-                  <tr key={reward.id} className="hover:bg-gray-50">
+                  <tr key={reward._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 bg-gradient-to-br ${getRewardTypeColor(reward.rewardType)} rounded-lg flex items-center justify-center`}>
@@ -268,7 +220,7 @@ const RewardManagement= () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => toggleActive(reward.id)}
+                        onClick={() => toggleActive(reward._id)}
                         className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${
                           reward.isActive 
                             ? 'bg-green-100 text-green-800' 
@@ -287,7 +239,7 @@ const RewardManagement= () => {
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(reward.id)}
+                        onClick={() => handleDelete(reward._id)}
                         className="text-red-600 hover:text-red-900 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />

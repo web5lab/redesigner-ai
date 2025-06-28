@@ -4,6 +4,9 @@ import { Gift, DollarSign, Users, Send, Trophy, BarChart3, UserPlus, CheckSquare
 
 
 const AdminSidebar = ({ activeSection, onSectionChange }) => {
+  const dispatch = useDispatch();
+  const { admin } = useSelector((state) => state.admin);
+
   const menuItems = [
     {
       id: 'rewards',
@@ -70,6 +73,12 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
             
+            // Check if admin has permission for this section
+            const hasPermission = admin?.role === 'super_admin' || 
+              admin?.permissions?.some(p => p.module === item.id && p.actions.includes('read'));
+            
+            if (!hasPermission) return null;
+            
             return (
               <button
                 key={item.id}
@@ -97,15 +106,18 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
         <div className="mt-8 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border border-yellow-200">
           <div className="flex items-center space-x-2 mb-2">
             <BarChart3 className="w-4 h-4 text-yellow-600" />
-            <span className="text-sm font-medium text-yellow-800">System Health</span>
+            <span className="text-sm font-medium text-yellow-800">Admin Info</span>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-yellow-700">Server Load</span>
-              <span className="text-yellow-800 font-medium">23%</span>
+              <span className="text-yellow-700">Role</span>
+              <span className="text-yellow-800 font-medium">{admin?.role}</span>
             </div>
-            <div className="w-full bg-yellow-200 rounded-full h-1.5">
-              <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: '23%' }}></div>
+            <div className="flex justify-between text-xs">
+              <span className="text-yellow-700">Last Login</span>
+              <span className="text-yellow-800 font-medium">
+                {admin?.lastLogin ? new Date(admin.lastLogin).toLocaleDateString() : 'N/A'}
+              </span>
             </div>
           </div>
         </div>

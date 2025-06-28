@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Landing from './pages/Landing';
+import BlogList from './pages/BlogList';
+import BlogPost from './components/BlogPost';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { useDispatch, useSelector } from 'react-redux';
@@ -98,6 +100,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/auth-success" element={<AuthHandler />} />
         <Route path="/api" element={<ApiDocs />} />
         <Route path="/login" element={

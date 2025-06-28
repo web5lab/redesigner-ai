@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const adminSchema = new mongoose.Schema({
   // Basic Information
@@ -310,7 +310,7 @@ adminSchema.methods.recordFailedLogin = function() {
 };
 
 adminSchema.methods.generatePasswordResetToken = function() {
-  const crypto = require('crypto');
+  const crypto = await import('crypto');
   const resetToken = crypto.randomBytes(32).toString('hex');
   
   this.passwordResetToken = crypto

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const spinResultSchema = new mongoose.Schema({
   // User Information

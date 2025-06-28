@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { adminLogin, clearError } from '../../store/adminSlice';
+import { adminLogin, clearError, setCredentials } from '../../store/adminSlice';
 import { Shield, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
 const AdminLogin = () => {
@@ -9,9 +9,21 @@ const AdminLogin = () => {
   
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  // Check if admin token exists in localStorage
+  React.useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      // Auto-login with stored token
+      dispatch(setCredentials({ 
+        admin: { role: 'admin' }, // Minimal data until profile is loaded
+        token 
+      }));
+    }
+  }, [dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +140,7 @@ const AdminLogin = () => {
 
           {/* Demo Credentials */}
           <div className="mt-8 p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg">
-            <h3 className="text-sm font-semibold text-blue-200 mb-2">Demo Credentials</h3>
+            <h3 className="text-sm font-semibold text-blue-200 mb-2">Admin Credentials</h3>
             <div className="text-xs text-blue-300 space-y-1">
               <p><strong>Email:</strong> admin@xxxgaminghub.com</p>
               <p><strong>Password:</strong> admin123456</p>

@@ -310,7 +310,7 @@ adminSchema.methods.recordFailedLogin = function() {
 };
 
 adminSchema.methods.generatePasswordResetToken = function() {
-  const crypto = await import('crypto');
+  const crypto = require('crypto');
   const resetToken = crypto.randomBytes(32).toString('hex');
   
   this.passwordResetToken = crypto

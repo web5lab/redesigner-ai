@@ -22,8 +22,7 @@ import {
   Award,
   Rocket,
   Target,
-  ChevronDown,
-  RotateCcw
+  ChevronDown
 } from 'lucide-react';
 import TradingSection from '../components/TradingSection';
 import { ConnectButton } from '@rainbow-me/rainbowkit';

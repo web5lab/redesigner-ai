@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReferralHistory } from '../store/referralSlice';
+import { useReferralCode } from '../hooks/useReferralCode';
 import { Users, Copy, Gift, TrendingUp, Share2, CheckCircle, Clock, Star, Link, Award } from 'lucide-react';
 
 

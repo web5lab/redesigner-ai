@@ -8,13 +8,15 @@ import {
   Shield,
   ChevronDown,
   Sparkles,
-  RotateCcw,
   Trophy,
   Coins,
   Star,
   Crown,
   Gem,
-  Zap
+  Zap,
+  TrendingUp,
+  Users,
+  Target
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
@@ -197,80 +199,96 @@ const HeroSection = ({
           </div>
         </div>
 
-        {/* Right Column - Visual */}
+        {/* Right Column - Modern Visual */}
         <div className="relative animate-slide-up" style={{ animationDelay: '0.3s' }}>
           {/* Main Visual Container */}
           <div className="relative">
             {/* Background Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-3xl blur-3xl opacity-20 animate-pulse"></div>
             
-            {/* Main Card */}
-            <div className="relative bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 rounded-3xl p-8 shadow-2xl border border-yellow-400/20">
-              {/* Spinning Wheel Preview */}
-              <div className="relative w-64 h-64 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full border-8 border-yellow-400 shadow-2xl overflow-hidden">
-                  {/* Wheel Segments */}
-                  {[
-                    { color: 'from-yellow-400 to-amber-600', icon: Coins, label: '500' },
-                    { color: 'from-green-400 to-emerald-600', icon: Trophy, label: 'NFT' },
-                    { color: 'from-blue-400 to-indigo-600', icon: Gift, label: 'BONUS' },
-                    { color: 'from-purple-500 to-violet-700', icon: Zap, label: '1000' },
-                    { color: 'from-pink-500 to-rose-700', icon: Crown, label: 'JACKPOT' },
-                    { color: 'from-orange-400 to-red-500', icon: Star, label: '250' },
-                    { color: 'from-cyan-400 to-blue-600', icon: Gem, label: 'RARE' },
-                    { color: 'from-emerald-400 to-teal-600', icon: Sparkles, label: '2X' }
-                  ].map((segment, index) => {
-                    const angle = (360 / 8) * index;
-                    const Icon = segment.icon;
-                    
-                    return (
-                      <div
-                        key={index}
-                        className="absolute w-full h-full animate-spin-slow"
-                        style={{
-                          transform: `rotate(${angle}deg)`,
-                          clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((2 * Math.PI) / 8)}% ${50 - 50 * Math.sin((2 * Math.PI) / 8)}%)`,
-                          animationDelay: `${index * 0.1}s`,
-                          animationDuration: '8s'
-                        }}
-                      >
-                        <div className={`relative w-full h-full bg-gradient-to-br ${segment.color}`}>
-                          <div className="relative flex items-center justify-center h-full">
-                            <div 
-                              className="text-center text-white transform translate-y-8"
-                              style={{ transform: `rotate(${90 - (360 / 8) / 2}deg) translateY(-50px)` }}
-                            >
-                              <Icon className="w-6 h-6 mx-auto mb-1 drop-shadow-lg" />
-                              <p className="text-xs font-black drop-shadow-lg">{segment.label}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+            {/* Main Dashboard Card */}
+            <div className="relative bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl p-8 shadow-2xl border border-yellow-200">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                    <Trophy className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Gaming Dashboard</h3>
+                    <p className="text-gray-600 text-sm">Live Statistics</p>
+                  </div>
+                </div>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <span className="text-xs text-blue-600 font-medium">+12%</span>
+                  </div>
+                  <div className="text-2xl font-bold text-blue-900">50K+</div>
+                  <div className="text-xs text-blue-700">Active Players</div>
                 </div>
                 
-                {/* Center Hub */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full border-4 border-white shadow-2xl flex items-center justify-center z-10">
-                  <RotateCcw className="w-6 h-6 text-white animate-spin-slow" />
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <Coins className="w-5 h-5 text-green-600" />
+                    <span className="text-xs text-green-600 font-medium">+8%</span>
+                  </div>
+                  <div className="text-2xl font-bold text-green-900">$2.5M</div>
+                  <div className="text-xs text-green-700">Rewards Paid</div>
                 </div>
                 
-                {/* Pointer */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20">
-                  <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-b-[24px] border-l-transparent border-r-transparent border-b-yellow-400 shadow-lg"></div>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <Gem className="w-5 h-5 text-purple-600" />
+                    <span className="text-xs text-purple-600 font-medium">+15%</span>
+                  </div>
+                  <div className="text-2xl font-bold text-purple-900">15K+</div>
+                  <div className="text-xs text-purple-700">NFTs Won</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <Target className="w-5 h-5 text-orange-600" />
+                    <span className="text-xs text-orange-600 font-medium">+3%</span>
+                  </div>
+                  <div className="text-2xl font-bold text-orange-900">68%</div>
+                  <div className="text-xs text-orange-700">Win Rate</div>
                 </div>
               </div>
-              
-              {/* Game Stats */}
-              <div className="grid grid-cols-2 gap-4 text-center text-white">
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-xl font-bold text-yellow-400">68%</div>
-                  <div className="text-xs text-gray-300">Win Rate</div>
+
+              {/* Chart Area */}
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-semibold text-gray-900">Performance</h4>
+                  <TrendingUp className="w-4 h-4 text-green-500" />
                 </div>
-                <div className="bg-white/10 rounded-xl p-3">
-                  <div className="text-xl font-bold text-green-400">15K+</div>
-                  <div className="text-xs text-gray-300">NFTs Won</div>
+                
+                {/* Simplified Chart Visualization */}
+                <div className="flex items-end space-x-2 h-20">
+                  {[40, 65, 45, 80, 55, 90, 70, 85].map((height, index) => (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-t from-yellow-400 to-orange-500 rounded-t-sm flex-1 animate-pulse"
+                      style={{ 
+                        height: `${height}%`,
+                        animationDelay: `${index * 0.1}s`
+                      }}
+                    ></div>
+                  ))}
                 </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="mt-6">
+                <button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                  <Play className="w-5 h-5" />
+                  <span>Start Playing</span>
+                </button>
               </div>
             </div>
             

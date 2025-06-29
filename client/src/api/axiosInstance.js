@@ -2,11 +2,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_SERVER_URL,
 });
 
 export const adminInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_SERVER_URL,
 });
 
 adminInstance.interceptors.request.use(

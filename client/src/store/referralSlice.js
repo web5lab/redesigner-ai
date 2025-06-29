@@ -41,33 +41,6 @@ export const createReferral = createAsyncThunk(
   }
 );
 
-export const createReferral = createAsyncThunk(
-  'referral/create',
-  async ({ referralCode, referredWalletAddress }, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post('/referral/create', {
-        referralCode,
-        referredWalletAddress
-      });
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create referral');
-    }
-  }
-);
-
-export const claimReferralReward = createAsyncThunk(
-  'referral/claimReward',
-  async (referralId, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post(`/referral/claim/${referralId}`);
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to claim reward');
-    }
-  }
-);
-
 const initialState = {
   stats: {
     totalReferrals: 0,
@@ -130,35 +103,6 @@ const referralSlice = createSlice({
         // Referral created successfully
       })
       .addCase(createReferral.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      
-      // Claim Reward
-      .addCase(createReferral.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createReferral.fulfilled, (state, action) => {
-        state.loading = false;
-        // Referral created successfully
-      })
-      .addCase(createReferral.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      
-      // Claim Reward
-      .addCase(claimReferralReward.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(claimReferralReward.fulfilled, (state, action) => {
-        state.loading = false;
-        // Update stats after claiming
-        state.stats.totalRewardsEarned += action.payload.rewardAmount;
-      })
-      .addCase(claimReferralReward.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { connectWallet, setAuthenticatedFromToken } from '../store/authSlice';
+import { connectWallet } from '../store/authSlice';
 import { web3Service } from '../utils/web3Utils';
 import { 
   Trophy, 
@@ -38,49 +38,19 @@ const LandingPage= () => {
       return;
     }
 
-    // Check if user is already authenticated
-    if (isAuthenticated) {
-      return;
-    }
-
     try {
-      // Check if we need to sign a message
+      // Sign authentication message
       const authData = await web3Service.signAuthMessage(wallet.address);
       
-      // If authData is null, it means we already have a valid token
-      if (authData === null) {
-        // Try to get user profile with existing token
-        try {
-          await dispatch(getUserProfile()).unwrap();
-        } catch (error) {
-          console.error('Failed to get profile with existing token:', error);
-          // Clear invalid token and retry
-          localStorage.removeItem('token');
-          delete axiosInstance.defaults.headers.common['Authorization'];
-          // Retry authentication
-          const newAuthData = await web3Service.signAuthMessage(wallet.address);
-          if (newAuthData) {
-            await dispatch(connectWallet({
-              walletAddress: wallet.address,
-              signature: newAuthData.signature,
-              message: newAuthData.message,
-              timestamp: newAuthData.timestamp,
-              walletProvider: 'metamask',
-              network: 'BSC'
-            })).unwrap();
-          }
-        }
-      } else {
-        // Dispatch login with signature
-        await dispatch(connectWallet({
-          walletAddress: wallet.address,
-          signature: authData.signature,
-          message: authData.message,
-          timestamp: authData.timestamp,
-          walletProvider: 'metamask',
-          network: 'BSC'
-        })).unwrap();
-      }
+      // Dispatch login with signature
+      await dispatch(connectWallet({
+        walletAddress: wallet.address,
+        signature: authData.signature,
+        message: authData.message,
+        timestamp: authData.timestamp,
+        walletProvider: 'metamask',
+        network: 'BSC'
+      })).unwrap();
     } catch (error) {
       console.error('Authentication failed:', error);
     }
@@ -88,17 +58,10 @@ const LandingPage= () => {
 
   // Auto-authenticate when wallet is connected
   React.useEffect(() => {
-    // Check if we have a token and set authenticated state
-    const token = localStorage.getItem('token');
-    if (token && !isAuthenticated) {
-      dispatch(setAuthenticatedFromToken());
-      return;
-    }
-
     if (wallet.isConnected && wallet.address && !isAuthenticated && !loading) {
       handleWalletAuth();
     }
-  }, [wallet.isConnected, wallet.address, isAuthenticated, loading, dispatch]);
+  }, [wallet.isConnected, wallet.address, isAuthenticated, loading]);
 
   // Navigate to game when authenticated
   React.useEffect(() => {

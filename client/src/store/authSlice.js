@@ -52,7 +52,7 @@ export const logout = createAsyncThunk(
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: false,
   loading: false,
   error: null
 };
@@ -68,11 +68,6 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-    },
-    setAuthenticatedFromToken: (state) => {
-      if (state.token) {
-        state.isAuthenticated = true;
-      }
     },
     updateUserBalance: (state, action) => {
       if (state.user) {
@@ -92,22 +87,6 @@ const authSlice = createSlice({
         state.user = {
           ...state.user,
           ...action.payload
-        // If it's a signature verification error but user exists, try to get profile
-        if (error.response?.status === 401 && error.response?.data?.message?.includes('signature')) {
-          // Check if we have a token and try to get profile instead
-          const existingToken = localStorage.getItem('token');
-          if (existingToken) {
-            try {
-              axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${existingToken}`;
-              const profileResponse = await axiosInstance.get('/auth/profile');
-              return { user: profileResponse.data.data.user, token: existingToken };
-            } catch (profileError) {
-              // If profile fetch fails, remove invalid token
-              localStorage.removeItem('token');
-              delete axiosInstance.defaults.headers.common['Authorization'];
-            }
-          }
-        }
         };
       }
     }
@@ -161,7 +140,6 @@ const authSlice = createSlice({
 export const { 
   clearError, 
   setCredentials, 
-  setAuthenticatedFromToken,
   updateUserBalance, 
   updateUserTickets, 
   updateUserStats 

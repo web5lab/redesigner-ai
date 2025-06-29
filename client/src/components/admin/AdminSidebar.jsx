@@ -47,6 +47,12 @@ const AdminSidebar = ({ activeSection, onSectionChange }) => {
       icon: CheckSquare,
       description: 'Manage social media tasks'
     },
+    {
+      id: 'spin-board',
+      label: 'Spin Board',
+      icon: RotateCcw,
+      description: 'Configure wheel rewards'
+    }
     // Uncomment if you want to add analytics section
     // {
     //   id: 'analytics',

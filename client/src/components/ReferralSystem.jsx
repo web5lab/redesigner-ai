@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getReferralHistory, claimReferralReward } from '../store/referralSlice';
-import { updateUserBalance } from '../store/authSlice';
+import { getReferralHistory } from '../store/referralSlice';
 import { Users, Copy, Gift, TrendingUp, Share2, CheckCircle, Clock, Star, Link, Award } from 'lucide-react';
-import toast from 'react-hot-toast';
+
 
 const ReferralSystem = ({ userAddress }) => {
   const dispatch = useDispatch();
-  const { stats, history, loading } = useSelector((state) => state.referral);
+  const { stats, history } = useSelector((state) => state.referral);
 
   const [copied, setCopied] = useState(false);
   const referralLink = stats.referralLink || `https://xxxgaminghub.app/ref/${stats.referralCode}`;
 
   React.useEffect(() => {
-    if (userAddress) {
-      dispatch(getReferralHistory());
-    }
-  }, [dispatch, userAddress]);
+    dispatch(getReferralHistory());
+  }, [dispatch]);
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast.success('Referral link copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -47,31 +43,7 @@ const ReferralSystem = ({ userAddress }) => {
     }
   };
 
-  const handleClaimReward = async (referralId) => {
-    try {
-      const result = await dispatch(claimReferralReward(referralId)).unwrap();
-      
-      // Update user balance in auth store
-      dispatch(updateUserBalance({ xxxhub: result.newBalance }));
-      
-      // Refresh referral history
-      dispatch(getReferralHistory());
-      
-      toast.success(`Claimed ${result.rewardAmount} XXX tokens!`);
-    } catch (error) {
-      toast.error(error || 'Failed to claim reward');
-    }
-  };
-
-  const formatAddress = (address) => `${address?.slice(0, 6)}...${address?.slice(-4)}`;
-
-  if (loading && history.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  const formatAddress = (address) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   return (
     <div className="space-y-8 animate-slide-up">
@@ -268,68 +240,57 @@ const ReferralSystem = ({ userAddress }) => {
           <h2 className="text-xl font-semibold text-gray-900">Your Referrals</h2>
         </div>
         
-        {history.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friend</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reward</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {history.map((referral) => (
-                  <tr key={referral.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-                          <Users className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-900">
-                          {formatAddress(referral.referredAddress)}
-                        </span>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friend</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reward</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {history.map((referral) => (
+                <tr key={referral.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
+                        <Users className="w-4 h-4 text-white" />
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        referral.status === 'active' || referral.status === 'completed'
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {referral.status === 'active' || referral.status === 'completed' ? 'Active' : 'Pending'}
+                      <span className="text-sm font-medium text-gray-900">
+                        {formatAddress(referral.referredAddress || 'Unknown')}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(referral.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {referral.rewardClaimed ? (
-                        <span className="text-green-600 font-semibold text-sm">200 XXX Claimed</span>
-                      ) : referral.status === 'active' || referral.status === 'completed' ? (
-                        <button 
-                          onClick={() => handleClaimReward(referral.id)}
-                          className="text-blue-600 hover:text-blue-800 font-semibold text-sm bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-lg transition-colors"
-                        >
-                          Claim 200 XXX
-                        </button>
-                      ) : (
-                        <span className="text-gray-500 text-sm">Pending</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-8 text-center">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Referrals Yet</h3>
-            <p className="text-gray-600">Start sharing your referral link to earn rewards!</p>
-          </div>
-        )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      referral.status === 'active' || referral.status === 'completed'
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {referral.status === 'active' || referral.status === 'completed' ? 'Active' : 'Pending'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {new Date(referral.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {referral.rewardClaimed ? (
+                      <span className="text-green-600 font-semibold text-sm">200 XXX Claimed</span>
+                    ) : referral.status === 'active' || referral.status === 'completed' ? (
+                      <button className="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                        Claim 200 XXX
+                      </button>
+                    ) : (
+                      <span className="text-gray-500 text-sm">Pending</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import SpinHistory from '../components/SpinHistory';
 import ReferralSystem from '../components/ReferralSystem';
 import SocialTasks from '../components/SocialTasks';
 import { useAccount } from 'wagmi';
-import { getUserProfile, logout, updateUserBalance, updateUserTickets, updateUserStats, setAuthenticatedFromToken } from '../store/authSlice';
+import { getUserProfile, logout, updateUserBalance, updateUserTickets, updateUserStats } from '../store/authSlice';
 import { getRewards, purchaseTickets, spinWheel, getSpinHistory } from '../store/gameSlice';
 import { getSocialTasks } from '../store/socialSlice';
 import { getReferralStats } from '../store/referralSlice';
@@ -29,12 +29,6 @@ const GamePlatform= () => {
 
   // Load user data and game data on component mount
   useEffect(() => {
-    // Check if we have a token and set authenticated state
-    const token = localStorage.getItem('token');
-    if (token && !isAuthenticated) {
-      dispatch(setAuthenticatedFromToken());
-    }
-
     if (isAuthenticated) {
       dispatch(getUserProfile());
       dispatch(getRewards());

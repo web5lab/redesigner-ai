@@ -79,6 +79,10 @@ const WalletConnection = ({ onConnect }) => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center space-x-4">
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 

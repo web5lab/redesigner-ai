@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { connectWallet } from '../store/authSlice';
-import { useSignMessage } from '../hooks/useSignMessage';
-import { Wallet, Shield, Smartphone, Link } from 'lucide-react';
 
 
-
-const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => {
-  const dispatch = useDispatch();
+const WalletConnection = ({ onConnect }) => {
   const [isConnecting, setIsConnecting] = useState(null);
-  const { signAuthMessage, isPending: isSigningPending } = useSignMessage();
 
   const walletProviders = [
     {
@@ -39,16 +34,12 @@ const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => 
     setIsConnecting(providerId);
     
     try {
-      // Connect to wallet
-      const walletInfo = { connected: true, address: '0x...', network: 'BSC' }; // This would come from wagmi
+      // This is just for UI feedback - actual connection is handled by RainbowKit
+      // Simulate connection delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (walletInfo.connected) {
-        // Call onConnect callback
-        onConnect({
-          address: walletInfo.address,
-          provider: providerId,
-          network: walletInfo.network,
-        });
+      if (onConnect) {
+        onConnect(providerId);
       }
     } catch (error) {
       console.error('Wallet connection failed:', error);
@@ -88,32 +79,6 @@ const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => 
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${provider.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <h3 className="text-lg font-semibold text-gray-900">{provider.name}</h3>
-                      <p className="text-sm text-gray-600">{provider.description}</p>
-                    </div>
-                    {isLoading && (
-                      <div className="w-6 h-6 border-2 border-yellow-300 border-t-transparent rounded-full animate-spin"></div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-            <div className="flex items-start space-x-3">
-              <Shield className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="text-sm font-semibold text-yellow-800">Secure Connection</h4>
-                <p className="text-xs text-yellow-700 mt-1">
-                  Your wallet connection is encrypted and secure. We never store your private keys.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 

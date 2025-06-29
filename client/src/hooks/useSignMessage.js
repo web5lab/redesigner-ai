@@ -5,6 +5,10 @@ export const useSignMessage = () => {
   const { signMessageAsync, isPending, error } = useWagmiSignMessage();
 
   const signAuthMessage = useCallback(async (walletAddress) => {
+    if (!walletAddress) {
+      throw new Error('Wallet address is required');
+    }
+
     try {
       const timestamp = Date.now();
       const message = `Welcome to XXX Gaming Hub!
@@ -28,7 +32,10 @@ This request will not trigger a blockchain transaction or cost any gas fees.`;
       console.error('Error signing message:', error);
       
       // Handle user rejection
-      if (error.name === 'UserRejectedRequestError' || error.message?.includes('rejected')) {
+      if (error.name === 'UserRejectedRequestError' || 
+          error.message?.includes('rejected') || 
+          error.message?.includes('denied') ||
+          error.code === 4001) {
         throw new Error('Signature request was rejected by user');
       }
       

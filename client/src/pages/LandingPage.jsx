@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { connectWallet, clearError } from '../store/authSlice';
+import { authenticateUser, clearError } from '../store/authSlice';
 import { useSignMessage } from '../hooks/useSignMessage';
 import { 
   Trophy, 
@@ -36,7 +36,7 @@ const LandingPage= () => {
 
   // Handle signing message to access casino
   const handleSignInToCasino = async () => {
-    if (!wallet.isConnected || !wallet.address) {
+    if (!wallet.isConnected) {
       alert('Please connect your wallet first');
       return;
     }
@@ -48,14 +48,12 @@ const LandingPage= () => {
       // Sign authentication message
       const authData = await signAuthMessage(wallet.address);
       
-      // Dispatch login with signature
-      await dispatch(connectWallet({
+      // Authenticate user with signature (don't reconnect wallet)
+      await dispatch(authenticateUser({
         walletAddress: wallet.address,
         signature: authData.signature,
         message: authData.message,
-        timestamp: authData.timestamp,
-        walletProvider: 'metamask',
-        network: 'BSC'
+        timestamp: authData.timestamp
       })).unwrap();
     } catch (error) {
       console.error('Authentication failed:', error);

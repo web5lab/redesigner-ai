@@ -1,17 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../api/axiosInstance';
 
 // Async thunks
-export const connectWallet = createAsyncThunk(
-  'auth/connectWallet',
-  async ({ walletAddress, signature, message, timestamp, walletProvider, network }, { rejectWithValue }) => {
+export const authenticateUser = createAsyncThunk(
+  'auth/authenticateUser',
+  async ({ walletAddress, signature, message, timestamp }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/auth/connect-wallet', {
         walletAddress,
         signature,
         message,
         timestamp,
-        walletProvider,
-        network
+        walletProvider: 'metamask', // Default since we're using RainbowKit
+        network: 'BSC'
       });
       
       // Store token in localStorage
@@ -22,7 +23,7 @@ export const connectWallet = createAsyncThunk(
       
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to connect wallet');
+      return rejectWithValue(error.response?.data?.message || 'Failed to authenticate user');
     }
   }
 );
@@ -92,19 +93,19 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Connect Wallet
-      .addCase(connectWallet.pending, (state) => {
+      // Authenticate User
+      .addCase(authenticateUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(connectWallet.fulfilled, (state, action) => {
+      .addCase(authenticateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(connectWallet.rejected, (state, action) => {
+      .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;
         // Only set error if it's not a user rejection
         if (!action.payload?.includes('rejected') && !action.payload?.includes('denied')) {

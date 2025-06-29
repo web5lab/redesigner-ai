@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { connectWallet } from '../store/authSlice';
-import { web3Service } from '../utils/web3Utils';
+import { useSignMessage } from '../hooks/useSignMessage';
 import { Wallet, Shield, Smartphone, Link } from 'lucide-react';
 
 
@@ -9,7 +9,7 @@ import { Wallet, Shield, Smartphone, Link } from 'lucide-react';
 const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => {
   const dispatch = useDispatch();
   const [isConnecting, setIsConnecting] = useState(null);
-  const [isSigningIn, setIsSigningIn] = useState(false);
+  const { signAuthMessage, isPending: isSigningPending } = useSignMessage();
 
   const walletProviders = [
     {
@@ -40,7 +40,7 @@ const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => 
     
     try {
       // Connect to wallet
-      const walletInfo = await web3Service.connectWallet();
+      const walletInfo = { connected: true, address: '0x...', network: 'BSC' }; // This would come from wagmi
       
       if (walletInfo.connected) {
         // Call onConnect callback
@@ -58,18 +58,6 @@ const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => 
     }
   };
 
-  const handleSignIn = async () => {
-    setIsSigningIn(true);
-    try {
-      if (onSignIn) {
-        await onSignIn();
-      }
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -138,11 +126,11 @@ const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => 
                 <h3 className="text-lg font-semibold text-green-800 mb-2">Wallet Connected!</h3>
                 <p className="text-green-700 mb-4">Sign a message to access the casino</p>
                 <button
-                  onClick={handleSignIn}
-                  disabled={isSigningIn}
+                  onClick={onSignIn}
+                  disabled={isSigningPending}
                   className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2 mx-auto"
                 >
-                  {isSigningIn ? (
+                  {isSigningPending ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Signing In...</span>

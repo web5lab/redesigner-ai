@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../api/axiosInstance';
 
 // Async thunks
 export const connectWallet = createAsyncThunk(

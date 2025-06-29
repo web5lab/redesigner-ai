@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { connectWallet, clearError } from '../store/authSlice';
-import { web3Service } from '../utils/web3Utils';
+import { useSignMessage } from '../hooks/useSignMessage';
 import { 
   Trophy, 
   Zap, 
@@ -32,6 +32,7 @@ const LandingPage= () => {
   const wallet = useAccount();
   const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
   const [isSigningIn, setIsSigningIn] = React.useState(false);
+  const { signAuthMessage, isPending: isSigningPending } = useSignMessage();
 
   // Handle signing message to access casino
   const handleSignInToCasino = async () => {
@@ -45,7 +46,7 @@ const LandingPage= () => {
       dispatch(clearError());
       
       // Sign authentication message
-      const authData = await web3Service.signAuthMessage(wallet.address);
+      const authData = await signAuthMessage(wallet.address);
       
       // Dispatch login with signature
       await dispatch(connectWallet({
@@ -66,6 +67,8 @@ const LandingPage= () => {
       setIsSigningIn(false);
     }
   };
+
+  const actuallySigningIn = isSigningIn || isSigningPending;
 
   // Navigate to game when authenticated
   React.useEffect(() => {
@@ -196,10 +199,10 @@ const LandingPage= () => {
                 )}
                 <button
                   onClick={handleSignInToCasino}
-                  disabled={isSigningIn}
+                  disabled={actuallySigningIn}
                   className="group bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl shadow-yellow-500/50 flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  {isSigningIn ? (
+                  {actuallySigningIn ? (
                     <>
                       <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Signing In...</span>
@@ -363,12 +366,12 @@ const LandingPage= () => {
                     handleSignInToCasino();
                   }
                 }}
-                disabled={isSigningIn}
+                disabled={actuallySigningIn}
                 className="bg-white text-gray-900 px-10 py-4 rounded-xl font-bold text-xl hover:bg-gray-100 transition-all transform hover:scale-110 shadow-xl flex items-center space-x-3 mx-auto"
               >
                 <Trophy className="w-6 h-6" />
                 <span>
-                  {isSigningIn ? 'Signing In...' : 
+                  {actuallySigningIn ? 'Signing In...' : 
                    !wallet.isConnected ? 'Connect Wallet' :
                    isAuthenticated ? 'Enter Game' : 'Sign In to Casino'}
                 </span>

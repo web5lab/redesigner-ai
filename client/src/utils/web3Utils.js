@@ -1,5 +1,7 @@
 import Web3 from 'web3';
 import { PANCAKE_ROUTER_ABI, ERC20_ABI, CONTRACTS, BSC_CHAIN_ID, BSC_RPC_URL } from '../contracts/PancakeSwapABI';
+import { createWalletClient, custom } from 'viem';
+import { bsc } from 'viem/chains';
 
 export class Web3Service {
   constructor() {
@@ -17,40 +19,6 @@ Wallet: ${walletAddress}
 Timestamp: ${timestamp}
 
 This request will not trigger a blockchain transaction or cost any gas fees.`;
-  }
-
-  // Sign authentication message
-  async signAuthMessage(walletAddress) {
-    if (typeof window.ethereum === 'undefined') {
-      throw new Error('MetaMask is not installed');
-    }
-
-    try {
-      const timestamp = Date.now();
-      const message = this.generateAuthMessage(walletAddress, timestamp);
-      
-      // Sign the message
-      const signature = await window.ethereum.request({
-        method: 'personal_sign',
-        params: [message, walletAddress],
-      });
-
-      return {
-        message,
-        signature,
-        timestamp,
-        walletAddress
-      };
-    } catch (error) {
-      console.error('Error signing message:', error);
-      if (error.code === 4001) {
-        throw new Error('Signature request was rejected by user');
-      }
-      if (error.code === -32603) {
-        throw new Error('Internal error occurred while signing');
-      }
-      throw new Error('Failed to sign authentication message');
-    }
   }
 
   async connectWallet() {

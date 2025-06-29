@@ -9,6 +9,7 @@ import SpinWheel from '../components/SpinWheel';
 import SpinHistory from '../components/SpinHistory';
 import ReferralSystem from '../components/ReferralSystem';
 import SocialTasks from '../components/SocialTasks';
+import TradeDashboard from '../components/TradeDashboard';
 import { useAccount } from 'wagmi';
 import { getUserProfile, logout, updateUserBalance, updateUserTickets, updateUserStats } from '../store/authSlice';
 import { getRewards, purchaseTickets, spinWheel, getSpinHistory } from '../store/gameSlice';
@@ -164,6 +165,7 @@ const GamePlatform= () => {
               activeSection === 'history' ? 'Spin History' :
               activeSection === 'referral' ? 'Refer & Earn' :
               activeSection === 'tasks' ? 'Social Tasks' :
+              activeSection === 'trade' ? 'Trade Tokens' :
               'Game Platform'
             }
             subtitle={
@@ -173,6 +175,7 @@ const GamePlatform= () => {
               activeSection === 'history' ? 'View your past spins and winnings' :
               activeSection === 'referral' ? 'Invite friends and earn rewards' :
               activeSection === 'tasks' ? 'Complete tasks to earn free rewards' :
+              activeSection === 'trade' ? 'Swap tokens on PancakeSwap' :
               'Welcome to XXX Gaming Hub'
             }
           />
@@ -216,6 +219,10 @@ const GamePlatform= () => {
             
             {activeSection === 'tasks' && wallet?.address && (
               <SocialTasks userAddress={wallet?.address} onTaskComplete={handleTaskComplete} />
+            )}
+            
+            {activeSection === 'trade' && (
+              <TradeDashboard />
             )}
           </main>
         </div>

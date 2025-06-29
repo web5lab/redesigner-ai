@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, Ticket, RotateCcw, History, Users, Gift, LogOut, Wallet, Zap, Settings } from 'lucide-react';
+import { Trophy, Ticket, RotateCcw, History, Users, Gift, LogOut, Wallet, Zap, Settings, TrendingUp } from 'lucide-react';
 
 
 
@@ -40,6 +40,12 @@ const UserSidebar = ({
       label: 'Social Tasks',
       icon: Gift,
       description: 'Complete tasks'
+    },
+    {
+      id: 'trade',
+      label: 'Trade',
+      icon: TrendingUp,
+      description: 'Swap tokens'
     }
   ];
 

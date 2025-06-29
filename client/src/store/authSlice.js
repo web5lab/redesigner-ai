@@ -107,7 +107,10 @@ const authSlice = createSlice({
       })
       .addCase(connectWallet.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        // Only set error if it's not a user rejection
+        if (!action.payload?.includes('rejected') && !action.payload?.includes('denied')) {
+          state.error = action.payload;
+        }
         state.isAuthenticated = false;
       })
       

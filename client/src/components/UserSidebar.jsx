@@ -155,7 +155,7 @@ const UserSidebar = ({
             className="w-full flex items-center space-x-3 p-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Disconnect</span>
+            <span className="font-medium">Disconnect Wallet</span>
           </button>
         )}
       </div>

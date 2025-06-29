@@ -6,9 +6,10 @@ import { Wallet, Shield, Smartphone, Link } from 'lucide-react';
 
 
 
-const WalletConnection= ({ onConnect }) => {
+const WalletConnection = ({ onConnect, showSignInButton = false, onSignIn }) => {
   const dispatch = useDispatch();
   const [isConnecting, setIsConnecting] = useState(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const walletProviders = [
     {
@@ -42,19 +43,6 @@ const WalletConnection= ({ onConnect }) => {
       const walletInfo = await web3Service.connectWallet();
       
       if (walletInfo.connected) {
-        // Sign authentication message
-        const authData = await web3Service.signAuthMessage(walletInfo.address);
-        
-        // Authenticate with backend
-        await dispatch(connectWallet({
-          walletAddress: walletInfo.address,
-          signature: authData.signature,
-          message: authData.message,
-          timestamp: authData.timestamp,
-          walletProvider: providerId,
-          network: walletInfo.network
-        })).unwrap();
-        
         // Call onConnect callback
         onConnect({
           address: walletInfo.address,
@@ -70,6 +58,18 @@ const WalletConnection= ({ onConnect }) => {
     }
   };
 
+  const handleSignIn = async () => {
+    setIsSigningIn(true);
+    try {
+      if (onSignIn) {
+        await onSignIn();
+      }
+    } catch (error) {
+      console.error('Sign in failed:', error);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -131,6 +131,32 @@ const WalletConnection= ({ onConnect }) => {
 
         <div className="text-center mt-6 text-sm text-gray-500">
           <p>Make sure you're connected to BSC (Binance Smart Chain)</p>
+
+          {showSignInButton && (
+            <div className="mt-8 text-center">
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Wallet Connected!</h3>
+                <p className="text-green-700 mb-4">Sign a message to access the casino</p>
+                <button
+                  onClick={handleSignIn}
+                  disabled={isSigningIn}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center space-x-2 mx-auto"
+                >
+                  {isSigningIn ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Signing In...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5" />
+                      <span>Sign In to Casino</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

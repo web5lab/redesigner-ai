@@ -40,10 +40,19 @@ const GamePlatform= () => {
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (!isAuthenticated && !loading) {
+    if (!isAuthenticated && !loading && !wallet.isConnected) {
       navigate('/');
     }
   }, [isAuthenticated, loading, navigate]);
+
+  // Check authentication when wallet changes
+  useEffect(() => {
+    if (!wallet.isConnected && isAuthenticated) {
+      // Wallet disconnected but user is still authenticated, logout
+      dispatch(logout());
+      navigate('/');
+    }
+  }, [wallet.isConnected, isAuthenticated, dispatch, navigate]);
 
   const handleWalletDisconnect = () => {
     dispatch(logout());

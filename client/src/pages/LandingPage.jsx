@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import { connectWallet } from '../store/authSlice';
+import { connectWallet, clearError } from '../store/authSlice';
 import { web3Service } from '../utils/web3Utils';
 import { 
   Trophy, 
@@ -30,15 +30,20 @@ const LandingPage= () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wallet = useAccount();
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
+  const [isSigningIn, setIsSigningIn] = React.useState(false);
 
-  // Handle wallet authentication with signature
-  const handleWalletAuth = async () => {
+  // Handle signing message to access casino
+  const handleSignInToCasino = async () => {
     if (!wallet.isConnected || !wallet.address) {
+      alert('Please connect your wallet first');
       return;
     }
 
     try {
+      setIsSigningIn(true);
+      dispatch(clearError());
+      
       // Sign authentication message
       const authData = await web3Service.signAuthMessage(wallet.address);
       
@@ -53,15 +58,14 @@ const LandingPage= () => {
       })).unwrap();
     } catch (error) {
       console.error('Authentication failed:', error);
+      // Don't show error for user rejection
+      if (!error.message?.includes('rejected') && !error.message?.includes('denied')) {
+        alert('Failed to sign in. Please try again.');
+      }
+    } finally {
+      setIsSigningIn(false);
     }
   };
-
-  // Auto-authenticate when wallet is connected
-  React.useEffect(() => {
-    if (wallet.isConnected && wallet.address && !isAuthenticated && !loading) {
-      handleWalletAuth();
-    }
-  }, [wallet.isConnected, wallet.address, isAuthenticated, loading]);
 
   // Navigate to game when authenticated
   React.useEffect(() => {
@@ -69,6 +73,13 @@ const LandingPage= () => {
       navigate('/game');
     }
   }, [isAuthenticated, navigate]);
+
+  // Clear error when wallet disconnects
+  React.useEffect(() => {
+    if (!wallet.isConnected) {
+      dispatch(clearError());
+    }
+  }, [wallet.isConnected, dispatch]);
 
   const features = [
     {
@@ -170,14 +181,48 @@ const LandingPage= () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <button
-              onClick={() => navigate('/game')}
-              className="group bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl shadow-yellow-500/50 flex items-center space-x-3"
-            >
-              <Play className="w-6 h-6 group-hover:animate-pulse" />
-              <span>Start Playing</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </button>
+            {!wallet.isConnected ? (
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Connect your wallet to start playing</p>
+                <ConnectButton />
+              </div>
+            ) : !isAuthenticated ? (
+              <div className="text-center space-y-4">
+                <p className="text-gray-600">Wallet connected! Sign in to access the casino</p>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
+                <button
+                  onClick={handleSignInToCasino}
+                  disabled={isSigningIn}
+                  className="group bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl shadow-yellow-500/50 flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  {isSigningIn ? (
+                    <>
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Signing In...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-6 h-6 group-hover:animate-pulse" />
+                      <span>Sign In to Casino</span>
+                      <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate('/game')}
+                className="group bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl shadow-yellow-500/50 flex items-center space-x-3"
+              >
+                <Play className="w-6 h-6 group-hover:animate-pulse" />
+                <span>Enter Casino</span>
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </button>
+            )}
             
             <button className="bg-white/80 backdrop-blur-lg text-gray-800 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white transition-all transform hover:scale-105 shadow-lg border border-yellow-200 flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-yellow-600" />
@@ -309,16 +354,24 @@ const LandingPage= () => {
               
               <button
                 onClick={() => {
-                  if (isAuthenticated) {
+                  if (!wallet.isConnected) {
+                    // Scroll to connect wallet section or show connect button
+                    document.querySelector('.connect-wallet-section')?.scrollIntoView({ behavior: 'smooth' });
+                  } else if (isAuthenticated) {
                     navigate('/game');
-                  } else if (wallet.isConnected && wallet.address) {
-                    handleWalletAuth();
+                  } else {
+                    handleSignInToCasino();
                   }
                 }}
+                disabled={isSigningIn}
                 className="bg-white text-gray-900 px-10 py-4 rounded-xl font-bold text-xl hover:bg-gray-100 transition-all transform hover:scale-110 shadow-xl flex items-center space-x-3 mx-auto"
               >
                 <Trophy className="w-6 h-6" />
-                <span>{loading ? 'Connecting...' : isAuthenticated ? 'Enter Game' : 'Launch Game'}</span>
+                <span>
+                  {isSigningIn ? 'Signing In...' : 
+                   !wallet.isConnected ? 'Connect Wallet' :
+                   isAuthenticated ? 'Enter Game' : 'Sign In to Casino'}
+                </span>
                 <ArrowRight className="w-6 h-6" />
               </button>
             </div>
@@ -327,8 +380,17 @@ const LandingPage= () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-gray-900 text-white py-12">
+      <footer className="relative z-10 bg-gray-900 text-white py-12 connect-wallet-section">
         <div className="container mx-auto px-4">
+          {/* Wallet Connection Section */}
+          {!wallet.isConnected && (
+            <div className="text-center mb-12 p-8 bg-gray-800 rounded-2xl">
+              <h3 className="text-2xl font-bold mb-4">Ready to Start Playing?</h3>
+              <p className="text-gray-300 mb-6">Connect your wallet to access the XXX Gaming Hub</p>
+              <ConnectButton />
+            </div>
+          )}
+          
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
               <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center">

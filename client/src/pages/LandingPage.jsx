@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { authenticateUser, clearError } from '../store/authSlice';
 import { useSignMessage } from '../hooks/useSignMessage';
+import { useReferralCode } from '../hooks/useReferralCode';
 import { 
   Trophy, 
   Zap, 
@@ -33,6 +34,7 @@ const LandingPage= () => {
   const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
   const [isSigningIn, setIsSigningIn] = React.useState(false);
   const { signAuthMessage, isPending: isSigningPending } = useSignMessage();
+  const { referralCode, clearReferralCode, getPendingReferralCode } = useReferralCode();
 
   // Handle signing message to access casino
   const handleSignInToCasino = async () => {
@@ -48,13 +50,22 @@ const LandingPage= () => {
       // Sign authentication message
       const authData = await signAuthMessage(wallet.address);
       
+      // Get pending referral code
+      const pendingReferralCode = getPendingReferralCode();
+      
       // Authenticate user with signature (don't reconnect wallet)
       await dispatch(authenticateUser({
         walletAddress: wallet.address,
         signature: authData.signature,
         message: authData.message,
-        timestamp: authData.timestamp
+        timestamp: authData.timestamp,
+        referralCode: pendingReferralCode
       })).unwrap();
+      
+      // Clear referral code after successful authentication
+      if (pendingReferralCode) {
+        clearReferralCode();
+      }
     } catch (error) {
       console.error('Authentication failed:', error);
       // Don't show error for user rejection
@@ -81,6 +92,9 @@ const LandingPage= () => {
       dispatch(clearError());
     }
   }, [wallet.isConnected, dispatch]);
+
+  // Show referral notification if there's a pending referral code
+  const showReferralNotification = referralCode && !isAuthenticated;
 
   const features = [
     {
@@ -182,6 +196,24 @@ const LandingPage= () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            {/* Referral Notification */}
+            {showReferralNotification && (
+              <div className="w-full bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-4 mb-6 animate-bounce-in">
+                <div className="flex items-center justify-center space-x-3">
+                  <Gift className="w-6 h-6 text-green-600" />
+                  <div className="text-center">
+                    <p className="text-green-800 font-semibold">🎉 You've been referred!</p>
+                    <p className="text-green-700 text-sm">
+                      Referral code: <span className="font-bold">{referralCode}</span>
+                    </p>
+                    <p className="text-green-600 text-xs">
+                      Connect your wallet and sign in to claim your bonus rewards!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {!wallet.isConnected ? (
               <div className="text-center">
                 <p className="text-gray-600 mb-4">Connect your wallet to start playing</p>
@@ -189,7 +221,14 @@ const LandingPage= () => {
               </div>
             ) : !isAuthenticated ? (
               <div className="text-center space-y-4">
-                <p className="text-gray-600">Wallet connected! Sign in to access the casino</p>
+                <p className="text-gray-600">
+                  Wallet connected! Sign in to access the casino
+                  {showReferralNotification && (
+                    <span className="block text-green-600 font-medium mt-1">
+                      🎁 Bonus rewards waiting for you!
+                    </span>
+                  )}
+                </p>
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
                     {error}
@@ -198,7 +237,11 @@ const LandingPage= () => {
                 <button
                   onClick={handleSignInToCasino}
                   disabled={actuallySigningIn}
-                  className="group bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl shadow-yellow-500/50 flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className={`group ${
+                    showReferralNotification 
+                      ? 'bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 shadow-green-500/50' 
+                      : 'bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 shadow-yellow-500/50'
+                  } text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-110 shadow-2xl flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
                 >
                   {actuallySigningIn ? (
                     <>
@@ -207,8 +250,17 @@ const LandingPage= () => {
                     </>
                   ) : (
                     <>
-                      <Play className="w-6 h-6 group-hover:animate-pulse" />
-                      <span>Sign In to Casino</span>
+                      {showReferralNotification ? (
+                        <>
+                          <Gift className="w-6 h-6 group-hover:animate-pulse" />
+                          <span>Claim Bonus & Enter</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-6 h-6 group-hover:animate-pulse" />
+                          <span>Sign In to Casino</span>
+                        </>
+                      )}
                       <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </>
                   )}

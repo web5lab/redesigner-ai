@@ -14,6 +14,7 @@ import { getUserProfile, logout, updateUserBalance, updateUserTickets, updateUse
 import { getRewards, purchaseTickets, spinWheel, getSpinHistory } from '../store/gameSlice';
 import { getSocialTasks } from '../store/socialSlice';
 import { getReferralStats } from '../store/referralSlice';
+import toast from 'react-hot-toast';
 
 
 const GamePlatform= () => {
@@ -35,6 +36,19 @@ const GamePlatform= () => {
       dispatch(getSpinHistory());
       dispatch(getSocialTasks());
       dispatch(getReferralStats());
+      
+      // Check if user just signed in with referral bonus
+      const referralProcessed = localStorage.getItem('referralProcessed');
+      if (referralProcessed === 'true') {
+        toast.success('🎉 Referral bonus applied! You received 100 XXX tokens and 3 free tickets!', {
+          duration: 5000,
+          style: {
+            background: '#10B981',
+            color: '#fff',
+          },
+        });
+        localStorage.removeItem('referralProcessed');
+      }
     }
   }, [dispatch, isAuthenticated]);
 

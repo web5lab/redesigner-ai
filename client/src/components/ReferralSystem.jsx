@@ -7,9 +7,10 @@ import { Users, Copy, Gift, TrendingUp, Share2, CheckCircle, Clock, Star, Link, 
 const ReferralSystem = ({ userAddress }) => {
   const dispatch = useDispatch();
   const { stats, history } = useSelector((state) => state.referral);
+  const { referralCode: pendingReferralCode } = useReferralCode();
 
   const [copied, setCopied] = useState(false);
-  const referralLink = stats.referralLink || `https://xxxgaminghub.app/ref/${stats.referralCode}`;
+  const referralLink = stats.referralLink || `${window.location.origin}?ref=${stats.referralCode}`;
 
   React.useEffect(() => {
     dispatch(getReferralHistory());
@@ -22,7 +23,7 @@ const ReferralSystem = ({ userAddress }) => {
   };
 
   const shareOnSocial = (platform) => {
-    const text = `🎰 Join me on XXX Gaming Hub - the ultimate Web3 gaming platform! Use my referral code ${stats.referralCode} and get bonus rewards! 🎁`;
+    const text = `🎰 Join me on XXX Gaming Hub - the ultimate Web3 gaming platform! Use my referral link and get bonus rewards! 🎁`;
     const url = referralLink;
     
     let shareUrl = '';

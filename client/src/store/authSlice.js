@@ -4,13 +4,14 @@ import axiosInstance from '../api/axiosInstance';
 // Async thunks
 export const authenticateUser = createAsyncThunk(
   'auth/authenticateUser',
-  async ({ walletAddress, signature, message, timestamp }, { rejectWithValue }) => {
+  async ({ walletAddress, signature, message, timestamp, referralCode }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/auth/connect-wallet', {
         walletAddress,
         signature,
         message,
         timestamp,
+        referralCode,
         walletProvider: 'metamask', // Default since we're using RainbowKit
         network: 'BSC'
       });
@@ -28,6 +29,21 @@ export const authenticateUser = createAsyncThunk(
   }
 );
 
+export const processReferral = createAsyncThunk(
+  'auth/processReferral',
+  async ({ referralCode, referredWalletAddress }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/referral/create', {
+        referralCode,
+        referredWalletAddress
+      });
+      
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to process referral');
+    }
+  }
+);
 export const getUserProfile = createAsyncThunk(
   'auth/getUserProfile',
   async (_, { rejectWithValue }) => {
@@ -104,6 +120,11 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
+        
+        // Store referral processing status for notification
+        if (action.payload.referralProcessed) {
+          localStorage.setItem('referralProcessed', 'true');
+        }
       })
       .addCase(authenticateUser.rejected, (state, action) => {
         state.loading = false;

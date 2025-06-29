@@ -43,7 +43,7 @@ const verifySignature = (message, signature, walletAddress) => {
 // Connect wallet and create/login user
 router.post('/connect-wallet', async (req, res) => {
   try {
-    const { walletAddress, signature, message, timestamp, walletProvider, network } = req.body;
+    const { walletAddress, signature, message, timestamp, walletProvider, network, referralCode } = req.body;
 
     if (!walletAddress || !signature || !message) {
       return res.status(400).json({
@@ -83,6 +83,77 @@ router.post('/connect-wallet', async (req, res) => {
       await user.save();
     }
 
+    // Process referral if provided
+    let referralProcessed = false;
+    let referralReward = null;
+    
+    if (referralCode && user.referredBy === null) {
+      try {
+        // Find referrer by code
+        const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+        
+        if (referrer && referrer._id.toString() !== user._id.toString()) {
+          // Create referral relationship
+          const { ReferralSystem } = await import('../../schemas/index.js');
+          
+          // Check if referral already exists
+          const existingReferral = await ReferralSystem.findOne({
+            referrerId: referrer._id,
+            referredId: user._id
+          });
+          
+          if (!existingReferral) {
+            // Create new referral
+            const referral = new ReferralSystem({
+              referrerId: referrer._id,
+              referrerAddress: referrer.walletAddress,
+              referralCode: referralCode.toUpperCase(),
+              referredId: user._id,
+              referredAddress: user.walletAddress,
+              status: 'active', // Auto-activate for demo
+              ipAddress: req.ip || '127.0.0.1',
+              userAgent: req.headers['user-agent'] || 'Unknown'
+            });
+            
+            await referral.save();
+            
+            // Update user referral info
+            user.referredBy = referrer._id;
+            
+            // Give referred user bonus
+            const referredBonus = 100; // 100 XXX tokens
+            const currentBalance = parseFloat(user.tokenBalances.xxxhub);
+            user.tokenBalances.xxxhub = (currentBalance + referredBonus).toString();
+            user.currentTickets += 3; // 3 free tickets
+            
+            await user.save();
+            
+            // Update referrer stats
+            referrer.totalReferrals += 1;
+            
+            // Give referrer bonus
+            const referrerBonus = 200; // 200 XXX tokens
+            const referrerBalance = parseFloat(referrer.tokenBalances.xxxhub);
+            referrer.tokenBalances.xxxhub = (referrerBalance + referrerBonus).toString();
+            referrer.currentTickets += 5; // 5 free tickets
+            referrer.referralRewardsEarned += referrerBonus;
+            
+            await referrer.save();
+            
+            referralProcessed = true;
+            referralReward = {
+              tokens: referredBonus,
+              tickets: 3,
+              referrerAddress: referrer.walletAddress
+            };
+          }
+        }
+      } catch (referralError) {
+        console.error('Referral processing error:', referralError);
+        // Don't fail the authentication if referral processing fails
+      }
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, walletAddress: user.walletAddress },
@@ -92,7 +163,9 @@ router.post('/connect-wallet', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Wallet connected successfully',
+      message: referralProcessed 
+        ? 'Wallet connected successfully! Referral bonus applied.' 
+        : 'Wallet connected successfully',
       data: {
         user: {
           id: user._id,
@@ -109,7 +182,9 @@ router.post('/connect-wallet', async (req, res) => {
           joinDate: user.joinDate,
           lastLoginDate: user.lastLoginDate
         },
-        token
+        token,
+        referralProcessed,
+        referralReward
       }
     });
   } catch (error) {

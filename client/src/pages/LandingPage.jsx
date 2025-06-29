@@ -22,7 +22,7 @@ import {
   Award,
   Rocket,
   Target,
-  ChevronDown
+  ChevronDown,
   RotateCcw
 } from 'lucide-react';
 import TradingSection from '../components/TradingSection';

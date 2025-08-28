@@ -4,11 +4,14 @@ import { useEffect } from 'react'
 import { BotProvider } from './contexts/BotContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { BottomNavigation } from './components/BottomNavigation'
 
 // Pages
 import { Bots } from './pages/Bots'
 import { Chat } from './pages/Chat'
 import { Login } from './pages/Login'
+import { Settings } from './pages/Settings'
+import { Dashboard } from './pages/Dashboard'
 
 import { logedInSelector } from './store/selectors'
 import { getUserData } from './store/actions'
@@ -16,9 +19,10 @@ import { getUserData } from './store/actions'
 function AppLayout() {
   const location = useLocation()
   const isAuthPage = location.pathname === '/login'
+  const isLoggedIn = useSelector(logedInSelector)
   
   return (
-    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <main className="flex-1 overflow-hidden">
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -32,8 +36,21 @@ function AppLayout() {
               <Chat />
             </ProtectedRoute>
           } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } />
         </Routes>
       </main>
+      
+      {/* Bottom Navigation - Only show when logged in and not on auth pages */}
+      {isLoggedIn && !isAuthPage && <BottomNavigation />}
     </div>
   )
 }

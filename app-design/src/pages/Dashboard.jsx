@@ -12,7 +12,8 @@ import {
   Activity,
   Clock,
   Target,
-  Brain
+  Brain,
+  Sparkles
 } from 'lucide-react'
 import { getBots } from '../store/actions'
 import { botsSelector, userSelector } from '../store/selectors'

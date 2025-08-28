@@ -9,8 +9,7 @@ import {
   Crown,
   Zap,
   MoreVertical,
-  Copy,
-  Refresh
+  Copy
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { addMessage, setInput, setIsTyping } from '../store/slice'

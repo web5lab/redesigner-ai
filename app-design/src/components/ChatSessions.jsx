@@ -284,5 +284,5 @@ export function ChatSessions({
         )}
       </div>
     </div>
-  })
+  )
 }

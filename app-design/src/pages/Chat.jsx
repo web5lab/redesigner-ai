@@ -472,7 +472,7 @@ export function Chat() {
                     
                     <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                       <div className="flex items-center gap-1">
-                        <MessageSquare className="w-3 h-3" />
+                        <MessageCircle className="w-3 h-3" />
                         <span>{session.messageCount} messages</span>
                       </div>
                       <div className={`w-2 h-2 rounded-full ${
@@ -490,7 +490,7 @@ export function Chat() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center p-8">
                 <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <MessageSquare className="w-10 h-10 text-gray-400" />
+                  <MessageCircle className="w-10 h-10 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {searchQuery ? 'No conversations found' : 'No conversations yet'}

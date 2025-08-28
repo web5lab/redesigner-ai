@@ -586,52 +586,54 @@ export function Chat() {
       {/* Input Area */}
       {activeSession && (
         <div className="p-4 bg-white/80 backdrop-blur-sm border-t border-gray-200">
-          <form onSubmit={handleSubmit} className="flex items-end gap-3">
-            <div className="flex-1 relative">
-              <textarea
-                value={input}
-                onChange={(e) => dispatch(setInput(e.target.value))}
-                placeholder="Type your message..."
-                rows={1}
-                className="w-full px-4 py-3 pr-12 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-white"
-                style={{ minHeight: '48px', maxHeight: '120px' }}
-                disabled={isTyping}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSubmit(e)
-                  }
-                }}
-              />
-              <div className="absolute right-3 bottom-3 text-xs text-gray-400">
-                {input.length}/500
+          <>
+            <form onSubmit={handleSubmit} className="flex items-end gap-3">
+              <div className="flex-1 relative">
+                <textarea
+                  value={input}
+                  onChange={(e) => dispatch(setInput(e.target.value))}
+                  placeholder="Type your message..."
+                  rows={1}
+                  className="w-full px-4 py-3 pr-12 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-white"
+                  style={{ minHeight: '48px', maxHeight: '120px' }}
+                  disabled={isTyping}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleSubmit(e)
+                    }
+                  }}
+                />
+                <div className="absolute right-3 bottom-3 text-xs text-gray-400">
+                  {input.length}/500
+                </div>
+              </div>
+              
+              <button
+                type="submit"
+                disabled={!input.trim() || isTyping}
+                className={`p-3 rounded-2xl transition-all shadow-lg touch-target ${
+                  input.trim() && !isTyping
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-xl haptic-medium'
+                    : 'bg-gray-200 text-gray-400'
+                }`}
+              >
+                {isTyping ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </form>
+            
+            <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+              <span>Press Enter to send</span>
+              <div className="flex items-center gap-1">
+                <Zap className="w-3 h-3" />
+                <span>AI-powered</span>
               </div>
             </div>
-            
-            <button
-              type="submit"
-              disabled={!input.trim() || isTyping}
-              className={`p-3 rounded-2xl transition-all shadow-lg touch-target ${
-                input.trim() && !isTyping
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-xl haptic-medium'
-                  : 'bg-gray-200 text-gray-400'
-              }`}
-            >
-              {isTyping ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Send className="w-5 h-5" />
-              )}
-            </button>
-          </form>
-          
-          <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-            <span>Press Enter to send</span>
-            <div className="flex items-center gap-1">
-              <Zap className="w-3 h-3" />
-              <span>AI-powered</span>
-            </div>
-          </div>
+          </>
         </div>
       )}
     </div>

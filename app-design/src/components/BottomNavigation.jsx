@@ -1,126 +1,71 @@
-import { useLocation, useNavigate } from 'react-router-dom'
-import { 
-  Bot, 
-  MessageSquare, 
-  BarChart3, 
-  Settings,
-  Plus
-} from 'lucide-react'
-
-const navItems = [
-  {
-    path: '/',
-    icon: Bot,
-    label: 'Bots',
-    activeColor: 'text-blue-600',
-    inactiveColor: 'text-gray-400'
-  },
-  {
-    path: '/chat',
-    icon: MessageSquare,
-    label: 'Chat',
-    activeColor: 'text-green-600',
-    inactiveColor: 'text-gray-400'
-  },
-  {
-    path: '/dashboard',
-    icon: BarChart3,
-    label: 'Analytics',
-    activeColor: 'text-purple-600',
-    inactiveColor: 'text-gray-400'
-  },
-  {
-    path: '/settings',
-    icon: Settings,
-    label: 'Settings',
-    activeColor: 'text-orange-600',
-    inactiveColor: 'text-gray-400'
-  }
-]
+import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Bot, MessageCircle, BarChart3, Settings, Plus } from 'lucide-react'
 
 export function BottomNavigation() {
-  const location = useLocation()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [showFAB, setShowFAB] = useState(false)
 
-  const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/'
-    }
-    return location.pathname.startsWith(path)
-  }
+  const navItems = [
+    { id: 'bots', icon: Bot, label: 'Bots', path: '/' },
+    { id: 'chat', icon: MessageCircle, label: 'Chat', path: '/chat' },
+    { id: 'analytics', icon: BarChart3, label: 'Analytics', path: '/dashboard' },
+    { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' }
+  ]
+
+  const isActive = (path) => location.pathname === path
 
   return (
-    <div className="relative">
-      {/* Background with blur effect */}
-      <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50"></div>
-      
-      {/* Navigation content */}
-      <nav className="relative flex items-center justify-around px-2 py-2 safe-area-bottom">
-        {navItems.map((item) => {
-          const active = isActive(item.path)
-          
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`relative flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 touch-target group ${
-                active 
-                  ? 'bg-gray-100 dark:bg-gray-800 shadow-lg scale-105' 
-                  : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
-              }`}
-            >
-              {/* Active indicator */}
-              {active && (
-                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-              )}
-              
-              {/* Icon with gradient background when active */}
-              <div className={`relative p-2 rounded-xl transition-all duration-300 ${
-                active 
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg' 
-                  : 'group-hover:bg-gray-100 dark:group-hover:bg-gray-700'
-              }`}>
-                <item.icon 
-                  className={`w-5 h-5 transition-colors duration-300 ${
-                    active ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
-                  }`} 
-                />
-                
-                {/* Notification badge for chat */}
-                {item.path === '/chat' && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">3</span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Label */}
-              <span className={`text-xs font-medium mt-1 transition-colors duration-300 ${
-                active 
-                  ? 'text-gray-900 dark:text-white' 
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}>
-                {item.label}
-              </span>
-              
-              {/* Ripple effect */}
-              <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
-                active 
-                  ? 'bg-gradient-to-r from-blue-500/10 to-purple-600/10' 
-                  : 'bg-transparent group-hover:bg-gray-100/50 dark:group-hover:bg-gray-700/50'
-              }`}></div>
-            </button>
-          )
-        })}
+    <>
+      {/* Floating Action Button */}
+      <div className="fixed bottom-20 right-6 z-50">
+        <button
+          onClick={() => setShowFAB(!showFAB)}
+          className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300 hover:scale-105"
+        >
+          <Plus className={`w-6 h-6 transition-transform duration-300 ${showFAB ? 'rotate-45' : ''}`} />
+        </button>
         
-        {/* Floating Action Button */}
-        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-          <button className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 group">
-            <Plus className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-ping opacity-20"></div>
-          </button>
+        {showFAB && (
+          <div className="absolute bottom-16 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-2 min-w-[120px]">
+            <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+              New Bot
+            </button>
+            <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+              New Chat
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 z-40">
+        <div className="flex items-center justify-around py-2 px-4">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const active = isActive(item.path)
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => navigate(item.path)}
+                className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 ${
+                  active
+                    ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                <Icon className={`w-5 h-5 mb-1 ${active ? 'scale-110' : ''} transition-transform duration-200`} />
+                <span className="text-xs font-medium">{item.label}</span>
+                {active && (
+                  <div className="absolute -bottom-1 w-1 h-1 bg-blue-500 rounded-full" />
+                )}
+              </button>
+            )
+          })}
         </div>
       </nav>
-    </div>
+    </>
   )
 }

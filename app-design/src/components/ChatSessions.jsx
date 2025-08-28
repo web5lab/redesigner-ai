@@ -25,20 +25,14 @@ export function ChatSessions({
   const [selectedSessionMenu, setSelectedSessionMenu] = useState(null)
   const [filterStatus, setFilterStatus] = useState('all')
 
-  const filteredSessions = sessions.filter(session =>
+  const filteredSessions = sessions.filter(session => {
     const matchesSearch = session.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          session.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter = filterStatus === 'all' || session.status === filterStatus
     return matchesSearch && matchesFilter
+  })
 
   const formatTimestamp = (date) => {
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => setSelectedSessionMenu(null)
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
-  }, [])
-
     const now = new Date()
     const diff = now - date
     const minutes = Math.floor(diff / (1000 * 60))
@@ -49,6 +43,13 @@ export function ChatSessions({
     if (hours > 0) return `${hours}h ago`
     return `${Math.max(1, minutes)}m ago`
   }
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setSelectedSessionMenu(null)
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
 
   const handleSessionAction = (action, sessionId) => {
     switch (action) {
@@ -115,6 +116,7 @@ export function ChatSessions({
             </button>
           ))}
         </div>
+      </div>
       </div>
 
       {/* Sessions List */}

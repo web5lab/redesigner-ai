@@ -1,35 +1,29 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
-        // Custom theme colors
-        primary: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
+        slate: {
+          800: '#1E293B',
+          900: '#0F172A',
         },
-        secondary: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        indigo: {
+          400: '#818CF8',
+          500: '#6366F1',
+          600: '#4F46E5',
         },
+        purple: {
+          400: '#C084FC',
+          500: '#8B5CF6',
+          600: '#7C3AED',
+        },
+      },
+      boxShadow: {
+        glow: '0 0 15px 0 rgba(99, 102, 241, 0.4)',
       },
     },
   },

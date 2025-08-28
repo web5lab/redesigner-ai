@@ -21,13 +21,47 @@ const THINKING_MESSAGES = [
   "Processing your question..."
 ]
 
+// Mock conversation data
+const mockConversation = [
+  {
+    id: 1,
+    role: 'bot',
+    content: 'Hello! How can I help you today?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 10)
+  },
+  {
+    id: 2,
+    role: 'user', 
+    content: 'I need help with my account settings',
+    timestamp: new Date(Date.now() - 1000 * 60 * 9)
+  },
+  {
+    id: 3,
+    role: 'bot',
+    content: 'I\'d be happy to help you with your account settings! What specific setting would you like to modify?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 8)
+  },
+  {
+    id: 4,
+    role: 'user',
+    content: 'I want to change my notification preferences',
+    timestamp: new Date(Date.now() - 1000 * 60 * 7)
+  },
+  {
+    id: 5,
+    role: 'bot',
+    content: 'Perfect! You can update your notification preferences in the Settings section. Would you like me to guide you through the process?',
+    timestamp: new Date(Date.now() - 1000 * 60 * 6)
+  }
+]
 export function Chat() {
   const dispatch = useDispatch()
   const activeBot = useSelector(activeBotSelector)
-  const messages = useSelector(messagesSelector)
+  const storeMessages = useSelector(messagesSelector)
   const input = useSelector(inputSelector)
   const isTyping = useSelector(isTypingSelector)
   const [thinkingMessage, setThinkingMessage] = useState(THINKING_MESSAGES[0])
+  const [messages, setMessages] = useState(mockConversation)
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -50,20 +84,26 @@ export function Chat() {
       // Simulate AI response
       setTimeout(() => {
         clearInterval(thinkingInterval)
-        dispatch(addMessage({
+        const botResponse = {
+          id: Date.now(),
           role: 'bot',
           content: "I understand your question. Let me help you with that. This is a simulated response for the mobile app prototype.",
+          timestamp: new Date(),
           animation: 'fadeIn'
-        }))
+        }
+        setMessages(prev => [...prev, botResponse])
         dispatch(setIsTyping(false))
       }, 2000)
     } catch (error) {
       clearInterval(thinkingInterval)
-      dispatch(addMessage({
+      const errorResponse = {
+        id: Date.now(),
         role: 'bot',
         content: "Sorry, I encountered an error. Please try again.",
+        timestamp: new Date(),
         isError: true
-      }))
+      }
+      setMessages(prev => [...prev, errorResponse])
       dispatch(setIsTyping(false))
     }
   }
@@ -75,6 +115,9 @@ export function Chat() {
     "Contact support"
   ]
 
+  const formatMessageTime = (timestamp) => {
+    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
       {/* Chat Header */}
@@ -144,7 +187,7 @@ export function Chat() {
         ) : (
           <>
             {messages.map((message, index) => (
-              <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={message.id || index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`flex items-start gap-3 max-w-[85%] ${message.animation === 'fadeIn' ? 'animate-fade-in' : ''}`}>
                   {message.role === 'bot' && (
                     <div className="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -166,7 +209,7 @@ export function Chat() {
                     </div>
                     
                     <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
-                      <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span>{formatMessageTime(message.timestamp)}</span>
                       {message.role === 'user' && <span className="text-green-500">✓</span>}
                     </div>
                   </div>

@@ -10,8 +10,13 @@ import {
   Target,
   Zap,
   X,
-  Check
+  Check,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Trash2
 } from 'lucide-react'
+import { TrainingStats } from '../components/TrainingStats'
 
 const tabs = [
   { id: 'pdf', label: 'PDFs', icon: FileText, color: 'text-red-500 bg-red-100' },
@@ -20,25 +25,59 @@ const tabs = [
   { id: 'qa', label: 'Q&A', icon: MessageSquare, color: 'text-purple-500 bg-purple-100' }
 ]
 
+const mockTrainingData = {
+  pdf: [
+    { name: 'Product Manual.pdf', status: 'completed', size: 2048000, uploadedAt: new Date(Date.now() - 1000 * 60 * 30) },
+    { name: 'FAQ Document.pdf', status: 'processing', size: 1024000, uploadedAt: new Date(Date.now() - 1000 * 60 * 5) }
+  ],
+  web: [
+    { url: 'https://example.com/help', status: 'completed', pages: 15, uploadedAt: new Date(Date.now() - 1000 * 60 * 60) },
+    { url: 'https://docs.example.com', status: 'processing', pages: 8, uploadedAt: new Date(Date.now() - 1000 * 60 * 10) }
+  ],
+  text: [
+    { content: 'Company policies and procedures for customer service...', status: 'completed', uploadedAt: new Date(Date.now() - 1000 * 60 * 120) },
+    { content: 'Product specifications and technical details...', status: 'completed', uploadedAt: new Date(Date.now() - 1000 * 60 * 180) }
+  ],
+  qa: [
+    { question: 'What are your business hours?', answer: 'We are open Monday to Friday, 9 AM to 6 PM EST.' },
+    { question: 'How do I reset my password?', answer: 'Click on "Forgot Password" on the login page and follow the instructions.' },
+    { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards, PayPal, and bank transfers.' }
+  ]
+}
 export function Training() {
   const [activeTab, setActiveTab] = useState('pdf')
-  const [trainingData, setTrainingData] = useState({
-    pdf: [],
-    web: [],
-    text: [],
-    qa: []
-  })
+  const [trainingData, setTrainingData] = useState(mockTrainingData)
   const [newQA, setNewQA] = useState({ question: '', answer: '' })
   const [newUrl, setNewUrl] = useState('')
   const [newText, setNewText] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0]
     if (file) {
+      setIsUploading(true)
       setTrainingData(prev => ({
         ...prev,
-        pdf: [...prev.pdf, { name: file.name, status: 'processing', size: file.size }]
+        pdf: [...prev.pdf, { 
+          name: file.name, 
+          status: 'processing', 
+          size: file.size,
+          uploadedAt: new Date()
+        }]
       }))
+      
+      // Simulate upload process
+      setTimeout(() => {
+        setTrainingData(prev => ({
+          ...prev,
+          pdf: prev.pdf.map(item => 
+            item.name === file.name 
+              ? { ...item, status: 'completed' }
+              : item
+          )
+        }))
+        setIsUploading(false)
+      }, 2000)
     }
   }
 
@@ -46,9 +85,26 @@ export function Training() {
     if (newUrl.trim()) {
       setTrainingData(prev => ({
         ...prev,
-        web: [...prev.web, { url: newUrl, status: 'processing' }]
+        web: [...prev.web, { 
+          url: newUrl, 
+          status: 'processing',
+          pages: 0,
+          uploadedAt: new Date()
+        }]
       }))
       setNewUrl('')
+      
+      // Simulate processing
+      setTimeout(() => {
+        setTrainingData(prev => ({
+          ...prev,
+          web: prev.web.map(item => 
+            item.url === newUrl 
+              ? { ...item, status: 'completed', pages: Math.floor(Math.random() * 20) + 1 }
+              : item
+          )
+        }))
+      }, 3000)
     }
   }
 
@@ -56,7 +112,11 @@ export function Training() {
     if (newText.trim()) {
       setTrainingData(prev => ({
         ...prev,
-        text: [...prev.text, { content: newText.substring(0, 100) + '...', status: 'completed' }]
+        text: [...prev.text, { 
+          content: newText.length > 100 ? newText.substring(0, 100) + '...' : newText, 
+          status: 'completed',
+          uploadedAt: new Date()
+        }]
       }))
       setNewText('')
     }
@@ -66,7 +126,11 @@ export function Training() {
     if (newQA.question.trim() && newQA.answer.trim()) {
       setTrainingData(prev => ({
         ...prev,
-        qa: [...prev.qa, { ...newQA, id: Date.now() }]
+        qa: [...prev.qa, { 
+          ...newQA, 
+          id: Date.now(),
+          uploadedAt: new Date()
+        }]
       }))
       setNewQA({ question: '', answer: '' })
     }
@@ -77,6 +141,39 @@ export function Training() {
       ...prev,
       [type]: prev[type].filter((_, i) => i !== index)
     }))
+  }
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  const formatTimestamp = (date) => {
+    const now = new Date()
+    const diff = now - date
+    const minutes = Math.floor(diff / (1000 * 60))
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+    if (days > 0) return `${days}d ago`
+    if (hours > 0) return `${hours}h ago`
+    return `${Math.max(1, minutes)}m ago`
+  }
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-500" />
+      case 'processing':
+        return <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+      case 'failed':
+        return <AlertCircle className="w-4 h-4 text-red-500" />
+      default:
+        return <Clock className="w-4 h-4 text-gray-400" />
+    }
   }
 
   const renderTabContent = () => {
@@ -100,25 +197,25 @@ export function Training() {
 
             <div className="space-y-3">
               {trainingData.pdf.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200">
+                <div key={index} className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
                   <div className="p-2 rounded-lg bg-red-100 text-red-600">
                     <FileText className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">{item.name}</p>
-                    <p className="text-xs text-gray-500">{(item.size / 1024).toFixed(1)} KB</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>{formatFileSize(item.size)}</span>
+                      <span>•</span>
+                      <span>{formatTimestamp(item.uploadedAt)}</span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {item.status === 'completed' ? (
-                      <Check className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
-                    )}
+                    {getStatusIcon(item.status)}
                     <button
                       onClick={() => removeItem('pdf', index)}
-                      className="p-1 text-gray-400 hover:text-red-500 touch-target"
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all touch-target"
                     >
-                      <X className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -149,20 +246,33 @@ export function Training() {
 
             <div className="space-y-3">
               {trainingData.web.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200">
+                <div key={index} className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
                   <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
                     <Globe className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">{item.url}</p>
-                    <p className="text-xs text-gray-500 capitalize">{item.status}</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="capitalize">{item.status}</span>
+                      {item.pages > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>{item.pages} pages</span>
+                        </>
+                      )}
+                      <span>•</span>
+                      <span>{formatTimestamp(item.uploadedAt)}</span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => removeItem('web', index)}
-                    className="p-1 text-gray-400 hover:text-red-500 touch-target"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(item.status)}
+                    <button
+                      onClick={() => removeItem('web', index)}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all touch-target"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -191,20 +301,27 @@ export function Training() {
 
             <div className="space-y-3">
               {trainingData.text.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200">
+                <div key={index} className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
                   <div className="p-2 rounded-lg bg-green-100 text-green-600">
                     <Type className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">{item.content}</p>
-                    <p className="text-xs text-gray-500">Text content</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>Text content</span>
+                      <span>•</span>
+                      <span>{formatTimestamp(item.uploadedAt)}</span>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => removeItem('text', index)}
-                    className="p-1 text-gray-400 hover:text-red-500 touch-target"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <button
+                      onClick={() => removeItem('text', index)}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all touch-target"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -240,18 +357,21 @@ export function Training() {
 
             <div className="space-y-3">
               {trainingData.qa.map((item, index) => (
-                <div key={item.id} className="p-4 bg-white rounded-xl border border-gray-200">
+                <div key={item.id || index} className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="w-4 h-4 text-purple-600" />
-                      <span className="font-medium text-gray-900 text-sm">Q&A {index + 1}</span>
+                      <span className="font-medium text-gray-900 text-sm">Q&A Pair {index + 1}</span>
                     </div>
-                    <button
-                      onClick={() => removeItem('qa', index)}
-                      className="p-1 text-gray-400 hover:text-red-500 touch-target"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <button
+                        onClick={() => removeItem('qa', index)}
+                        className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all touch-target"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <div>
@@ -262,6 +382,11 @@ export function Training() {
                       <p className="text-xs text-gray-500 mb-1">Answer:</p>
                       <p className="text-sm text-gray-600">{item.answer}</p>
                     </div>
+                    {item.uploadedAt && (
+                      <div className="pt-2 border-t border-gray-100">
+                        <p className="text-xs text-gray-400">Added {formatTimestamp(item.uploadedAt)}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -276,6 +401,11 @@ export function Training() {
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
+      {/* Training Stats */}
+      <div className="p-4">
+        <TrainingStats trainingData={trainingData} />
+      </div>
+
       {/* Tab Navigation */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 p-4">
         <div className="grid grid-cols-4 gap-2">
@@ -310,14 +440,22 @@ export function Training() {
       <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-white/20 rounded-xl">
-            <Brain className="w-5 h-5" />
+            {isUploading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Brain className="w-5 h-5" />
+            )}
           </div>
           <div className="flex-1">
-            <p className="font-semibold">Training Status</p>
-            <p className="text-sm text-green-100">Ready to train with your data</p>
+            <p className="font-semibold">
+              {isUploading ? 'Processing Data' : 'Training Status'}
+            </p>
+            <p className="text-sm text-green-100">
+              {isUploading ? 'Uploading and processing...' : `${Object.values(trainingData).flat().length} sources ready`}
+            </p>
           </div>
           <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl font-medium transition-all haptic-medium">
-            Start Training
+            {isUploading ? 'Processing...' : 'Start Training'}
           </button>
         </div>
       </div>

@@ -11,7 +11,8 @@ import {
   ArrowRight,
   Activity,
   Clock,
-  Target
+  Target,
+  Brain
 } from 'lucide-react'
 import { getBots } from '../store/actions'
 import { botsSelector, userSelector } from '../store/selectors'

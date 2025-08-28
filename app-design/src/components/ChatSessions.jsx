@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   MessageSquare, 
   Search, 
@@ -9,77 +9,36 @@ import {
   Archive,
   Pin,
   User,
-  Bot
+  Bot,
+  Filter,
+  Plus
 } from 'lucide-react'
 
-const mockSessions = [
-  {
-    id: 1,
-    title: 'Customer Support Chat',
-    lastMessage: 'Thank you for your help!',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    messageCount: 12,
-    status: 'completed',
-    isStarred: false,
-    isPinned: true
-  },
-  {
-    id: 2,
-    title: 'Product Inquiry',
-    lastMessage: 'Can you tell me more about pricing?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    messageCount: 8,
-    status: 'active',
-    isStarred: true,
-    isPinned: false
-  },
-  {
-    id: 3,
-    title: 'Technical Support',
-    lastMessage: 'The issue has been resolved.',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    messageCount: 15,
-    status: 'completed',
-    isStarred: false,
-    isPinned: false
-  },
-  {
-    id: 4,
-    title: 'Billing Question',
-    lastMessage: 'When will my subscription renew?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
-    messageCount: 6,
-    status: 'active',
-    isStarred: false,
-    isPinned: false
-  },
-  {
-    id: 5,
-    title: 'Feature Request',
-    lastMessage: 'Could you add dark mode support?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    messageCount: 9,
-    status: 'completed',
-    isStarred: true,
-    isPinned: false
-  }
-]
-
 export function ChatSessions({ 
-  sessions = mockSessions, 
+  sessions = [], 
   activeSessionId, 
   onSessionSelect, 
-  onSessionDelete 
+  onSessionDelete,
+  onCreateNew
 }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSessionMenu, setSelectedSessionMenu] = useState(null)
+  const [filterStatus, setFilterStatus] = useState('all')
 
   const filteredSessions = sessions.filter(session =>
-    session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    session.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+    const matchesSearch = session.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         session.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = filterStatus === 'all' || session.status === filterStatus
+    return matchesSearch && matchesFilter
 
   const formatTimestamp = (date) => {
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setSelectedSessionMenu(null)
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
+
     const now = new Date()
     const diff = now - date
     const minutes = Math.floor(diff / (1000 * 60))
@@ -118,7 +77,17 @@ export function ChatSessions({
       <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
         <h2 className="text-lg font-bold text-gray-900 mb-3">Chat Sessions</h2>
         
-        {/* Search */}
+      <div className="p-4 border-b border-gray-100 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-gray-900">Chat Sessions</h2>
+          <button
+            onClick={onCreateNew}
+            className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all haptic-medium"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+        
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -128,6 +97,23 @@ export function ChatSessions({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
           />
+        </div>
+        
+        {/* Filter Buttons */}
+        <div className="flex gap-2">
+          {['all', 'active', 'completed'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                filterStatus === status
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 

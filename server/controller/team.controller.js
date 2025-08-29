@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Team from '../models/Team.schema.js';
 import User from '../models/User.schema.js';
 import BotConfig from '../models/BotConfig.schema.js';
+import { sendTeamInvitation } from '../services/emailService.js';
 
 // Get team for a specific bot
 export const getBotTeam = async (req, res) => {
@@ -139,7 +140,23 @@ export const inviteTeamMember = async (req, res) => {
         await team.save();
         await team.populate('members.userId', 'name email profilePicture');
 
-        // TODO: Send invitation email here
+        // Send invitation email
+        try {
+            const inviter = await User.findById(inviterId);
+            const invitationLink = `${process.env.VITE_WEB_URL}/team/accept?botId=${botId}&memberId=${newMember._id}`;
+            
+            await sendTeamInvitation({
+                recipientEmail: email,
+                recipientName: invitedUser.name,
+                inviterName: inviter.name,
+                botName: bot.name,
+                role,
+                invitationLink
+            });
+        } catch (emailError) {
+            console.error('Error sending invitation email:', emailError);
+            // Don't fail the invitation if email fails
+        }
 
         res.status(201).json({ 
             message: 'Team member invited successfully', 

@@ -22,7 +22,6 @@ import { Integrations } from './pages/Integrations';
 import { BotSettings } from './pages/BotSettings';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useEffect } from 'react';
-import { ForgotPassword } from './pages/Forget';
 import { logedInSelector } from './store/global.Selctor';
 import { setLogedIn } from './store/global.Slice';
 import { GetBots, GetUserData } from './store/global.Action';
@@ -68,10 +67,8 @@ function AppLayout() {
   const isAuthPage =
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
-    location.pathname === '/forget' ||
     location.pathname === '/chat' ||
     location.pathname === '/chatbot' ||
-    location.pathname === '/update';
 
   const isLandingPage = location.pathname === '/';
 
@@ -104,8 +101,6 @@ function AppLayout() {
               <Route path="/chatbot" element={<ChatWidget />} />
               <Route path='/chat' element={<ShareChatUI />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/forget" element={<ForgotPassword />} />
-              <Route path="/update" element={<ForgotPassword />} />
               <Route path="/auth-success" element={<AuthHandler />} />
               <Route
                 path="/dashboard"

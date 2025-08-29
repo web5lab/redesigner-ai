@@ -225,7 +225,7 @@ export function Sidebar() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-gray-900 truncate">
-                    {user?.user?.name || 'User'}
+          {activeBot && (
                   </h3>
                   <p className="text-xs text-gray-500">Premium Member</p>
                 </div>
@@ -274,8 +274,20 @@ export function Sidebar() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{selectedBot.name}</p>
-                      <p className="text-xs text-gray-500">AI Assistant</p>
-                    </div>
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                    {activeBot.icon ? (
+                      <img
+                        src={activeBot.icon}
+                        alt={activeBot.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(activeBot.name)}&background=374151&color=ffffff&size=32`;
+                        }}
+                      />
+                    ) : (
+                      <Bot className="w-4 h-4 text-gray-600" />
+                    )}
                   </div>
                 </div>
 
@@ -284,7 +296,7 @@ export function Sidebar() {
                     <NavItem 
                       key={item.name} 
                       item={item} 
-                      isActive={location.pathname === item.href} 
+                    <p className="text-sm font-medium text-gray-900 truncate">{activeBot.name}</p>
                     />
                   ))}
                 </div>

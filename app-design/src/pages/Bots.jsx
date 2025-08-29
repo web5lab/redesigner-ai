@@ -138,7 +138,6 @@ export function Bots() {
                     <option value="Viewer">Viewer</option>
                   </select>
                   <button
-                    onClick={addTeamMember}
                     onClick={(e) => {
                       e.stopPropagation()
                       handleTeamManagement(e, bot)

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Team from '../models/Team.schema.js';
 import User from '../models/User.schema.js';
 import BotConfig from '../models/BotConfig.schema.js';
-import { sendTeamInvitation } from '../services/emailService.js';
+import { sendTeamInvitation, sendWelcomeEmail, sendTeamRemovalNotification, sendRoleUpdateNotification } from '../services/emailService.js';
 
 // Get team for a specific bot
 export const getBotTeam = async (req, res) => {
@@ -143,7 +143,7 @@ export const inviteTeamMember = async (req, res) => {
         // Send invitation email
         try {
             const inviter = await User.findById(inviterId);
-            const invitationLink = `${process.env.VITE_WEB_URL}/team/accept?botId=${botId}&memberId=${newMember._id}`;
+            const invitationLink = `${process.env.VITE_WEB_URL}/teams?action=accept&botId=${botId}&memberId=${newMember._id}&token=${generateInvitationToken(newMember._id)}`;
             
             await sendTeamInvitation({
                 recipientEmail: email,
@@ -196,6 +196,9 @@ export const updateTeamMember = async (req, res) => {
             return res.status(404).json({ message: 'Team member not found' });
         }
 
+        const oldRole = member.role;
+        const oldStatus = member.status;
+
         // Update member
         if (role) member.role = role;
         if (status) member.status = status;
@@ -203,6 +206,35 @@ export const updateTeamMember = async (req, res) => {
 
         await team.save();
         await team.populate('members.userId', 'name email profilePicture');
+
+        // Send notification emails for role changes
+        try {
+            if (role && role !== oldRole) {
+                const updater = await User.findById(userId);
+                const memberUser = await User.findById(member.userId);
+                
+                await sendRoleUpdateNotification({
+                    recipientEmail: member.email,
+                    recipientName: memberUser.name,
+                    botName: (await BotConfig.findById(botId)).name,
+                    oldRole,
+                    newRole: role,
+                    updaterName: updater.name
+                });
+            }
+            
+            if (status === 'active' && oldStatus === 'pending') {
+                await sendWelcomeEmail({
+                    recipientEmail: member.email,
+                    recipientName: (await User.findById(member.userId)).name,
+                    botName: (await BotConfig.findById(botId)).name,
+                    role: member.role
+                });
+            }
+        } catch (emailError) {
+            console.error('Error sending notification email:', emailError);
+            // Don't fail the update if email fails
+        }
 
         res.status(200).json({ 
             message: 'Team member updated successfully', 
@@ -244,6 +276,23 @@ export const removeTeamMember = async (req, res) => {
         // Cannot remove owner
         if (member.userId.toString() === team.ownerId.toString()) {
             return res.status(400).json({ message: 'Cannot remove team owner' });
+        }
+
+        // Send removal notification
+        try {
+            const remover = await User.findById(userId);
+            const memberUser = await User.findById(member.userId);
+            const bot = await BotConfig.findById(botId);
+            
+            await sendTeamRemovalNotification({
+                recipientEmail: member.email,
+                recipientName: memberUser.name,
+                botName: bot.name,
+                removerName: remover.name
+            });
+        } catch (emailError) {
+            console.error('Error sending removal notification:', emailError);
+            // Don't fail the removal if email fails
         }
 
         team.members.pull(memberId);
@@ -373,5 +422,77 @@ export const getTeamPermissions = async (req, res) => {
     } catch (error) {
         console.error('Error fetching permissions:', error);
         res.status(500).json({ message: 'Server error while fetching permissions' });
+    }
+};
+
+// Helper function to generate invitation tokens
+const generateInvitationToken = (memberId) => {
+    // In production, use a proper JWT or secure token
+    return Buffer.from(`${memberId}-${Date.now()}`).toString('base64');
+};
+
+// Accept invitation with token validation
+export const acceptInvitationWithToken = async (req, res) => {
+    try {
+        const { botId, memberId, token } = req.query;
+        const userId = req.user.userId;
+
+        if (!mongoose.Types.ObjectId.isValid(botId) || !mongoose.Types.ObjectId.isValid(memberId)) {
+            return res.status(400).json({ message: 'Invalid Bot ID or Member ID' });
+        }
+
+        // Validate token (basic validation - enhance for production)
+        try {
+            const decodedToken = Buffer.from(token, 'base64').toString();
+            if (!decodedToken.startsWith(memberId)) {
+                throw new Error('Invalid token');
+            }
+        } catch (tokenError) {
+            return res.status(400).json({ message: 'Invalid or expired invitation token' });
+        }
+
+        const team = await Team.findOne({ botId });
+        if (!team) {
+            return res.status(404).json({ message: 'Team not found' });
+        }
+
+        const member = team.members.id(memberId);
+        if (!member) {
+            return res.status(404).json({ message: 'Invitation not found' });
+        }
+
+        if (member.userId.toString() !== userId) {
+            return res.status(403).json({ message: 'This invitation is not for you' });
+        }
+
+        if (member.status !== 'pending') {
+            return res.status(400).json({ message: 'Invitation already processed' });
+        }
+
+        member.status = 'active';
+        member.joinedAt = new Date();
+        await team.save();
+
+        // Send welcome email
+        try {
+            const bot = await BotConfig.findById(botId);
+            await sendWelcomeEmail({
+                recipientEmail: member.email,
+                recipientName: member.name,
+                botName: bot.name,
+                role: member.role
+            });
+        } catch (emailError) {
+            console.error('Error sending welcome email:', emailError);
+        }
+
+        res.status(200).json({ 
+            message: 'Invitation accepted successfully', 
+            team,
+            member
+        });
+    } catch (error) {
+        console.error('Error accepting invitation:', error);
+        res.status(500).json({ message: 'Server error while accepting invitation' });
     }
 };

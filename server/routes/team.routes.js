@@ -8,7 +8,8 @@ import {
     removeTeamMember,
     updateTeamSettings,
     acceptInvitation,
-    getTeamPermissions
+    getTeamPermissions,
+    acceptInvitationWithToken
 } from '../controller/team.controller.js';
 
 const router = express.Router();
@@ -33,6 +34,9 @@ router.put('/bot/:botId/settings', authenticateToken, updateTeamSettings);
 
 // Accept invitation
 router.post('/bot/:botId/accept/:memberId', authenticateToken, acceptInvitation);
+
+// Accept invitation with token (for email links)
+router.get('/accept-invitation', authenticateToken, acceptInvitationWithToken);
 
 // Get team permissions for current user
 router.get('/bot/:botId/permissions', authenticateToken, getTeamPermissions);

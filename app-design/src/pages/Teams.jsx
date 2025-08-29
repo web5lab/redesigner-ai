@@ -26,11 +26,13 @@ import {
   MessageSquare
 } from 'lucide-react'
 import { botsSelector } from '../store/selectors'
+import { CreateBotModal } from '../components/CreateBotModal'
 
 export default function Teams() {
   const dispatch = useDispatch()
   const bots = useSelector(botsSelector)
   const [showInviteModal, setShowInviteModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedBot, setSelectedBot] = useState(null)
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('viewer')
@@ -184,6 +186,11 @@ export default function Teams() {
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
+      {/* Create Bot Modal */}
+      {showCreateModal && (
+        <CreateBotModal onClose={() => setShowCreateModal(false)} />
+      )}
+
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">
         <div className="px-6 py-4">

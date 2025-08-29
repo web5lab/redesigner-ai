@@ -498,22 +498,6 @@ export function Training() {
           </div>
         </div>
       </div>
-
-      {/* Stats Overview */}
-      <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-        <div className="grid grid-cols-4 gap-3">
-          {tabs.map((tab) => (
-            <div key={tab.key} className="text-center">
-              <div className={`inline-flex p-2 rounded-lg bg-gradient-to-r ${tab.gradient} mb-1`}>
-                <tab.icon className="w-4 h-4 text-white" />
-              </div>
-              <div className="text-lg font-bold text-gray-900 dark:text-white">{getTabStats(tab.key)}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">{tab.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Tab Navigation */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
         <div className="flex">
@@ -565,23 +549,6 @@ export function Training() {
           )}
         </div>
       </div>
-
-      {/* Training Tips */}
-      {activeBot && (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white safe-area-bottom">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Training Tips</h3>
-              <p className="text-sm text-blue-100 leading-relaxed">
-                Upload diverse content to improve AI understanding. Use clear, well-structured documents for better results.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

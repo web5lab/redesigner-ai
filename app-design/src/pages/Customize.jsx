@@ -16,7 +16,8 @@ import {
   Moon,
   Bot,
   Send,
-  Loader2
+  Loader2,
+  Plus
 } from 'lucide-react'
 import { activeBotSelector, uiConfigSelector } from '../store/selectors'
 import { setUiConfig } from '../store/slice'

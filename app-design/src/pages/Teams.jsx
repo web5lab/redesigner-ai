@@ -189,13 +189,14 @@ export function Teams() {
         </div>
 
         {/* Role Permissions Info */}
-        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Role Permissions</h3>
           <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
             <p><strong>Admin:</strong> Full access - can manage team, edit bots, and view all data</p>
             <p><strong>Editor:</strong> Can edit bot configurations and training data</p>
             <p><strong>Viewer:</strong> Read-only access to bots and conversations</p>
           </div>
+        </div>
         </div>
       </div>
 

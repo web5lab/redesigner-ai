@@ -260,4 +260,5 @@ export function Teams() {
         </div>
       )}
     </div>
+  );
 }

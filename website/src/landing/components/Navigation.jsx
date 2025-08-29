@@ -49,7 +49,7 @@ export function Navigation() {
               Sign in
             </button>
             <button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/login')}
               className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium transition-all"
             >
               Get started
@@ -85,7 +85,7 @@ export function Navigation() {
                 Sign in
               </button>
               <button 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/login')}
                 className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium text-left"
               >
                 Get started

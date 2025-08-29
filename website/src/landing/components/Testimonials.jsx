@@ -7,21 +7,21 @@ const testimonials = [
     author: "Sarah Johnson",
     role: "Head of Support",
     company: "TechCorp",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+    image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face"
   },
   {
     text: "The mobile app lets our team provide support from anywhere. Game-changer for our distributed team.",
     author: "Michael Chen",
     role: "Customer Success",
     company: "CloudScale",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+    image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face"
   },
   {
     text: "Setup took less than 5 minutes. The AI learned our FAQ instantly and started helping customers right away.",
     author: "Emily Rodriguez",
     role: "Operations Manager",
     company: "StartupXYZ",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+    image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face"
   }
 ];
 

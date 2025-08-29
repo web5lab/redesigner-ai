@@ -58,7 +58,7 @@ export const createBotApi = async ({ data }) => {
             throw err;
         }
     }
-}
+};
 
 
 export const GetBots = createAsyncThunk(
@@ -115,7 +115,7 @@ export const DeleteChatBot = async ({chatBotId}) => {
                 throw err;
             }
         }
-    }
+    };
 
 
 export const addFaq = createAsyncThunk(
@@ -251,7 +251,7 @@ export const updateChatBot = async ({ data, botId }) => {
             throw err;
         }
     }
-}
+};
 
 export const getBotConfig = async ({ botId }) => {
     try {
@@ -262,7 +262,7 @@ export const getBotConfig = async ({ botId }) => {
             throw err;
         }
     }
-}
+};
 
 export const chatApi = createAsyncThunk(
     "global/chatApi",
@@ -298,24 +298,7 @@ export const geminiChatApi = async ({ data }) => {
             throw err;
         }
     }
-}
-
-export const getTeamPermissions = createAsyncThunk(
-    "global/getTeamPermissions",
-    async ({ botId }) => {
-        try {
-            const token = localStorage.getItem('authToken');
-            const response = await axiosInstance.get(`/team/bot/${botId}/permissions`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (err) {
-            throw err;
-        }
-    }
-);
+};
 
 // Team Management Actions
 export const getBotTeam = createAsyncThunk(
@@ -402,6 +385,20 @@ export const removeTeamMember = async ({ botId, memberId }) => {
         return response.data;
     } catch (err) {
         toast.error("Failed to remove team member");
+        throw err;
+    }
+};
+
+export const getTeamPermissions = async ({ botId }) => {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await axiosInstance.get(`/team/bot/${botId}/permissions`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (err) {
         throw err;
     }
 };

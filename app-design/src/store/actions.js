@@ -1,45 +1,156 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import axiosInstance from '../services/axiosInstance'
+import toast from 'react-hot-toast'
 
-// Mock API calls for the prototype
 export const getUserData = createAsyncThunk(
   'global/getUserData',
   async (token) => {
-    // Simulate API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          name: 'John Doe',
-          email: 'john@example.com',
-          profilePicture: null
-        })
-      }, 1000)
-    })
+    try {
+      const response = await axiosInstance.get('/auth/user-data', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return response.data
+    } catch (err) {
+      throw err
+    }
   }
 )
 
 export const getBots = createAsyncThunk(
   'global/getBots',
   async () => {
-    // Simulate API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            _id: '1',
-            name: 'Support Assistant',
-            icon: 'https://ui-avatars.com/api/?name=Support+Assistant&background=3b82f6&color=ffffff&size=48',
-            status: 'active',
-            description: 'Helps with customer support'
-          },
-          {
-            _id: '2',
-            name: 'Sales Bot',
-            icon: 'https://ui-avatars.com/api/?name=Sales+Bot&background=10b981&color=ffffff&size=48',
-            status: 'active',
-            description: 'Assists with sales inquiries'
-          }
-        ])
-      }, 1000)
-    })
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.get('/bot/get-bot', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return response.data
+    } catch (err) {
+      throw err
+    }
   }
 )
+
+export const createBot = createAsyncThunk(
+  'global/createBot',
+  async ({ data }) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.post('/bot/create-bot', data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      toast.success('Bot Created Successfully')
+      return response.data
+    } catch (err) {
+      toast.error('Bot Creation Failed')
+      throw err
+    }
+  }
+)
+
+export const createBotApi = async ({ data }) => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axiosInstance.post('/bot/create-bot', data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    toast.success('Bot Created Successfully')
+    return response.data
+  } catch (err) {
+    toast.error('Bot Creation Failed')
+    throw err
+  }
+}
+
+export const deleteChatBot = async ({ chatBotId }) => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axiosInstance.delete(`/bot/delete-bot/${chatBotId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response.data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const updateChatBot = async ({ data, botId }) => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axiosInstance.post(`/bot/update-bot/${botId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response.data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getChatSessions = createAsyncThunk(
+  'global/getChatSessions',
+  async ({ botId }) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.get(`/chat/get-chat-sessions/${botId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return response.data
+    } catch (err) {
+      throw err
+    }
+  }
+)
+
+export const getChatSession = createAsyncThunk(
+  'global/getChatSession',
+  async ({ sessionId }) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.get(`/chat/get-chat-session/${sessionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return response.data
+    } catch (err) {
+      throw err
+    }
+  }
+)
+
+export const geminiChatApi = async ({ data }) => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axiosInstance.post('/chat/process-chat', data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response.data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getBotConfig = async ({ botId }) => {
+  try {
+    const response = await axiosInstance.get(`/bot/bot-config/${botId}`)
+    return response.data.bot
+  } catch (err) {
+    throw err
+  }
+}

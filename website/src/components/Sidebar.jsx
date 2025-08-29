@@ -263,14 +263,7 @@ export function Sidebar() {
             {/* Bot Navigation */}
             {activeBot && (
               <>
-                <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-200">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{activeBot.name}</p>
-                      <p className="text-xs text-gray-500">Active bot</p>
-                    </div>
-                  </div>
-                </div>
+  
 
                 <div className="space-y-1">
                   {botNavigation.map((item) => (

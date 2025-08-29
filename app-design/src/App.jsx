@@ -64,6 +64,11 @@ function AppLayout() {
               <Training />
             </ProtectedRoute>
           } />
+          <Route path="/customize" element={
+            <ProtectedRoute requiresBot>
+              <Customize />
+            </ProtectedRoute>
+          } />
           <Route path="/teams" element={
             <ProtectedRoute>
               <Teams />

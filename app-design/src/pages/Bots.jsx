@@ -33,7 +33,7 @@ export function Bots() {
 
   const handleBotSelect = (bot) => {
     dispatch(setActiveBot(bot))
-    navigate('/chat')
+    navigate('/customize')
   }
 
   const handleBotDelete = async (e, botId) => {

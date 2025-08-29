@@ -68,7 +68,7 @@ function AppLayout() {
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
     location.pathname === '/chat' ||
-    location.pathname === '/chatbot' ||
+    location.pathname === '/chatbot';
 
   const isLandingPage = location.pathname === '/';
 

@@ -265,21 +265,6 @@ export function Sidebar() {
               <>
                 <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-200">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      {activeBot?.icon ? (
-                        <img
-                          src={activeBot.icon}
-                          alt={activeBot.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(activeBot.name)}&background=374151&color=ffffff&size=32`;
-                          }}
-                        />
-                      ) : (
-                        <Bot className="w-4 h-4 text-gray-600" />
-                      )}
-                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{activeBot.name}</p>
                       <p className="text-xs text-gray-500">Active bot</p>

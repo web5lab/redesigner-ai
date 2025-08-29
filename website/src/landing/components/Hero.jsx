@@ -22,8 +22,8 @@ export const Hero = () => {
           </h1>
           
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-            AI-powered customer support with seamless human handoff. 
-            Deploy in minutes, support customers 24/7.
+            AI-powered customer support with seamless human handoff. Deploy in minutes, 
+            support customers 24/7 from web and mobile app.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -51,8 +51,8 @@ export const Hero = () => {
               <span>10k+ businesses</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>50+ languages</span>
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <span>Mobile app included</span>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@ export const Hero = () => {
                       <div className="flex items-center gap-2 text-orange-700">
                         <Zap className="w-3 h-3" />
                         Connecting you with Sarah from billing...
-                      </div>
+                      Connecting you with Sarah (Mobile App)...
                     </div>
                   </div>
                 </div>

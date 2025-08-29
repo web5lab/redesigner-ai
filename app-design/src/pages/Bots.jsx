@@ -45,14 +45,6 @@ export function Bots() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Assistants</h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">{bots.length} bots available</p>
             </div>
-            
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="relative p-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-            >
-              <Plus className="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-300" />
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-            </button>
           </div>
 
         </div>

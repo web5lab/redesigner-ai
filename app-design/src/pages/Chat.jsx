@@ -22,6 +22,8 @@ import {
   Image,
   FileText,
   Camera
+  ChevronDown,
+  Check
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { addMessage, setInput, setIsTyping, setSessionId } from '../store/slice'
@@ -41,6 +43,7 @@ export function Chat() {
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [sessionMessages, setSessionMessages] = useState({})
+  const [showBotSelector, setShowBotSelector] = useState(false)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
   const imageInputRef = useRef(null)
@@ -59,6 +62,18 @@ export function Chat() {
       loadChatSessions()
     }
   }, [activeBot])
+
+  // Close bot selector when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showBotSelector && !event.target.closest('.relative')) {
+        setShowBotSelector(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showBotSelector])
 
   const loadChatSessions = async () => {
     try {
@@ -407,6 +422,23 @@ export function Chat() {
     }
   }
 
+  const handleBotChange = (bot) => {
+    dispatch(setActiveBot(bot))
+    setShowBotSelector(false)
+    // Reset chat state when switching bots
+    setActiveSessionId(null)
+    setShowSessionsList(true)
+    setSessionMessages({})
+    setChatSessions([])
+    navigate('/chat', { replace: true })
+    // Load new bot's sessions
+    setTimeout(() => {
+      if (bot._id) {
+        loadChatSessions()
+      }
+    }, 100)
+  }
+
   // Sessions List View (Mobile-optimized)
   if (showSessionsList || !activeSession) {
     return (
@@ -422,13 +454,81 @@ export function Chat() {
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {activeBot?.name || 'Chat Sessions'}
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {chatSessions.length} conversations
-                  </p>
+                
+                {/* Bot Selector Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowBotSelector(!showBotSelector)}
+                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl border border-gray-200 dark:border-gray-600 transition-colors min-w-[200px]"
+                  >
+                    <div className="w-8 h-8 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-600 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                      {activeBot?.icon ? (
+                        <img
+                          src={activeBot.icon}
+                          alt={activeBot.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Bot className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                    <div className="flex-1 text-left min-w-0">
+                      <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                        {activeBot?.name || 'Select Bot'}
+                      </h2>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {chatSessions.length} conversations
+                      </p>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showBotSelector ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showBotSelector && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto animate-slide-down">
+                      <div className="p-2">
+                        {bots.map((bot) => (
+                          <button
+                            key={bot._id}
+                            onClick={() => handleBotChange(bot)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                              activeBot?._id === bot._id
+                                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }`}
+                          >
+                            <div className="w-8 h-8 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-600 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                              {bot.icon ? (
+                                <img
+                                  src={bot.icon}
+                                  alt={bot.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Bot className="w-4 h-4 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1 text-left min-w-0">
+                              <h3 className="text-sm font-semibold truncate">{bot.name}</h3>
+                              <p className="text-xs opacity-75 truncate">
+                                {bot.description || 'AI Assistant'}
+                              </p>
+                            </div>
+                            {activeBot?._id === bot._id && (
+                              <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            )}
+                          </button>
+                        ))}
+                        
+                        {bots.length === 0 && (
+                          <div className="p-4 text-center">
+                            <Bot className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No bots available</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <button

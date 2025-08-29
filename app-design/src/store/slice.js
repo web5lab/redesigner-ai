@@ -1,177 +1,131 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
-import axiosInstance from '../services/axiosInstance'
-import toast from 'react-hot-toast'
+import { createSlice } from '@reduxjs/toolkit'
+import { GetUserData, GetBots, createBot, getChatSessions, getChatSession, scrapPdfData, scrapWebsiteUrl } from './actions'
 
-export const GetUserData = createAsyncThunk(
-  'global/getUserData',
-  async (token) => {
-    try {
-      const response = await axiosInstance.get('/auth/user-data', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      return response.data
-    } catch (err) {
-      throw err
-    }
-  }
-)
-
-export const GetBots = createAsyncThunk(
-  'global/getBots',
-  async () => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.get('/bot/get-bot', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      return response.data
-    } catch (err) {
-      throw err
-    }
-  }
-)
-
-export const createBot = createAsyncThunk(
-  'global/createBot',
-  async ({ data }) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.post('/bot/create-bot', data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      toast.success('Bot Created Successfully')
-      return response.data
-    } catch (err) {
-      toast.error('Bot Creation Failed')
-      throw err
-    }
-  }
-)
-
-export const createBotApi = async ({ data }) => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axiosInstance.post('/bot/create-bot', data, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    toast.success('Bot Created Successfully')
-    return response.data
-  } catch (err) {
-    toast.error('Bot Creation Failed')
-    throw err
-  }
+const initialState = {
+  user: null,
+  bots: [],
+  activeBot: null,
+  chatSessions: [],
+  activeChatSession: null,
+  messages: [],
+  loading: false,
+  error: null
 }
 
-export const DeleteChatBot = async ({ chatBotId }) => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axiosInstance.delete(`/bot/delete-bot/${chatBotId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    return response.data
-  } catch (err) {
-    throw err
-  }
-}
-
-export const updateChatBot = async ({ data, botId }) => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axiosInstance.post(`/bot/update-bot/${botId}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    console.log("api data", response)
-    return response.data
-  } catch (err) {
-    throw err
-  }
-}
-
-export const getChatSession = createAsyncThunk(
-  'global/getChatSession',
-  async ({ sessionId }) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.get(`/chat/get-chat-session/${sessionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      console.log("api data", response)
-      return response.data
-    } catch (err) {
-      throw err
+const globalSlice = createSlice({
+  name: 'global',
+  initialState,
+  reducers: {
+    setActiveBot: (state, action) => {
+      state.activeBot = action.payload
+    },
+    setActiveChatSession: (state, action) => {
+      state.activeChatSession = action.payload
+    },
+    addMessage: (state, action) => {
+      state.messages.push(action.payload)
+    },
+    clearMessages: (state) => {
+      state.messages = []
+    },
+    clearError: (state) => {
+      state.error = null
     }
-  }
-)
-
-export const geminiChatApi = async ({ data }) => {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axiosInstance.post('/chat/process-chat', data, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    return response.data
-  } catch (err) {
-    throw err
-  }
-}
-
-export const getBotConfig = async ({ botId }) => {
-  try {
-    const response = await axiosInstance.get(`/bot/bot-config/${botId}`)
-    return response.data.bot
-  } catch (err) {
-    throw err
-  }
-}
-
-export const scrapPdfData = createAsyncThunk(
-  'global/addPdfData',
-  async ({ data }) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.post('/scrap-data/process-pdf', data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  },
+  extraReducers: (builder) => {
+    builder
+      // GetUserData
+      .addCase(GetUserData.pending, (state) => {
+        state.loading = true
+        state.error = null
       })
-      console.log("api data", response)
-      return response.data
-    } catch (err) {
-      throw err
-    }
-  }
-)
-
-export const scrapWebsiteUrl = createAsyncThunk(
-  'global/scrapWebsiteUrl',
-  async ({ url }) => {
-    const token = localStorage.getItem('authToken')
-    try {
-      const response = await axiosInstance.get(`/scrap-data/process-url?url=${url}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      .addCase(GetUserData.fulfilled, (state, action) => {
+        state.loading = false
+        state.user = action.payload.user
       })
-      console.log("api data", response)
-      return response.data
-    } catch (err) {
-      throw err
-    }
+      .addCase(GetUserData.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // GetBots
+      .addCase(GetBots.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(GetBots.fulfilled, (state, action) => {
+        state.loading = false
+        state.bots = action.payload.bots || []
+      })
+      .addCase(GetBots.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // createBot
+      .addCase(createBot.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(createBot.fulfilled, (state, action) => {
+        state.loading = false
+        state.bots.push(action.payload.bot)
+      })
+      .addCase(createBot.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // getChatSessions
+      .addCase(getChatSessions.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(getChatSessions.fulfilled, (state, action) => {
+        state.loading = false
+        state.chatSessions = action.payload.sessions || []
+      })
+      .addCase(getChatSessions.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // getChatSession
+      .addCase(getChatSession.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(getChatSession.fulfilled, (state, action) => {
+        state.loading = false
+        state.activeChatSession = action.payload.session
+        state.messages = action.payload.session?.messages || []
+      })
+      .addCase(getChatSession.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // scrapPdfData
+      .addCase(scrapPdfData.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(scrapPdfData.fulfilled, (state, action) => {
+        state.loading = false
+      })
+      .addCase(scrapPdfData.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
+      // scrapWebsiteUrl
+      .addCase(scrapWebsiteUrl.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(scrapWebsiteUrl.fulfilled, (state, action) => {
+        state.loading = false
+      })
+      .addCase(scrapWebsiteUrl.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+      })
   }
-)
+})
+
+export const { setActiveBot, setActiveChatSession, addMessage, clearMessages, clearError } = globalSlice.actions
+export default globalSlice.reducer

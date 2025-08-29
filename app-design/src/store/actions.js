@@ -174,3 +174,20 @@ export const scrapWebsiteUrl = createAsyncThunk(
     }
   }
 )
+
+export const getChatSessions = createAsyncThunk(
+  'global/getChatSessions',
+  async ({ botId }) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.get(`/chat/get-chat-sessions/${botId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return response.data
+    } catch (err) {
+      throw err
+    }
+  }
+)

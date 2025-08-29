@@ -1,9 +1,35 @@
-import React from 'react';
-import { ArrowRight, Play, Bot, MessageSquare, Users, Smartphone } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { ArrowRight, Play, Bot, MessageSquare, Users, Smartphone, Zap, CheckCircle, X } from 'lucide-react';
 
-export function Hero() {
-  const navigate = useNavigate();
+export default function Hero() {
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showIframe, setShowIframe] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(2);
+
+  const handleSubmit = () => {
+    if (!websiteUrl) {
+      setErrorMessage('Please enter a website URL');
+      return;
+    }
+
+    try {
+      new URL(websiteUrl);
+      setErrorMessage('');
+      setShowIframe(true);
+      setShowChatbot(true);
+    } catch (error) {
+      setErrorMessage('Please enter a valid URL (e.g., https://example.com)');
+    }
+  };
+
+  const handleWatchDemo = () => {
+    setWebsiteUrl('https://example.com');
+    setShowIframe(true);
+    setShowChatbot(true);
+    setErrorMessage('');
+  };
 
   return (
     <section className="relative pt-32 pb-20 px-6">
@@ -21,17 +47,43 @@ export function Hero() {
             Support customers 24/7 from web and mobile app.
           </p>
 
+          {/* Demo Input Section */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex-1 relative w-full">
+                  <input
+                    type="url"
+                    placeholder="Enter your website URL to see the demo"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <Zap className="w-5 h-5 text-gray-400" />
+                  </div>
+                </div>
+                <button
+                  onClick={handleSubmit}
+                  className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 text-lg font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  <span>Try Demo</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+              
+              {errorMessage && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button 
-              onClick={() => navigate('/login')}
-              className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all"
-            >
-              Get started
-              <ArrowRight className="w-4 h-4" />
-            </button>
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors">
               <Play className="w-4 h-4" />
-              Watch demo
+              Or watch overview
             </button>
           </div>
 
@@ -275,6 +327,150 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Website Preview Modal */}
+      {showIframe && (
+        <div className="fixed inset-0 z-[99999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div className="relative w-full h-full max-w-screen-xl max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            {/* Enhanced Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full">
+                  <Play className="w-4 h-4" />
+                  <span className="text-sm font-bold">Live Demo</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 truncate max-w-[calc(100%-200px)]">
+                  {websiteUrl || 'Demo Website'}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowIframe(false)}
+                className="p-3 text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
+                title="Close preview"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 relative overflow-hidden">
+              <iframe
+                src={websiteUrl || 'https://example.com'}
+                className="w-full h-full border-none"
+                title="Website Preview"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+
+              {/* Enhanced Chatbot Overlay */}
+              {showChatbot ? (
+                <div className="absolute bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 overflow-hidden">
+                  {/* Chat Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                        <Bot className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">AI Support</div>
+                        <div className="text-sm text-green-600 flex items-center gap-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          Online
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowChatbot(false)}
+                      className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Chat Messages */}
+                  <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3">
+                        <p className="text-sm text-gray-900">
+                          Hello! I'm your AI assistant. How can I help you today?
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3 justify-end">
+                      <div className="bg-blue-500 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-xs">
+                        <p className="text-sm">
+                          I'm having trouble with my recent order
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="bg-gray-100 rounded-2xl rounded-tl-md px-4 py-3">
+                        <p className="text-sm text-gray-900">
+                          I'd be happy to help with your order. Can you provide your order number?
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="bg-orange-50 border border-orange-200 rounded-2xl rounded-tl-md px-4 py-3">
+                        <p className="text-sm text-orange-700">
+                          <CheckCircle className="w-4 h-4 inline mr-2" />
+                          Connecting you to a human agent...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Input Area */}
+                  <div className="p-4 border-t border-gray-100 bg-gray-50">
+                    <div className="flex gap-2">
+                      <input 
+                        className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        placeholder="Type your message..."
+                        disabled
+                      />
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl transition-colors">
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="absolute bottom-6 right-6 z-50">
+                  <button
+                    onClick={() => {
+                      setShowChatbot(true);
+                      setUnreadCount(0);
+                    }}
+                    className="group relative w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                    title="Open chat"
+                  >
+                    <MessageSquare className="w-7 h-7 text-white" />
+                    
+                    {unreadCount > 0 && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white animate-bounce">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </div>
+                    )}
+                    
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 animate-ping opacity-20"></div>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

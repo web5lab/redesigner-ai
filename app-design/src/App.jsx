@@ -9,6 +9,7 @@ import { BottomNavigation } from './components/BottomNavigation'
 // Pages
 import { Bots } from './pages/Bots'
 import { Chat } from './pages/Chat'
+import { Training } from './pages/Training'
 import { Login } from './pages/Login'
 import { Settings } from './pages/Settings'
 import Teams from './pages/Teams'
@@ -56,6 +57,11 @@ function AppLayout() {
           <Route path="/chat" element={
             <ProtectedRoute requiresBot>
               <Chat />
+            </ProtectedRoute>
+          } />
+          <Route path="/training" element={
+            <ProtectedRoute requiresBot>
+              <Training />
             </ProtectedRoute>
           } />
           <Route path="/teams" element={

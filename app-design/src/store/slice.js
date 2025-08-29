@@ -3,11 +3,18 @@ import { GetUserData, GetBots, createBot, getChatSessions, getChatSession, scrap
 
 const initialState = {
   user: null,
+  logedIn: false,
   bots: [],
   activeBot: null,
   chatSessions: [],
   activeChatSession: null,
   messages: [],
+  uiConfig: {
+    messages: [],
+    input: '',
+    isTyping: false,
+    sessionId: null
+  },
   loading: false,
   error: null
 }
@@ -18,15 +25,47 @@ const globalSlice = createSlice({
   reducers: {
     setActiveBot: (state, action) => {
       state.activeBot = action.payload
+      state.uiConfig.sessionId = null
+      state.uiConfig.messages = []
     },
     setActiveChatSession: (state, action) => {
       state.activeChatSession = action.payload
     },
+    setInput: (state, action) => {
+      state.uiConfig.input = action.payload
+    },
+    setIsTyping: (state, action) => {
+      state.uiConfig.isTyping = action.payload
+    },
+    setSessionId: (state, action) => {
+      state.uiConfig.sessionId = action.payload
+    },
+    setUiConfig: (state, action) => {
+      state.uiConfig = { ...state.uiConfig, ...action.payload }
+    },
+    setLogout: (state) => {
+      state.user = null
+      state.logedIn = false
+      state.activeBot = null
+      state.activeChatSession = null
+      state.messages = []
+      state.uiConfig = {
+        messages: [],
+        input: '',
+        isTyping: false,
+        sessionId: null
+      }
+    },
+    resetMessages: (state) => {
+      state.uiConfig.messages = []
+    },
     addMessage: (state, action) => {
       state.messages.push(action.payload)
+      state.uiConfig.messages.push(action.payload)
     },
     clearMessages: (state) => {
       state.messages = []
+      state.uiConfig.messages = []
     },
     clearError: (state) => {
       state.error = null
@@ -42,6 +81,7 @@ const globalSlice = createSlice({
       .addCase(GetUserData.fulfilled, (state, action) => {
         state.loading = false
         state.user = action.payload.user
+        state.logedIn = true
       })
       .addCase(GetUserData.rejected, (state, action) => {
         state.loading = false
@@ -95,6 +135,8 @@ const globalSlice = createSlice({
         state.loading = false
         state.activeChatSession = action.payload.session
         state.messages = action.payload.session?.messages || []
+        state.uiConfig.messages = action.payload.session?.messages || []
+        state.uiConfig.sessionId = action.payload.session?.id || null
       })
       .addCase(getChatSession.rejected, (state, action) => {
         state.loading = false
@@ -127,5 +169,17 @@ const globalSlice = createSlice({
   }
 })
 
-export const { setActiveBot, setActiveChatSession, addMessage, clearMessages, clearError } = globalSlice.actions
+export const { 
+  setActiveBot, 
+  setActiveChatSession, 
+  setInput, 
+  setIsTyping, 
+  setSessionId, 
+  setUiConfig, 
+  setLogout, 
+  resetMessages, 
+  addMessage, 
+  clearMessages, 
+  clearError 
+} = globalSlice.actions
 export default globalSlice.reducer

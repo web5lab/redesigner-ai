@@ -12,7 +12,7 @@ export function ProtectedRoute({ children, requiresBot = false }) {
   }
 
   if (requiresBot && !activeBot) {
-    return <Navigate to="/bots" replace />
+    return <Navigate to="/" replace />
   }
 
   return children

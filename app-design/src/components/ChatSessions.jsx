@@ -10,7 +10,6 @@ import {
   Pin,
   User,
   Bot,
-  Filter,
   Plus
 } from 'lucide-react'
 
@@ -23,13 +22,11 @@ export function ChatSessions({
 }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSessionMenu, setSelectedSessionMenu] = useState(null)
-  const [filterStatus, setFilterStatus] = useState('all')
 
   const filteredSessions = sessions.filter(session => {
     const matchesSearch = session.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          session.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesFilter = filterStatus === 'all' || session.status === filterStatus
-    return matchesSearch && matchesFilter
+    return matchesSearch
   })
 
   const formatTimestamp = (date) => {
@@ -57,15 +54,12 @@ export function ChatSessions({
         onSessionDelete?.(sessionId)
         break
       case 'star':
-        // Handle star toggle
         console.log('Toggle star for session:', sessionId)
         break
       case 'archive':
-        // Handle archive
         console.log('Archive session:', sessionId)
         break
       case 'pin':
-        // Handle pin toggle
         console.log('Toggle pin for session:', sessionId)
         break
     }
@@ -75,93 +69,63 @@ export function ChatSessions({
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <h2 className="text-lg font-bold text-gray-900 mb-3">Chat Sessions</h2>
-        
-      <div className="p-4 border-b border-gray-100 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">Chat Sessions</h2>
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-gray-900">Chat Sessions</h2>
           <button
             onClick={onCreateNew}
-            className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all haptic-medium"
+            className="p-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors touch-target"
           >
             <Plus className="w-4 h-4" />
           </button>
         </div>
         
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-sm"
           />
         </div>
-        
-        {/* Filter Buttons */}
-        <div className="flex gap-2">
-          {['all', 'active', 'completed'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                filterStatus === status
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
       </div>
 
       {/* Sessions List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {filteredSessions.length > 0 ? (
-          <div className="p-2">
+          <div className="divide-y divide-gray-100">
             {filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className={`relative p-4 m-2 rounded-2xl border transition-all haptic-light ${
-                  activeSessionId === session.id
-                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-lg'
-                    : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-gray-300'
+                className={`relative p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                  activeSessionId === session.id ? 'bg-gray-50 border-r-2 border-gray-900' : ''
                 }`}
                 onClick={() => onSessionSelect?.(session)}
               >
                 <div className="flex items-start gap-3">
                   {/* Session Icon */}
                   <div className="relative">
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md ${
-                      session.status === 'active' 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
-                        : 'bg-gradient-to-r from-blue-500 to-indigo-600'
-                    }`}>
-                      <MessageSquare className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                      <MessageSquare className="w-5 h-5 text-gray-600" />
                     </div>
                     
-                    {/* Status indicators */}
                     {session.isPinned && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
                         <Pin className="w-2 h-2 text-white" />
                       </div>
                     )}
                     
                     {session.status === 'active' && (
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                     )}
                   </div>
 
                   {/* Session Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className={`font-bold truncate ${
-                        activeSessionId === session.id ? 'text-blue-700' : 'text-gray-900'
-                      }`}>
+                      <h3 className="font-medium text-gray-900 truncate">
                         {session.title}
                       </h3>
                       
@@ -203,14 +167,14 @@ export function ChatSessions({
 
                 {/* Action Menu */}
                 {selectedSessionMenu === session.id && (
-                  <div className="absolute top-12 right-4 bg-white rounded-xl shadow-xl border border-gray-200 z-10 min-w-[140px] animate-slide-down">
-                    <div className="py-2">
+                  <div className="absolute top-12 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-10 min-w-[140px]">
+                    <div className="py-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
                           handleSessionAction('star', session.id)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Star className="w-4 h-4" />
                         {session.isStarred ? 'Unstar' : 'Star'}
@@ -221,7 +185,7 @@ export function ChatSessions({
                           e.stopPropagation()
                           handleSessionAction('pin', session.id)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Pin className="w-4 h-4" />
                         {session.isPinned ? 'Unpin' : 'Pin'}
@@ -232,7 +196,7 @@ export function ChatSessions({
                           e.stopPropagation()
                           handleSessionAction('archive', session.id)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Archive className="w-4 h-4" />
                         Archive
@@ -245,7 +209,7 @@ export function ChatSessions({
                           e.stopPropagation()
                           handleSessionAction('delete', session.id)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                         Delete
@@ -259,7 +223,7 @@ export function ChatSessions({
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <MessageSquare className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -274,7 +238,7 @@ export function ChatSessions({
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
-                  className="mt-3 text-blue-600 font-medium text-sm"
+                  className="mt-3 text-gray-900 font-medium text-sm hover:underline"
                 >
                   Clear search
                 </button>

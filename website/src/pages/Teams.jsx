@@ -1,26 +1,32 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Plus, 
-  Mail, 
-  Edit3, 
-  Eye, 
-  Trash2, 
-  X,
-  UserPlus,
   Search,
   Bot,
-  ChevronDown,
-  ChevronRight,
-  MessageSquare,
-  ArrowLeft
+  ArrowLeft,
+  UserPlus,
+  Mail,
+  Shield,
+  Eye,
+  Edit3
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { botsSelector, activeBotSelector, currentTeamSelector, teamPermissionsSelector } from '../store/global.Selctor';
-import { CreateBotModal } from '../components/CreateBotModal';
-import { GetBots, getBotTeam, inviteTeamMember, updateTeamMember, removeTeamMember, getTeamPermissions } from '../store/global.Action';
+import { 
+  botsSelector, 
+  activeBotSelector, 
+  currentTeamSelector, 
+  teamPermissionsSelector 
+} from '../store/global.Selctor';
+import { 
+  GetBots, 
+  getBotTeam, 
+  inviteTeamMember, 
+  updateTeamMember, 
+  removeTeamMember, 
+  getTeamPermissions 
+} from '../store/global.Action';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { TeamInviteModal } from '../components/TeamInviteModal';
 import toast from 'react-hot-toast';
@@ -33,11 +39,10 @@ export function Teams() {
   const activeBot = useSelector(activeBotSelector);
   const currentTeam = useSelector(currentTeamSelector);
   const teamPermissions = useSelector(teamPermissionsSelector);
+  
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedBot, setSelectedBot] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedBots, setExpandedBots] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -64,7 +69,6 @@ export function Teams() {
 
   const handleAcceptInvitation = async (botId, memberId, token) => {
     try {
-      // Call API to accept invitation
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/team/accept-invitation?botId=${botId}&memberId=${memberId}&token=${token}`, {
         method: 'GET',
         headers: {
@@ -74,7 +78,6 @@ export function Teams() {
       
       if (response.ok) {
         toast.success('Invitation accepted successfully!');
-        // Refresh team data
         if (activeBot) {
           dispatch(getBotTeam({ botId: activeBot._id }));
         }
@@ -128,36 +131,6 @@ export function Teams() {
     }
   };
 
-  const toggleBotExpansion = (botId) => {
-    setExpandedBots(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(botId)) {
-        newSet.delete(botId);
-      } else {
-        newSet.add(botId);
-      }
-      return newSet;
-    });
-  };
-
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800';
-      case 'editor': return 'bg-blue-100 text-blue-800';
-      case 'viewer': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'online': return 'bg-green-500';
-      case 'away': return 'bg-yellow-500';
-      case 'offline': return 'bg-gray-400';
-      default: return 'bg-gray-400';
-    }
-  };
-
   const getTotalMembers = () => {
     return currentTeam?.members?.length || 0;
   };
@@ -173,17 +146,9 @@ export function Teams() {
 
   const canInviteMembers = teamPermissions?.canInvite || false;
   const canRemoveMembers = teamPermissions?.canRemoveMembers || false;
-  const canUpdateSettings = teamPermissions?.canUpdateSettings || false;
-
-  const selectedBotData = activeBot;
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Create Bot Modal */}
-      {showCreateModal && (
-        <CreateBotModal onClose={() => setShowCreateModal(false)} />
-      )}
-
       {/* Header */}
       <header className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
@@ -228,8 +193,8 @@ export function Teams() {
           </div>
         ) : (
           <>
-        {/* Search */}
-        <div className="mb-8">
+            {/* Search and Header */}
+            <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">
                   {activeBot.name} Team ({getTotalMembers()} members)
@@ -247,17 +212,18 @@ export function Teams() {
                   </button>
                 )}
               </div>
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search team members..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-            />
-          </div>
-        </div>
+              
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search team members..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                />
+              </div>
+            </div>
 
             {/* Team Members List */}
             <div className="bg-white border border-gray-200 rounded-lg">
@@ -270,30 +236,30 @@ export function Teams() {
                         onUpdateRole={handleUpdateMemberRole}
                         onRemove={handleRemoveMember}
                         canEdit={canRemoveMembers}
-                        isOwner={member.userId === currentTeam.ownerId}
+                        isOwner={member.userId === currentTeam?.ownerId}
                       />
                     </div>
                   ))}
                 </div>
               ) : (
-            <div className="text-center py-20">
+                <div className="text-center py-20">
                   <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
                     <Users className="w-8 h-8 text-gray-400" />
-              </div>
+                  </div>
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">No team members</h4>
-              <p className="text-gray-500 mb-8">
+                  <p className="text-gray-500 mb-8">
                     This bot doesn't have any team members yet
-              </p>
+                  </p>
                   {canInviteMembers && (
-              <button
-                        onClick={() => {
-                          setSelectedBot(activeBot._id);
-                          setShowInviteModal(true);
-                        }}
-                        className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
-              >
-                        Invite First Member
-              </button>
+                    <button
+                      onClick={() => {
+                        setSelectedBot(activeBot._id);
+                        setShowInviteModal(true);
+                      }}
+                      className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+                    >
+                      Invite First Member
+                    </button>
                   )}
                 </div>
               )}
@@ -309,10 +275,9 @@ export function Teams() {
             setSelectedBot(null);
           }}
           onInvite={handleInviteMember}
-          botName={selectedBotData?.name}
+          botName={activeBot?.name}
           isLoading={isLoading}
         />
-        )}
       </div>
     </div>
   );

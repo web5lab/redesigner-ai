@@ -401,4 +401,3 @@ export const getTeamPermissions = async ({ botId }) => {
     } catch (err) {
         throw err;
     }
-};

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Hero } from '../components/Hero';
+import { AppFeatures } from '../components/AppFeatures';
 import { Features } from '../components/Features';
 import { Pricing } from '../components/Pricing';
 import { Testimonials } from '../components/Testimonials';
@@ -12,6 +13,7 @@ export function HomePage() {
     <>
       <Hero />
       <Stats />
+      <AppFeatures />
       <Features />
       <HowItWorks />
       <Integration />

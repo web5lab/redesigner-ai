@@ -21,6 +21,9 @@ function AppLayout() {
   const isAuthPage = location.pathname === '/login'
   const isLoggedIn = useSelector(logedInSelector)
   
+  // Check if we're in a chat session (not just the chat list)
+  const isInChatSession = location.pathname === '/chat' && location.search.includes('session=')
+  
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <main className="flex-1 overflow-hidden">
@@ -49,8 +52,8 @@ function AppLayout() {
         </Routes>
       </main>
       
-      {/* Bottom Navigation - Only show when logged in, not on auth pages, and not in chat */}
-      {isLoggedIn && !isAuthPage && location.pathname !== '/chat' && <BottomNavigation />}
+      {/* Bottom Navigation - Only show when logged in, not on auth pages, and not in chat session */}
+      {isLoggedIn && !isAuthPage && !isInChatSession && <BottomNavigation />}
     </div>
   )
 }

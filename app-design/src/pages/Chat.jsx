@@ -269,6 +269,8 @@ export function Chat() {
   const openSession = (sessionId) => {
     setActiveSessionId(sessionId)
     setShowSessionsList(false)
+    // Update URL to indicate we're in a chat session
+    navigate(`/chat?session=${sessionId}`, { replace: true })
     // Mark as read
     setChatSessions(prev => prev.map(session => 
       session.id === sessionId ? { ...session, unread: 0 } : session
@@ -278,6 +280,8 @@ export function Chat() {
   const closeSession = () => {
     setActiveSessionId(null)
     setShowSessionsList(true)
+    // Remove session parameter from URL
+    navigate('/chat', { replace: true })
   }
 
   const deleteSession = (sessionId) => {

@@ -49,8 +49,8 @@ function AppLayout() {
         </Routes>
       </main>
       
-      {/* Bottom Navigation - Only show when logged in and not on auth pages */}
-      {isLoggedIn && !isAuthPage && <BottomNavigation />}
+      {/* Bottom Navigation - Only show when logged in, not on auth pages, and not in chat */}
+      {isLoggedIn && !isAuthPage && location.pathname !== '/chat' && <BottomNavigation />}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Play, Sparkles, Zap, Crown, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, Play, Sparkles, Zap, Crown, Star, CheckCircle, Headphones, Users, Smartphone, Clock, Globe, Shield } from 'lucide-react';
 
 export const Hero = () => {
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -54,16 +54,16 @@ export const Hero = () => {
             <div className="space-y-4">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight">
                 <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                  Your Website's
+                  AI-Powered
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  AI Chatbot,
+                  Customer Support
                 </span>
                 <br />
                 <span className="relative">
                   <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Built in Seconds
+                    With Human Touch
                   </span>
                   <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
                 </span>
@@ -72,18 +72,18 @@ export const Hero = () => {
 
             {/* Enhanced Description */}
             <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Transform your website with an intelligent AI chatbot that understands your business, 
-              <span className="font-semibold text-blue-600"> answers visitor questions instantly</span>, 
-              and delights customers 24/7.
+              Deliver exceptional customer support with AI that learns from your business, 
+              <span className="font-semibold text-blue-600"> seamlessly hands off to human agents</span>, 
+              and provides support anywhere, anytime through our mobile app.
             </p>
 
             {/* Features List */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto lg:mx-0">
               {[
-                'Instant Setup',
-                'Smart Learning',
-                '24/7 Availability',
-                'Custom Branding'
+                'AI + Human Support',
+                'Mobile App Access',
+                'Smart Escalation',
+                'Global Coverage'
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-white/50 shadow-sm">
                   <div className="p-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full">
@@ -94,20 +94,60 @@ export const Hero = () => {
               ))}
             </div>
 
+            {/* Support Features */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Headphones className="w-5 h-5 text-blue-600" />
+                Complete Support Solution
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg">
+                    <Users className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">AI + Human</p>
+                    <p className="text-xs text-gray-600">Seamless handoff</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
+                    <Smartphone className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">Mobile App</p>
+                    <p className="text-xs text-gray-600">Support anywhere</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                    <Clock className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">24/7 Available</p>
+                    <p className="text-xs text-gray-600">Never miss a customer</p>
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Enhanced CTA Section */}
             <div className="space-y-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Start Your Customer Support Revolution</h3>
+                  <p className="text-gray-600">Enter your website URL to create an intelligent support bot</p>
+                </div>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="flex-1 relative">
                     <input
                       type="url"
-                      placeholder="Enter your website URL"
+                      placeholder="https://yourwebsite.com"
                       value={websiteUrl}
                       onChange={(e) => setWebsiteUrl(e.target.value)}
                       className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all bg-white/80 backdrop-blur-sm"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <Zap className="w-5 h-5 text-gray-400" />
+                      <Globe className="w-5 h-5 text-gray-400" />
                     </div>
                   </div>
                   <button
@@ -115,7 +155,7 @@ export const Hero = () => {
                     className="group relative w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                    <span className="relative">Create My Bot</span>
+                    <span className="relative">Create Support Bot</span>
                     <ArrowRight className="w-5 h-5 relative group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -130,6 +170,10 @@ export const Hero = () => {
               {/* Social Proof */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <span className="font-medium">Enterprise-grade security</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[1,2,3,4].map((i) => (
                       <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
@@ -137,13 +181,13 @@ export const Hero = () => {
                       </div>
                     ))}
                   </div>
-                  <span className="font-medium">10,000+ businesses trust us</span>
+                  <span className="font-medium">10,000+ support teams</span>
                 </div>
                 <div className="flex items-center gap-1">
                   {[1,2,3,4,5].map((i) => (
                     <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
-                  <span className="ml-2 font-medium">4.9/5 rating</span>
+                  <span className="ml-2 font-medium">4.9/5 support rating</span>
                 </div>
               </div>
             </div>
@@ -152,6 +196,38 @@ export const Hero = () => {
           {/* Right Column: Enhanced Demo */}
           <div className="relative flex justify-center items-center">
             <div className="relative">
+              {/* Mobile App Preview */}
+              <div className="absolute -left-20 top-20 w-48 h-96 bg-gradient-to-br from-gray-900 to-blue-900 rounded-3xl shadow-2xl transform -rotate-12 hover:rotate-0 transition-transform duration-700 overflow-hidden border-4 border-gray-800">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 text-white">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
+                      <Smartphone className="w-3 h-3" />
+                    </div>
+                    <span className="text-sm font-bold">Mobile Support</span>
+                  </div>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="bg-white/10 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                      <span className="text-white text-xs font-medium">Agent Available</span>
+                    </div>
+                    <p className="text-white/80 text-xs">Support team ready to help</p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="bg-blue-500 text-white p-2 rounded-lg text-xs">
+                      AI: How can I help you today?
+                    </div>
+                    <div className="bg-white/20 text-white p-2 rounded-lg text-xs">
+                      User: Need help with billing
+                    </div>
+                    <div className="bg-orange-500 text-white p-2 rounded-lg text-xs">
+                      Transferring to human agent...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Main Chat Demo */}
               <div className="w-96 h-[600px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200 transform rotate-3 hover:rotate-0 transition-transform duration-700 ease-in-out">
                 <iframe src='https://customerbot.in/chatbot' className='h-full w-full rounded-3xl' />
@@ -161,23 +237,29 @@ export const Hero = () => {
               <div className="absolute -top-6 -left-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  Online
+                  Support Online
                 </div>
               </div>
 
               <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4" />
-                  AI Powered
+                  <Users className="w-4 h-4" />
+                  Human Backup
                 </div>
               </div>
 
-              <div className="absolute top-1/2 -right-12 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                24/7
+              <div className="absolute top-1/2 -right-16 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
+                <div className="flex items-center gap-1">
+                  <Smartphone className="w-3 h-3" />
+                  Mobile
+                </div>
               </div>
 
-              <div className="absolute top-1/4 -left-12 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                Instant
+              <div className="absolute top-1/4 -left-16 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  24/7
+                </div>
               </div>
             </div>
           </div>

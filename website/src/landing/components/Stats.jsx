@@ -1,18 +1,18 @@
 import React from 'react';
-import { Users, MessageSquare, Clock, Globe, TrendingUp, Zap } from 'lucide-react';
+import { Users, MessageSquare, Clock, Zap } from 'lucide-react';
 
 const stats = [
   {
-    number: '50K+',
+    number: '10K+',
     label: 'Support Teams',
-    description: 'Trust CustomerBot worldwide',
+    description: 'Trust CustomerBot',
     icon: Users,
     color: 'text-blue-600'
   },
   {
-    number: '10M+',
+    number: '5M+',
     label: 'Conversations',
-    description: 'Handled every month',
+    description: 'Handled monthly',
     icon: MessageSquare,
     color: 'text-green-600'
   },
@@ -26,7 +26,7 @@ const stats = [
   {
     number: '99.9%',
     label: 'Uptime',
-    description: 'Reliable service guarantee',
+    description: 'Service guarantee',
     icon: Zap,
     color: 'text-orange-600'
   }
@@ -34,18 +34,18 @@ const stats = [
 
 export function Stats() {
   return (
-    <section className="py-16 bg-gray-50 border-y border-gray-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
+    <section className="py-12 sm:py-16 bg-gray-50 border-y border-gray-200">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="flex items-center justify-center mb-4">
-                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-100 flex items-center justify-center`}>
-                  <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
+              <div className="flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+                  <stat.icon className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 ${stat.color}`} />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{stat.number}</div>
-              <div className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{stat.label}</div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">{stat.number}</div>
+              <div className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 mb-1">{stat.label}</div>
               <div className="text-xs sm:text-sm text-gray-600">{stat.description}</div>
             </div>
           ))}

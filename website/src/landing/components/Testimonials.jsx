@@ -27,23 +27,23 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+    <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Loved by support teams
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 px-4">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed">
             See what our customers have to say about their experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
-              <div className="flex gap-1 mb-4">
+            <div key={index} className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all">
+              <div className="flex gap-1 mb-3 sm:mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
                 ))}
               </div>
               
@@ -55,7 +55,7 @@ export function Testimonials() {
                 <img
                   src={testimonial.image}
                   alt={testimonial.author}
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-200"
                 />
                 <div>
                   <div className="text-sm sm:text-base font-medium text-gray-900">{testimonial.author}</div>

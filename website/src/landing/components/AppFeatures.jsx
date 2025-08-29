@@ -13,7 +13,8 @@ import {
   Clock,
   Globe,
   Headphones,
-  Download
+  Download,
+  Star
 } from 'lucide-react';
 
 const mobileFeatures = [
@@ -58,43 +59,43 @@ const appStats = [
 
 export function AppFeatures() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Mobile app for support teams
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Manage customer support from anywhere with our native mobile app. 
             Respond to customers and collaborate with your team on the go.
           </p>
         </div>
 
         {/* App Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-12 sm:mb-16">
           {appStats.map((stat, index) => (
             <div
               key={index}
-              className="text-center p-4 sm:p-6 bg-gray-50 rounded-lg border border-gray-200"
+              className="text-center p-4 sm:p-6 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-gray-200 shadow-sm">
                 <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
               <div className="text-xs sm:text-sm text-gray-600">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Mobile App Preview */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-12 sm:mb-16">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16">
           {/* Left - Mobile Screenshots */}
-          <div className="relative">
-            <div className="flex gap-3 sm:gap-6 justify-center">
+          <div className="relative order-2 lg:order-1">
+            <div className="flex gap-4 sm:gap-6 justify-center">
               {/* Chat List Screenshot */}
-              <div className="w-48 sm:w-64 h-[400px] sm:h-[500px] bg-gray-900 rounded-2xl sm:rounded-3xl p-2 sm:p-3 shadow-lg">
-                <div className="w-full h-full bg-white rounded-2xl overflow-hidden">
+              <div className="w-40 sm:w-48 lg:w-56 h-80 sm:h-96 lg:h-[450px] bg-gray-900 rounded-2xl lg:rounded-3xl p-2 sm:p-3 shadow-xl">
+                <div className="w-full h-full bg-white rounded-xl lg:rounded-2xl overflow-hidden">
                   {/* Status Bar */}
                   <div className="h-6 sm:h-8 bg-gray-900 flex items-center justify-center">
                     <div className="text-white text-xs sm:text-sm font-medium">9:41 AM</div>
@@ -109,7 +110,7 @@ export function AppFeatures() {
                   {/* Chat List */}
                   <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -121,7 +122,7 @@ export function AppFeatures() {
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -133,7 +134,7 @@ export function AppFeatures() {
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -147,8 +148,8 @@ export function AppFeatures() {
               </div>
 
               {/* Chat Interface Screenshot */}
-              <div className="w-48 sm:w-64 h-[400px] sm:h-[500px] bg-gray-900 rounded-2xl sm:rounded-3xl p-2 sm:p-3 shadow-lg">
-                <div className="w-full h-full bg-white rounded-2xl overflow-hidden">
+              <div className="w-40 sm:w-48 lg:w-56 h-80 sm:h-96 lg:h-[450px] bg-gray-900 rounded-2xl lg:rounded-3xl p-2 sm:p-3 shadow-xl">
+                <div className="w-full h-full bg-white rounded-xl lg:rounded-2xl overflow-hidden">
                   {/* Status Bar */}
                   <div className="h-6 sm:h-8 bg-gray-900 flex items-center justify-center">
                     <div className="text-white text-xs sm:text-sm font-medium">9:41 AM</div>
@@ -197,7 +198,7 @@ export function AppFeatures() {
                       </div>
                       <div className="bg-green-50 border border-green-200 rounded-lg px-2 sm:px-3 py-1 sm:py-2 text-xs">
                         <CheckCircle className="w-2 h-2 sm:w-3 sm:h-3 inline mr-1 text-green-600" />
-                        <span className="text-green-700">Issue resolved successfully</span>
+                        <span className="text-green-700">Issue resolved</span>
                       </div>
                     </div>
                   </div>
@@ -206,7 +207,7 @@ export function AppFeatures() {
                   <div className="p-2 sm:p-3 border-t border-gray-200">
                     <div className="flex gap-1 sm:gap-2">
                       <input
-                        className="flex-1 px-2 sm:px-3 py-1 sm:py-2 border border-gray-200 rounded-lg text-xs"
+                        className="flex-1 px-2 sm:px-3 py-1 sm:py-2 border border-gray-200 rounded-lg text-xs bg-gray-50"
                         placeholder="Type a message..."
                         disabled
                       />
@@ -221,8 +222,8 @@ export function AppFeatures() {
           </div>
 
           {/* Right - Content */}
-          <div>
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
+          <div className="order-1 lg:order-2">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
               Everything you need in your pocket
             </h3>
             <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed">
@@ -240,7 +241,7 @@ export function AppFeatures() {
                 'View real-time analytics'
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
                   <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                 </div>
               ))}
@@ -248,13 +249,13 @@ export function AppFeatures() {
 
             {/* Download Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+              <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                 <Download className="w-4 h-4" />
-                App Store
+                <span>App Store</span>
               </button>
-              <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+              <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                 <Download className="w-4 h-4" />
-                Google Play
+                <span>Google Play</span>
               </button>
             </div>
           </div>
@@ -267,7 +268,7 @@ export function AppFeatures() {
               key={index}
               className="p-4 sm:p-6 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center mb-3 sm:mb-4 border border-gray-200 shadow-sm">
                 <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
               </div>
               <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">

@@ -21,23 +21,23 @@ const apiFeatures = [
 
 export function Integration() {
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+    <section className="py-16 sm:py-20 lg:py-24 bg-white">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Integrate with your existing tools
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Connect CustomerBot with your favorite platforms and tools. Works everywhere your customers are.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Platform Integrations */}
           <div>
             <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-4 sm:mb-6">
               <Puzzle className="w-4 h-4" />
-              Platform Integrations
+              <span>Platform Integrations</span>
             </div>
             
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
@@ -57,18 +57,18 @@ export function Integration() {
             </div>
 
             <button className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm sm:text-base">
-              View all integrations
+              <span>View all integrations</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* API & Mobile */}
-          <div className="space-y-8 sm:space-y-12 mt-8 lg:mt-0">
+          <div className="space-y-8 sm:space-y-12">
             {/* API Section */}
             <div>
               <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-3 sm:mb-4">
                 <Code className="w-4 h-4" />
-                Developer API
+                <span>Developer API</span>
               </div>
               
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -89,25 +89,25 @@ export function Integration() {
             <div>
               <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-3 sm:mb-4">
                 <Smartphone className="w-4 h-4" />
-                Mobile App
+                <span>Mobile App</span>
               </div>
               
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Native mobile apps
               </h3>
               
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
                 Download our mobile app for iOS and Android. Manage support tickets, respond to customers, and collaborate with your team from anywhere.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                   <span>📱</span>
-                  App Store
+                  <span>App Store</span>
                 </button>
                 <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                   <span>🤖</span>
-                  Google Play
+                  <span>Google Play</span>
                 </button>
               </div>
             </div>

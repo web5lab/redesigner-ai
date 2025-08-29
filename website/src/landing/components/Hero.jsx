@@ -1,334 +1,144 @@
 import React, { useState } from 'react';
-import { ArrowRight, Play, Sparkles, Zap, Crown, Star, CheckCircle, Headphones, Users, Smartphone, Clock, Globe, Shield } from 'lucide-react';
+import { ArrowRight, Play, Bot, MessageSquare, Users, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Hero = () => {
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showIframe, setShowIframe] = useState(false);
-  const [showChatbot, setShowChatbot] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(2);
-
-  const handleSubmit = () => {
-    if (!websiteUrl) {
-      setErrorMessage('Please enter a website URL');
-      return;
-    }
-
-    try {
-      new URL(websiteUrl);
-      setErrorMessage('');
-      setShowIframe(true);
-      setShowChatbot(true);
-    } catch (error) {
-      setErrorMessage('Please enter a valid URL (e.g., https://example.com)');
-    }
-  };
-
-  window.addEventListener("message", (event) => {
-    if (event.data?.type === "CHATBOT") {
-      setShowChatbot(false);
-    }
-  });
+  const navigate = useNavigate();
 
   return (
-    <section className="relative mt-12 min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -right-1/4 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-indigo-600/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-1/4 -left-1/4 w-96 h-96 bg-gradient-to-tr from-purple-400/30 to-pink-600/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-cyan-400/20 to-blue-600/20 rounded-full blur-2xl animate-pulse" style={{animationDelay: '4s'}}></div>
-      </div>
+    <section className="relative pt-32 pb-20 px-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Main Content */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium mb-8">
+            <Bot className="w-4 h-4" />
+            AI Customer Support
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
+            Support that scales
+            <br />
+            <span className="text-gray-600">with your business</span>
+          </h1>
+          
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+            AI-powered customer support with seamless human handoff. 
+            Deploy in minutes, support customers 24/7.
+          </p>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column: Enhanced Content */}
-          <div className="text-center lg:text-left space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-6 py-3 rounded-full border border-blue-200 shadow-lg">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-semibold tracking-wide uppercase">AI-Powered Revolution</span>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="group flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              Get started
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors">
+              <Play className="w-4 h-4" />
+              Watch demo
+            </button>
+          </div>
+
+          {/* Simple Stats */}
+          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>99.9% uptime</span>
             </div>
-
-            {/* Main Heading */}
-            <div className="space-y-4">
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                  AI-Powered
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Customer Support
-                </span>
-                <br />
-                <span className="relative">
-                  <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    With Human Touch
-                  </span>
-                  <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-                </span>
-              </h1>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>10k+ businesses</span>
             </div>
-
-            {/* Enhanced Description */}
-            <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Deliver exceptional customer support with AI that learns from your business, 
-              <span className="font-semibold text-blue-600"> seamlessly hands off to human agents</span>, 
-              and provides support anywhere, anytime through our mobile app.
-            </p>
-
-            {/* Features List */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto lg:mx-0">
-              {[
-                'AI + Human Support',
-                'Mobile App Access',
-                'Smart Escalation',
-                'Global Coverage'
-              ].map((feature, index) => (
-                <div key={index} className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-white/50 shadow-sm">
-                  <div className="p-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full">
-                    <CheckCircle className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-700">{feature}</span>
-                </div>
-              ))}
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>50+ languages</span>
             </div>
+          </div>
+        </div>
 
-            {/* Support Features */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Headphones className="w-5 h-5 text-blue-600" />
-                Complete Support Solution
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg">
-                    <Users className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">AI + Human</p>
-                    <p className="text-xs text-gray-600">Seamless handoff</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
-                    <Smartphone className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">Mobile App</p>
-                    <p className="text-xs text-gray-600">Support anywhere</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
-                    <Clock className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">24/7 Available</p>
-                    <p className="text-xs text-gray-600">Never miss a customer</p>
-                  </div>
+        {/* Demo Preview */}
+        <div className="relative max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
+            {/* Browser Bar */}
+            <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <div className="flex-1 text-center">
+                <div className="bg-white border border-gray-200 rounded px-3 py-1 text-sm text-gray-600 max-w-xs mx-auto">
+                  yoursite.com
                 </div>
               </div>
             </div>
-            {/* Enhanced CTA Section */}
-            <div className="space-y-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-                <div className="text-center mb-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Start Your Customer Support Revolution</h3>
-                  <p className="text-gray-600">Enter your website URL to create an intelligent support bot</p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <div className="flex-1 relative">
-                    <input
-                      type="url"
-                      placeholder="https://yourwebsite.com"
-                      value={websiteUrl}
-                      onChange={(e) => setWebsiteUrl(e.target.value)}
-                      className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all bg-white/80 backdrop-blur-sm"
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <Globe className="w-5 h-5 text-gray-400" />
-                    </div>
+            
+            {/* Chat Interface */}
+            <div className="h-96 bg-gray-50 relative overflow-hidden">
+              <div className="absolute bottom-6 right-6 w-80 h-80 bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col">
+                {/* Chat Header */}
+                <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-white" />
                   </div>
-                  <button
-                    onClick={handleSubmit}
-                    className="group relative w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                    <span className="relative">Create Support Bot</span>
-                    <ArrowRight className="w-5 h-5 relative group-hover:translate-x-1 transition-transform" />
-                  </button>
+                  <div>
+                    <div className="font-medium text-gray-900">Support Assistant</div>
+                    <div className="text-sm text-green-600">Online</div>
+                  </div>
                 </div>
                 
-                {errorMessage && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+                {/* Messages */}
+                <div className="flex-1 p-4 space-y-3 overflow-hidden">
+                  <div className="flex gap-2">
+                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Bot className="w-3 h-3 text-white" />
+                    </div>
+                    <div className="bg-gray-100 rounded-lg px-3 py-2 text-sm">
+                      Hi! How can I help you today?
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* Social Proof */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-600" />
-                  <span className="font-medium">Enterprise-grade security</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {[1,2,3,4].map((i) => (
-                      <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
-                        {i}
+                  
+                  <div className="flex gap-2 justify-end">
+                    <div className="bg-blue-500 text-white rounded-lg px-3 py-2 text-sm">
+                      I need help with billing
+                    </div>
+                    <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Users className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Users className="w-3 h-3 text-white" />
+                    </div>
+                    <div className="bg-orange-100 border border-orange-200 rounded-lg px-3 py-2 text-sm">
+                      <div className="flex items-center gap-2 text-orange-700">
+                        <Zap className="w-3 h-3" />
+                        Connecting you with Sarah from billing...
                       </div>
-                    ))}
-                  </div>
-                  <span className="font-medium">10,000+ support teams</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {[1,2,3,4,5].map((i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                  ))}
-                  <span className="ml-2 font-medium">4.9/5 support rating</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Enhanced Demo */}
-          <div className="relative flex justify-center items-center">
-            <div className="relative">
-              {/* Mobile App Preview */}
-              <div className="absolute -left-20 top-20 w-48 h-96 bg-gradient-to-br from-gray-900 to-blue-900 rounded-3xl shadow-2xl transform -rotate-12 hover:rotate-0 transition-transform duration-700 overflow-hidden border-4 border-gray-800">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 text-white">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
-                      <Smartphone className="w-3 h-3" />
-                    </div>
-                    <span className="text-sm font-bold">Mobile Support</span>
-                  </div>
-                </div>
-                <div className="p-4 space-y-3">
-                  <div className="bg-white/10 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                      <span className="text-white text-xs font-medium">Agent Available</span>
-                    </div>
-                    <p className="text-white/80 text-xs">Support team ready to help</p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="bg-blue-500 text-white p-2 rounded-lg text-xs">
-                      AI: How can I help you today?
-                    </div>
-                    <div className="bg-white/20 text-white p-2 rounded-lg text-xs">
-                      User: Need help with billing
-                    </div>
-                    <div className="bg-orange-500 text-white p-2 rounded-lg text-xs">
-                      Transferring to human agent...
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Main Chat Demo */}
-              <div className="w-96 h-[600px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200 transform rotate-3 hover:rotate-0 transition-transform duration-700 ease-in-out">
-                <iframe src='https://customerbot.in/chatbot' className='h-full w-full rounded-3xl' />
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute -top-6 -left-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  Support Online
-                </div>
-              </div>
-
-              <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Human Backup
-                </div>
-              </div>
-
-              <div className="absolute top-1/2 -right-16 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                <div className="flex items-center gap-1">
-                  <Smartphone className="w-3 h-3" />
-                  Mobile
-                </div>
-              </div>
-
-              <div className="absolute top-1/4 -left-16 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  24/7
+                
+                {/* Input */}
+                <div className="p-3 border-t border-gray-100">
+                  <div className="flex gap-2">
+                    <input 
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm" 
+                      placeholder="Type a message..."
+                      disabled
+                    />
+                    <button className="bg-blue-500 text-white p-2 rounded-lg">
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Website Preview Modal */}
-      {showIframe && (
-        <div className="fixed inset-0 z-[99999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <div className="relative w-full h-full max-w-screen-xl max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            {/* Enhanced Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full">
-                  <Play className="w-4 h-4" />
-                  <span className="text-sm font-bold">Live Preview</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 truncate max-w-[calc(100%-200px)]">{websiteUrl}</h3>
-              </div>
-              <button
-                onClick={() => setShowIframe(false)}
-                className="p-3 text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
-                title="Close preview"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 relative overflow-hidden">
-              <iframe
-                src={websiteUrl}
-                className="w-full h-full border-none"
-                title="Website Preview"
-                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-              />
-
-              {/* Enhanced Chatbot Overlay */}
-              {showChatbot ? (
-                <div className="absolute bottom-6 right-6 w-96 h-[600px] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col z-50 overflow-hidden">
-                  <iframe src='https://ai.customerbot.in/\' className='h-full w-full rounded-3xl' />
-                </div>
-              ) : (
-                <div className="absolute bottom-6 right-6 z-50">
-                  <button
-                    onClick={() => setShowChatbot(true)}
-                    className="group relative w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110"
-                    title="Open chat"
-                  >
-                    <svg className="w-8 h-8 text-white group-hover:text-gray-100" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
-                    </svg>
-                    
-                    {unreadCount > 0 && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white animate-bounce">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </div>
-                    )}
-                    
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 animate-ping opacity-20"></div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

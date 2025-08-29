@@ -70,14 +70,13 @@ function AppLayout() {
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
     location.pathname === '/chat' ||
-    location.pathname === '/chatbot' 
+    location.pathname === '/chatbot';
 
   const isLandingPage = location.pathname === '/';
 
   if (isLandingPage) {
     // Render landing layout without Sidebar/Header
     return (
-
       <div className="min-h-screen flex flex-col dark:bg-dark-900">
         <Navigation />
         <div className="mt-8 flex-grow">
@@ -131,9 +130,7 @@ function AppLayout() {
                 path="/billing"
                 element={
                   <ProtectedRoute>
-
                     <Billing />
-
                   </ProtectedRoute>
                 }
               />

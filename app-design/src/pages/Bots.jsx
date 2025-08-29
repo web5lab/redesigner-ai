@@ -131,23 +131,6 @@ export function Bots() {
             </div>
           ))}
 
-          {/* Empty State */}
-          {filteredBots.length === 0 && searchQuery && (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                <Search className="w-10 h-10 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No assistants found</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">Try adjusting your search terms</p>
-              <button
-                onClick={() => setSearchQuery('')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-              >
-                Clear search
-              </button>
-            </div>
-          )}
-
           {/* No Bots State */}
           {bots.length === 0 && !searchQuery && (
             <div className="text-center py-16">

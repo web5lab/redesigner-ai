@@ -97,6 +97,7 @@ export const updateChatBot = async ({ data, botId }) => {
   } catch (err) {
     throw err
   }
+}
 export const getChatSession = createAsyncThunk(
   'global/getChatSession',
   async ({ sessionId }) => {

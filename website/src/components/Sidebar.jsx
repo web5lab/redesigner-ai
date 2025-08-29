@@ -262,6 +262,7 @@ export function Sidebar() {
 
             {/* Bot Navigation */}
             {activeBot && (
+              <>
                 <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-200">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -295,6 +296,7 @@ export function Sidebar() {
                     />
                   ))}
                 </div>
+              </>
               </div>
             )}
 

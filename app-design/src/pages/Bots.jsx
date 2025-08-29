@@ -61,21 +61,7 @@ export function Bots() {
       {/* Bots List */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-3">
-          {/* Create New Bot Card */}
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Plus className="w-7 h-7 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-semibold text-gray-900 dark:text-white">Create New Assistant</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Build your AI chatbot</p>
-              </div>
-            </div>
-          </button>
+        
 
           {/* Bots List */}
           {filteredBots.map((bot) => (

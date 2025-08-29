@@ -415,30 +415,6 @@ export default function Teams() {
         </div>
       </div>
 
-      {/* Role Permissions Info */}
-      <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-2 mb-3">
-            <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <h4 className="font-semibold text-blue-900 dark:text-blue-400">Role Permissions</h4>
-          </div>
-          <div className="space-y-2 text-sm text-blue-800 dark:text-blue-300">
-            <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-yellow-500" />
-              <span><strong>Admin:</strong> Full access to bot settings and team management</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Edit3 className="w-4 h-4 text-blue-500" />
-              <span><strong>Editor:</strong> Can modify bot responses and training data</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-gray-500" />
-              <span><strong>Viewer:</strong> Read-only access to conversations and analytics</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Invite Modal */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

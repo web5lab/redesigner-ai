@@ -26,6 +26,7 @@ import {
   Check
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
+import { botsSelector } from '../store/selectors'
 import { addMessage, setInput, setIsTyping, setSessionId } from '../store/slice'
 import { geminiChatApi, getChatSessions } from '../store/actions'
 
@@ -34,6 +35,7 @@ export function Chat() {
   const location = useLocation()
   const dispatch = useDispatch()
   const activeBot = useSelector(activeBotSelector)
+  const bots = useSelector(botsSelector)
   const input = useSelector(inputSelector)
   const isTyping = useSelector(isTypingSelector)
   const [chatSessions, setChatSessions] = useState([])

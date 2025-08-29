@@ -13,6 +13,7 @@ import {
   Settings,
   Trash2,
   Star,
+  FileText,
   Activity,
   Users,
   UserPlus,

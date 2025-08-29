@@ -18,26 +18,7 @@ export function BottomNavigation() {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <div className=" z-50">
-        <button
-          onClick={() => setShowFAB(!showFAB)}
-          className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300 hover:scale-105"
-        >
-          <Plus className={`w-6 h-6 transition-transform duration-300 ${showFAB ? 'rotate-45' : ''}`} />
-        </button>
-        
-        {showFAB && (
-          <div className="absolute bottom-16 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-2 min-w-[120px]">
-            <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-              New Bot
-            </button>
-            <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-              New Chat
-            </button>
-          </div>
-        )}
-      </div>
+    
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 z-40">

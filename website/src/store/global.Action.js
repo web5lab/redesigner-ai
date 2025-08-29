@@ -300,6 +300,23 @@ export const geminiChatApi = async ({ data }) => {
     }
 }
 
+export const getTeamPermissions = createAsyncThunk(
+    "global/getTeamPermissions",
+    async ({ botId }) => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const response = await axiosInstance.get(`/team/bot/${botId}/permissions`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+);
+
 // Team Management Actions
 export const getBotTeam = createAsyncThunk(
     "global/getBotTeam",
@@ -388,16 +405,3 @@ export const removeTeamMember = async ({ botId, memberId }) => {
         throw err;
     }
 };
-
-export const getTeamPermissions = async ({ botId }) => {
-    try {
-        const token = localStorage.getItem('authToken');
-        const response = await axiosInstance.get(`/team/bot/${botId}/permissions`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        return response.data;
-    } catch (err) {
-        throw err;
-    }

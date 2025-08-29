@@ -192,6 +192,16 @@ export const globalSlice = createSlice({
       .addCase(getUserTeams.fulfilled, (state, action) => {
         state.teams = action.payload.teams || [];
       });
+    builder
+      .addCase(getTeamPermissions.pending, (state) => {
+        state.teamPermissions = null;
+      })
+      .addCase(getTeamPermissions.rejected, (state, action) => {
+        state.teamPermissions = null;
+      })
+      .addCase(getTeamPermissions.fulfilled, (state, action) => {
+        state.teamPermissions = action.payload.permissions || null;
+      });
   }
 })
 

@@ -12,13 +12,15 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import logo from "../assets/logo.png"
-import { logedInSelector, userSelector } from '../store/global.Selctor';
+import { logedInSelector, userSelector, botsSelector, activeBotSelector } from '../store/global.Selctor';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from 'react';
-import { setLogout } from '../store/global.Slice';
+import { setLogout, setBotsActive } from '../store/global.Slice';
 
 const baseNavigation = [
   { name: 'My Bots', href: '/dashboard', icon: Grid }
@@ -44,9 +46,12 @@ export function Sidebar() {
   const dispatch = useDispatch();
   const logedIn = useSelector(logedInSelector);
   const user = useSelector(userSelector);
+  const bots = useSelector(botsSelector);
+  const activeBot = useSelector(activeBotSelector);
   const { selectedBot } = useBot();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showBotSelector, setShowBotSelector] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -76,6 +81,11 @@ export function Sidebar() {
 
   const handleLogout = () => {
     dispatch(setLogout());
+  };
+
+  const handleBotChange = (bot) => {
+    dispatch(setBotsActive(bot));
+    setShowBotSelector(false);
   };
 
   const toggleSidebar = () => {
@@ -128,6 +138,79 @@ export function Sidebar() {
             <img src={logo} className="w-8 h-8 mr-3" alt="CustomerBot" />
             <span className="text-xl font-semibold text-gray-900">CustomerBot</span>
           </div>
+
+          {/* Bot Selector */}
+          {bots.length > 0 && (
+            <div className="px-6 mb-6">
+              <div className="relative">
+                <button
+                  onClick={() => setShowBotSelector(!showBotSelector)}
+                  className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    {activeBot?.icon ? (
+                      <img
+                        src={activeBot.icon}
+                        alt={activeBot.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Bot className="w-4 h-4 text-gray-600" />
+                    )}
+                  </div>
+                  <div className="flex-1 text-left min-w-0">
+                    <h2 className="text-sm font-semibold text-gray-900 truncate">
+                      {activeBot?.name || 'Select Bot'}
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      {activeBot ? 'Active bot' : 'Choose a bot'}
+                    </p>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showBotSelector ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {showBotSelector && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-64 overflow-y-auto">
+                    <div className="p-2">
+                      {bots.map((bot) => (
+                        <button
+                          key={bot._id}
+                          onClick={() => handleBotChange(bot)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                            activeBot?._id === bot._id
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'hover:bg-gray-50 text-gray-700'
+                          }`}
+                        >
+                          <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            {bot.icon ? (
+                              <img
+                                src={bot.icon}
+                                alt={bot.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Bot className="w-4 h-4 text-gray-600" />
+                            )}
+                          </div>
+                          <div className="flex-1 text-left min-w-0">
+                            <h3 className="text-sm font-semibold truncate">{bot.name}</h3>
+                            <p className="text-xs text-gray-500 truncate">
+                              {bot.description || 'AI Assistant'}
+                            </p>
+                          </div>
+                          {activeBot?._id === bot._id && (
+                            <Check className="w-4 h-4 text-gray-600" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* User Profile Section */}
           <div className="px-6 mb-8">

@@ -3,9 +3,7 @@ import { useBot } from '../contexts/BotContext';
 import { useSelector } from 'react-redux';
 import { logedInSelector, userSelector } from '../store/global.Selctor';
 
-
 export function ProtectedRoute({ children, requiresBot = false }) {
-
   const logedIn = useSelector(logedInSelector);
   const user = useSelector(userSelector);
   const { selectedBot } = useBot();

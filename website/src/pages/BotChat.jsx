@@ -3,7 +3,7 @@ import { ChatUI } from '../components/ChatUi'
 
 function BotChat() {
   return (
-    <div className='w-full flex justify-center items-center p-4'>
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center p-4">
         <ChatUI />
     </div>
   )

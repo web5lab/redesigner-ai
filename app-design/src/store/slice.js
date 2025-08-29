@@ -192,6 +192,7 @@ export const getChatSession = createAsyncThunk(
       throw err
     }
   }
+)
 
 export const scrapPdfData = createAsyncThunk(
   'global/addPdfData',

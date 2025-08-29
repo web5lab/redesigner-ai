@@ -402,12 +402,6 @@ export function Chat() {
                   {chatSessions.length} conversations
                 </p>
               </div>
-              <button
-                onClick={createNewSession}
-                className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-2xl shadow-lg transition-all duration-300 group"
-              >
-                <Plus className="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-300" />
-              </button>
             </div>
 
             {/* Search */}

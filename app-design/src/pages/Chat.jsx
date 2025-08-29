@@ -18,6 +18,10 @@ import {
   Clock,
   Phone,
   Video
+  Paperclip,
+  Image,
+  FileText,
+  Camera
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { addMessage, setInput, setIsTyping } from '../store/slice'
@@ -228,7 +232,11 @@ export function Chat() {
   const [activeSessionId, setActiveSessionId] = useState(null)
   const [showSessionsList, setShowSessionsList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
   const messagesEndRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const imageInputRef = useRef(null)
 
   const activeSession = chatSessions.find(session => session.id === activeSessionId)
   const messages = activeSession?.messages || []
@@ -305,6 +313,72 @@ export function Chat() {
 
   const formatMessageTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setSelectedFile(file)
+      setShowAttachmentMenu(false)
+    }
+  }
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+    if (imageInputRef.current) imageInputRef.current.value = ''
+  }
+
+  const sendFileMessage = () => {
+    if (!selectedFile || !activeSession) return
+
+    const fileMessage = {
+      id: Date.now(),
+      role: 'user',
+      content: `📎 ${selectedFile.name}`,
+      timestamp: new Date(),
+      file: {
+        name: selectedFile.name,
+        size: selectedFile.size,
+        type: selectedFile.type
+      }
+    }
+
+    setChatSessions(prev => prev.map(session => 
+      session.id === activeSessionId 
+        ? {
+            ...session,
+            messages: [...session.messages, fileMessage],
+            lastMessage: `📎 ${selectedFile.name}`,
+            messageCount: session.messageCount + 1,
+            timestamp: new Date()
+          }
+        : session
+    ))
+
+    removeSelectedFile()
+
+    // Simulate bot response to file
+    setTimeout(() => {
+      const botResponse = {
+        id: Date.now() + 1,
+        role: 'bot',
+        content: `I've received your file "${selectedFile.name}". How can I help you with this?`,
+        timestamp: new Date()
+      }
+      
+      setChatSessions(prev => prev.map(session => 
+        session.id === activeSessionId 
+          ? {
+              ...session,
+              messages: [...session.messages, botResponse],
+              lastMessage: botResponse.content,
+              messageCount: session.messageCount + 1,
+              timestamp: new Date()
+            }
+          : session
+      ))
+    }, 1000)
   }
 
   const handleSubmit = async (e) => {
@@ -646,7 +720,103 @@ export function Chat() {
 
       {/* Input Area */}
       <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
+        {/* File Preview */}
+        {selectedFile && (
+          <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-lg flex items-center justify-center">
+                  {selectedFile.type.startsWith('image/') ? (
+                    <Image className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  ) : (
+                    <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {selectedFile.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={sendFileMessage}
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Send
+                </button>
+                <button
+                  onClick={removeSelectedFile}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex items-center gap-3">
+          {/* Attachment Button */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
+              className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors touch-target"
+            >
+              <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
+
+            {/* Attachment Menu */}
+            {showAttachmentMenu && (
+              <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-slide-up">
+                <div className="p-2">
+                  <button
+                    onClick={() => {
+                      imageInputRef.current?.click()
+                      setShowAttachmentMenu(false)
+                    }}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                      <Image className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Photo</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      fileInputRef.current?.click()
+                      setShowAttachmentMenu(false)
+                    }}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Document</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      // Handle camera capture
+                      setShowAttachmentMenu(false)
+                    }}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                      <Camera className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Camera</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex-1 relative">
             <input
               type="text"
@@ -674,6 +844,22 @@ export function Chat() {
             )}
           </button>
         </form>
+
+        {/* Hidden File Inputs */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx,.txt,.csv,.xlsx"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
       </div>
     </div>
   )

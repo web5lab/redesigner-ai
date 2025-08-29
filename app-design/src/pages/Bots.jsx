@@ -7,24 +7,18 @@ import {
   Bot, 
   MessageSquare,
   ArrowRight,
-  Crown,
-  Sparkles,
   MoreHorizontal,
   Settings,
   Trash2,
-  Star,
-  FileText,
-  Activity,
   Users,
-  UserPlus,
-  Mail,
-  Shield,
-  X
+  Activity,
+  BookOpen
 } from 'lucide-react'
 import { botsSelector } from '../store/selectors'
 import { setActiveBot } from '../store/slice'
 import { CreateBotModal } from '../components/CreateBotModal'
 import { GetBots, DeleteChatBot } from '../store/actions'
+
 export function Bots() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -54,146 +48,206 @@ export function Bots() {
   )
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="h-full flex flex-col bg-white">
       {/* Create Bot Modal */}
       {showCreateModal && (
         <CreateBotModal onClose={() => setShowCreateModal(false)} />
       )}
 
-      {/* Premium Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+      {/* Header */}
+      <div className="border-b border-gray-200">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Assistants</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{bots.length} bots available</p>
+              <h1 className="text-2xl font-bold text-gray-900">AI Assistants</h1>
+              <p className="text-gray-600">{bots.length} bots available</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/docs')}
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Documentation</span>
+              </button>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Bot</span>
+              </button>
             </div>
           </div>
 
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search assistants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="border-b border-gray-200 bg-gray-50">
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { label: 'Total Bots', value: bots.length, icon: MessageSquare },
+              { label: 'Active Bots', value: bots.filter(b => b.status === 'active').length, icon: Activity },
+              { label: 'Total Conversations', value: '2.4k', icon: Users },
+              { label: 'This Month', value: '847', icon: MessageSquare }
+            ].map((stat, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm text-gray-600">{stat.label}</p>
+                  </div>
+                  <stat.icon className="w-8 h-8 text-gray-400" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Bots List */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-3">
-          {/* Create New Bot Card */}
-          <div
-            onClick={() => setShowCreateModal(true)}
-            className="group bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-3xl border-2 border-dashed border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gradient-to-br hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-300 cursor-pointer"
-          >
-            <div className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Plus className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                Create New Assistant
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                Build a custom AI assistant for your needs
-              </p>
-            </div>
-          </div>
-        
-        
-
-          {/* Bots List */}
-          {filteredBots.map((bot) => (
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Create New Bot Card */}
             <div
-              key={bot._id}
-              className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300"
+              onClick={() => setShowCreateModal(true)}
+              className="group border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 hover:border-gray-400 hover:bg-gray-50 transition-all cursor-pointer min-h-[200px]"
             >
-              <button
-                onClick={() => handleBotSelect(bot)}
-                className="w-full p-4 text-left"
-              >
-                <div className="flex items-center gap-4">
-                  {/* Bot Avatar */}
-                  <div className="relative">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg ring-2 ring-gray-100 dark:ring-gray-700">
-                      <img
-                        src={bot.icon || `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=3b82f6&color=ffffff&size=56`}
-                        alt={bot.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-
-                  {/* Bot Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">{bot.name}</h3>
-                      <Crown className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                      {bot.description || 'AI Assistant • Ready to help'}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <MessageSquare className="w-3 h-3" />
-                        <span>1.2k chats</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Activity className="w-3 h-3" />
-                        <span>Active</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Arrow */}
-                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 group-hover:translate-x-1 transition-all duration-300" />
-                </div>
-              </button>
-
-              {/* Bot Actions */}
-              <div className="px-4 pb-4 border-t border-gray-100 dark:border-gray-700 pt-3">
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleBotDelete(e, bot._id)
-                    }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-colors text-sm font-medium text-red-700 dark:text-red-400"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      dispatch(setActiveBot(bot))
-                      navigate('/teams')
-                    }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    <Users className="w-4 h-4" />
-                    Team
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-colors text-sm font-medium text-blue-700 dark:text-blue-400">
-                    <MessageSquare className="w-4 h-4" />
-                    Chat Now
-                  </button>
-                </div>
+              <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                <Plus className="w-6 h-6 text-gray-600" />
+              </div>
+              <div className="text-center">
+                <h3 className="font-semibold text-gray-900 mb-1">Create Assistant</h3>
+                <p className="text-sm text-gray-600">Build a new AI assistant</p>
               </div>
             </div>
-          ))}
+
+            {/* Bot Cards */}
+            {filteredBots.map((bot) => (
+              <div
+                key={bot._id}
+                className="group border border-gray-200 rounded-lg hover:shadow-sm transition-all cursor-pointer overflow-hidden bg-white"
+                onClick={() => handleBotSelect(bot)}
+              >
+                <div className="p-6">
+                  {/* Bot Info */}
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                        <img
+                          src={bot.icon}
+                          alt={bot.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=374151&color=ffffff&size=48`
+                          }}
+                        />
+                      </div>
+                      {bot.status === 'active' && (
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate group-hover:text-gray-700 transition-colors">
+                        {bot.name || 'Untitled Assistant'}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        {bot.description || 'No description provided.'}
+                      </p>
+                    </div>
+                    
+                    {/* Menu Button */}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <MoreHorizontal className="w-4 h-4 text-gray-500" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-gray-900">1.2k</div>
+                      <div className="text-xs text-gray-500">Conversations</div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        dispatch(setActiveBot(bot))
+                        navigate('/teams')
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium text-gray-700"
+                    >
+                      <Users className="w-4 h-4" />
+                      Team
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleBotDelete(e, bot._id)
+                      }}
+                      className="flex items-center justify-center gap-2 py-2 px-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Empty State */}
+          {filteredBots.length === 0 && searchQuery && (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Search className="w-6 h-6 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No bots found</h3>
+              <p className="text-gray-500 mb-4">No bots found matching "{searchQuery}"</p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-gray-900 hover:underline font-medium"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
 
           {/* No Bots State */}
           {bots.length === 0 && !searchQuery && (
             <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Bot className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+              <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+                <Bot className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Welcome to CustomerBot</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-8 px-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Welcome to CustomerBot</h3>
+              <p className="text-gray-500 mb-8 px-8">
                 Create your first AI assistant to get started with automated customer support
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="px-8 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
               >
                 Create Your First Bot
               </button>

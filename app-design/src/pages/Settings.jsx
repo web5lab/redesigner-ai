@@ -10,10 +10,10 @@ import {
   Moon,
   Sun,
   Globe,
-  Crown,
-  Zap,
-  Save
+  Save,
+  ArrowLeft
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { userSelector } from '../store/selectors'
 import { setLogout } from '../store/slice'
 
@@ -21,21 +21,22 @@ const settingsGroups = [
   {
     title: 'Account',
     items: [
-      { id: 'profile', label: 'Profile', icon: User, color: 'text-blue-600 bg-blue-100' },
-      { id: 'notifications', label: 'Notifications', icon: Bell, color: 'text-green-600 bg-green-100' },
-      { id: 'security', label: 'Security', icon: Shield, color: 'text-red-600 bg-red-100' }
+      { id: 'profile', label: 'Profile', icon: User },
+      { id: 'notifications', label: 'Notifications', icon: Bell },
+      { id: 'security', label: 'Security', icon: Shield }
     ]
   },
   {
     title: 'Preferences',
     items: [
-      { id: 'appearance', label: 'Appearance', icon: Palette, color: 'text-purple-600 bg-purple-100' },
-      { id: 'language', label: 'Language', icon: Globe, color: 'text-orange-600 bg-orange-100' }
+      { id: 'appearance', label: 'Appearance', icon: Palette },
+      { id: 'language', label: 'Language', icon: Globe }
     ]
   }
 ]
 
 export function Settings() {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const user = useSelector(userSelector)
   const [activeSection, setActiveSection] = useState(null)
@@ -64,14 +65,14 @@ export function Settings() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 overflow-hidden">
+              <div className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center mx-auto mb-4 overflow-hidden">
                 {profile.avatar ? (
                   <img src={profile.avatar} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="w-8 h-8 text-white" />
+                  <User className="w-8 h-8 text-gray-600" />
                 )}
               </div>
-              <button className="text-blue-600 text-sm font-medium">Change Photo</button>
+              <button className="text-gray-900 text-sm font-medium hover:underline">Change Photo</button>
             </div>
 
             <div className="space-y-4">
@@ -81,7 +82,7 @@ export function Settings() {
                   type="text"
                   value={profile.name}
                   onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
               
@@ -91,12 +92,12 @@ export function Settings() {
                   type="email"
                   value={profile.email}
                   onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
             </div>
 
-            <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all haptic-medium">
+            <button className="w-full py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
               Save Changes
             </button>
           </div>
@@ -106,7 +107,7 @@ export function Settings() {
         return (
           <div className="space-y-4">
             {Object.entries(notifications).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 capitalize">
                     {key === 'push' ? 'Push Notifications' : 
@@ -126,7 +127,7 @@ export function Settings() {
                     onChange={(e) => setNotifications(prev => ({ ...prev, [key]: e.target.checked }))}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
                 </label>
               </div>
             ))}
@@ -146,9 +147,9 @@ export function Settings() {
                   <button
                     key={theme.value}
                     onClick={() => setAppearance(prev => ({ ...prev, theme: theme.value }))}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all haptic-light ${
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
                       appearance.theme === theme.value
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-gray-900 bg-gray-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -166,9 +167,9 @@ export function Settings() {
                   <button
                     key={size}
                     onClick={() => setAppearance(prev => ({ ...prev, fontSize: size }))}
-                    className={`p-3 rounded-xl border-2 transition-all haptic-light ${
+                    className={`p-3 rounded-lg border-2 transition-all ${
                       appearance.fontSize === size
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-gray-900 bg-gray-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -192,22 +193,22 @@ export function Settings() {
 
   if (activeSection) {
     return (
-      <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="h-full flex flex-col bg-white">
         {/* Section Header */}
-        <div className="p-4 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setActiveSection(null)}
-              className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors touch-target"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              ←
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 capitalize">{activeSection}</h1>
           </div>
         </div>
 
         {/* Section Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
+        <div className="flex-1 overflow-y-auto p-4">
           {renderSectionContent()}
         </div>
       </div>
@@ -215,27 +216,24 @@ export function Settings() {
   }
 
   return (
-    <div className="h-full overflow-y-auto custom-scrollbar bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="h-full overflow-y-auto bg-white">
       <div className="p-4 space-y-6">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-6 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-          
-          <div className="relative flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
               {user?.profilePicture ? (
                 <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-8 h-8 text-white" />
+                <User className="w-8 h-8 text-gray-600" />
               )}
             </div>
             
             <div className="flex-1">
-              <h2 className="text-xl font-bold">{user?.name || 'User'}</h2>
-              <p className="text-blue-100">{user?.email || 'user@example.com'}</p>
+              <h2 className="text-xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+              <p className="text-gray-600">{user?.email || 'user@example.com'}</p>
               <div className="flex items-center gap-2 mt-2">
-                <Crown className="w-4 h-4 text-yellow-300" />
-                <span className="text-sm">Premium Member</span>
+                <span className="text-sm text-gray-500">Premium Member</span>
               </div>
             </div>
           </div>
@@ -243,9 +241,9 @@ export function Settings() {
 
         {/* Settings Groups */}
         {settingsGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
-              <h3 className="font-bold text-gray-900">{group.title}</h3>
+          <div key={groupIndex} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="p-4 border-b border-gray-200 bg-gray-50">
+              <h3 className="font-semibold text-gray-900">{group.title}</h3>
             </div>
             
             <div className="divide-y divide-gray-100">
@@ -253,10 +251,10 @@ export function Settings() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-all haptic-light"
+                  className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors"
                 >
-                  <div className={`p-2 rounded-xl ${item.color}`}>
-                    <item.icon className="w-5 h-5" />
+                  <div className="p-2 rounded-lg bg-gray-100">
+                    <item.icon className="w-5 h-5 text-gray-600" />
                   </div>
                   
                   <div className="flex-1 text-left">
@@ -271,13 +269,13 @@ export function Settings() {
         ))}
 
         {/* Logout */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-lg">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-4 p-4 hover:bg-red-50 transition-all haptic-medium"
+            className="w-full flex items-center gap-4 p-4 hover:bg-red-50 transition-colors"
           >
-            <div className="p-2 rounded-xl bg-red-100 text-red-600">
-              <LogOut className="w-5 h-5" />
+            <div className="p-2 rounded-lg bg-red-100">
+              <LogOut className="w-5 h-5 text-red-600" />
             </div>
             <span className="font-medium text-red-600">Sign Out</span>
           </button>

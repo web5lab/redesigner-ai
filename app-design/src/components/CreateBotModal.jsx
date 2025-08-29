@@ -327,7 +327,7 @@ export function CreateBotModal({ onClose }) {
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center shadow-sm bg-gradient-to-br from-blue-500 to-purple-600">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-gray-100">
                     {botIcon ? (
                       <img
                         src={URL.createObjectURL(botIcon)}
@@ -335,7 +335,7 @@ export function CreateBotModal({ onClose }) {
                         className="w-full h-full rounded-lg object-cover"
                       />
                     ) : (
-                      <Bot className="w-6 h-6 text-white" />
+                      <Bot className="w-6 h-6 text-gray-600" />
                     )}
                   </div>
 
@@ -352,8 +352,8 @@ export function CreateBotModal({ onClose }) {
                       <span>
                         FAQ: {faqMethod === 'skip' ? 'None' :
                           faqMethod === 'upload' ? `PDF: ${faqFile?.name || 'Selected'}` :
-                            'Custom text'}
-                      </span>
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <Upload className="w-6 h-6 text-gray-600" />
                     </div>
                   </div>
                 </div>

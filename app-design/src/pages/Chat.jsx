@@ -11,19 +11,9 @@ import {
   Plus,
   X,
   Search,
-  MoreVertical,
-  Star,
-  Archive,
   Trash2,
-  Clock,
-  Phone,
-  Video,
-  Paperclip,
-  Image,
-  FileText,
-  Camera,
-  ChevronDown,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { botsSelector } from '../store/selectors'
@@ -42,13 +32,9 @@ export function Chat() {
   const [activeSessionId, setActiveSessionId] = useState(null)
   const [showSessionsList, setShowSessionsList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
   const [sessionMessages, setSessionMessages] = useState({})
   const [showBotSelector, setShowBotSelector] = useState(false)
   const messagesEndRef = useRef(null)
-  const fileInputRef = useRef(null)
-  const imageInputRef = useRef(null)
 
   const activeSession = chatSessions.find(session => session._id === activeSessionId)
   const messages = sessionMessages[activeSessionId] || []
@@ -64,18 +50,6 @@ export function Chat() {
       loadChatSessions()
     }
   }, [activeBot])
-
-  // Close bot selector when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showBotSelector && !event.target.closest('.relative')) {
-        setShowBotSelector(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showBotSelector])
 
   const loadChatSessions = async () => {
     try {
@@ -113,25 +87,10 @@ export function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
 
-  // Check URL for session parameter
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const sessionId = params.get('session')
-    if (sessionId) {
-      const session = chatSessions.find(s => s._id === sessionId)
-      if (session) {
-        setActiveSessionId(session._id)
-        setShowSessionsList(false)
-        loadSessionMessages(session._id)
-      }
-    }
-  }, [location.search, chatSessions])
-
   const createNewSession = async () => {
     if (!activeBot) return
 
     try {
-      // Create a new session by sending the first message
       const welcomeMessage = activeBot.welcomeMessage || 'Hello! How can I help you today?'
       
       const newSessionData = {
@@ -170,12 +129,10 @@ export function Chat() {
     setShowSessionsList(false)
     navigate(`/chat?session=${sessionId}`, { replace: true })
     
-    // Load messages if not already loaded
     if (!sessionMessages[sessionId]) {
       loadSessionMessages(sessionId)
     }
     
-    // Mark as read
     setChatSessions(prev => prev.map(session => 
       session._id === sessionId ? { ...session, unread: 0 } : session
     ))
@@ -229,78 +186,19 @@ export function Chat() {
     return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setSelectedFile(file)
-      setShowAttachmentMenu(false)
-    }
-  }
-
-  const removeSelectedFile = () => {
-    setSelectedFile(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-    if (imageInputRef.current) imageInputRef.current.value = ''
-  }
-
-  const sendFileMessage = () => {
-    if (!selectedFile || !activeSession) return
-
-    const fileMessage = {
-      _id: `msg_${Date.now()}`,
-      role: 'user',
-      content: `📎 ${selectedFile.name}`,
-      timestamp: new Date(),
-      file: {
-        name: selectedFile.name,
-        size: selectedFile.size,
-        type: selectedFile.type
-      }
-    }
-
-    setSessionMessages(prev => ({
-      ...prev,
-      [activeSessionId]: [...(prev[activeSessionId] || []), fileMessage]
-    }))
-
-    setChatSessions(prev => prev.map(session => 
-      session._id === activeSessionId 
-        ? {
-            ...session,
-            lastMessage: `📎 ${selectedFile.name}`,
-            messageCount: (session.messageCount || 0) + 1,
-            timestamp: new Date()
-          }
-        : session
-    ))
-
-    removeSelectedFile()
-
-    // Simulate bot response to file
+  const handleBotChange = (bot) => {
+    dispatch(setActiveBot(bot))
+    setShowBotSelector(false)
+    setActiveSessionId(null)
+    setShowSessionsList(true)
+    setSessionMessages({})
+    setChatSessions([])
+    navigate('/chat', { replace: true })
     setTimeout(() => {
-      const botResponse = {
-        _id: `msg_${Date.now() + 1}`,
-        role: 'bot',
-        content: `I've received your file "${selectedFile.name}". How can I help you with this?`,
-        timestamp: new Date()
+      if (bot._id) {
+        loadChatSessions()
       }
-      
-      setSessionMessages(prev => ({
-        ...prev,
-        [activeSessionId]: [...(prev[activeSessionId] || []), botResponse]
-      }))
-
-      setChatSessions(prev => prev.map(session => 
-        session._id === activeSessionId 
-          ? {
-              ...session,
-              lastMessage: botResponse.content,
-              messageCount: (session.messageCount || 0) + 1,
-              timestamp: new Date()
-            }
-          : session
-      ))
-    }, 1000)
+    }, 100)
   }
 
   const handleSubmit = async (e) => {
@@ -316,13 +214,11 @@ export function Chat() {
       timestamp: new Date()
     }
 
-    // Add message to current session
     setSessionMessages(prev => ({
       ...prev,
       [activeSessionId]: [...(prev[activeSessionId] || []), userMessage]
     }))
 
-    // Update session in list
     setChatSessions(prev => prev.map(session => 
       session._id === activeSessionId 
         ? {
@@ -346,18 +242,15 @@ export function Chat() {
         }
       })
       
-      // Update session ID if it was temporary
       if (activeSessionId.startsWith('temp_') && chatData.sessionId) {
         const newSessionId = chatData.sessionId
         
-        // Update the session ID in the sessions list
         setChatSessions(prev => prev.map(session => 
           session._id === activeSessionId 
             ? { ...session, _id: newSessionId }
             : session
         ))
         
-        // Move messages to new session ID
         setSessionMessages(prev => {
           const messages = prev[activeSessionId] || []
           const newMessages = { ...prev }
@@ -410,60 +303,33 @@ export function Chat() {
         [activeSessionId]: [...(prev[activeSessionId] || []), errorResponse]
       }))
 
-      setChatSessions(prev => prev.map(session => 
-        session._id === activeSessionId 
-          ? {
-              ...session,
-              lastMessage: errorResponse.content,
-              messageCount: (session.messageCount || 0) + 1,
-              timestamp: new Date()
-            }
-          : session
-      ))
       dispatch(setIsTyping(false))
     }
   }
 
-  const handleBotChange = (bot) => {
-    dispatch(setActiveBot(bot))
-    setShowBotSelector(false)
-    // Reset chat state when switching bots
-    setActiveSessionId(null)
-    setShowSessionsList(true)
-    setSessionMessages({})
-    setChatSessions([])
-    navigate('/chat', { replace: true })
-    // Load new bot's sessions
-    setTimeout(() => {
-      if (bot._id) {
-        loadChatSessions()
-      }
-    }, 100)
-  }
-
-  // Sessions List View (Mobile-optimized)
+  // Sessions List View
   if (showSessionsList || !activeSession) {
     return (
-      <div className="h-full flex flex-col bg-white dark:bg-gray-900">
+      <div className="h-full flex flex-col bg-white">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+        <div className="border-b border-gray-200">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate('/')}
-                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-target"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
                 
-                {/* Bot Selector Dropdown */}
+                {/* Bot Selector */}
                 <div className="relative">
                   <button
                     onClick={() => setShowBotSelector(!showBotSelector)}
-                    className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-2xl border border-gray-200 dark:border-gray-600 transition-colors min-w-[200px]"
+                    className="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors min-w-[200px]"
                   >
-                    <div className="w-8 h-8 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-600 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
                       {activeBot?.icon ? (
                         <img
                           src={activeBot.icon}
@@ -471,14 +337,14 @@ export function Chat() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Bot className="w-4 h-4 text-white" />
+                        <Bot className="w-4 h-4 text-gray-600" />
                       )}
                     </div>
                     <div className="flex-1 text-left min-w-0">
-                      <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                      <h2 className="text-sm font-semibold text-gray-900 truncate">
                         {activeBot?.name || 'Select Bot'}
                       </h2>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-500">
                         {chatSessions.length} conversations
                       </p>
                     </div>
@@ -487,19 +353,19 @@ export function Chat() {
 
                   {/* Dropdown Menu */}
                   {showBotSelector && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto animate-slide-down">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-64 overflow-y-auto">
                       <div className="p-2">
                         {bots.map((bot) => (
                           <button
                             key={bot._id}
                             onClick={() => handleBotChange(bot)}
-                            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
                               activeBot?._id === bot._id
-                                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'hover:bg-gray-50 text-gray-700'
                             }`}
                           >
-                            <div className="w-8 h-8 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-600 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
                               {bot.icon ? (
                                 <img
                                   src={bot.icon}
@@ -507,27 +373,20 @@ export function Chat() {
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <Bot className="w-4 h-4 text-white" />
+                                <Bot className="w-4 h-4 text-gray-600" />
                               )}
                             </div>
                             <div className="flex-1 text-left min-w-0">
                               <h3 className="text-sm font-semibold truncate">{bot.name}</h3>
-                              <p className="text-xs opacity-75 truncate">
+                              <p className="text-xs text-gray-500 truncate">
                                 {bot.description || 'AI Assistant'}
                               </p>
                             </div>
                             {activeBot?._id === bot._id && (
-                              <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              <Check className="w-4 h-4 text-gray-600" />
                             )}
                           </button>
                         ))}
-                        
-                        {bots.length === 0 && (
-                          <div className="p-4 text-center">
-                            <Bot className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-500 dark:text-gray-400">No bots available</p>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
@@ -535,7 +394,7 @@ export function Chat() {
               </div>
               <button
                 onClick={createNewSession}
-                className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="p-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -549,7 +408,7 @@ export function Chat() {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
@@ -557,17 +416,17 @@ export function Chat() {
 
         {/* Sessions List */}
         <div className="flex-1 overflow-y-auto">
-          <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          <div className="divide-y divide-gray-100">
             {filteredSessions.map((session) => (
               <button
                 key={session._id}
                 onClick={() => openSession(session._id)}
-                className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left group"
+                className="w-full p-4 hover:bg-gray-50 transition-colors text-left group"
               >
                 <div className="flex items-center gap-4">
                   {/* Avatar */}
                   <div className="relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden shadow-lg ring-2 ring-gray-100 dark:ring-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                       {activeBot?.icon ? (
                         <img
                           src={activeBot.icon}
@@ -575,37 +434,37 @@ export function Chat() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Bot className="w-6 h-6 text-white" />
+                        <Bot className="w-6 h-6 text-gray-600" />
                       )}
                     </div>
                     {session.status === 'active' && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                     )}
                   </div>
                   
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <h3 className="font-semibold text-gray-900 truncate group-hover:text-gray-700 transition-colors">
                         {session.title || session.name || `Chat ${session._id.slice(-6)}`}
                       </h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-gray-500">
                           {formatTimestamp(session.timestamp || session.updatedAt)}
                         </span>
                         {session.unread > 0 && (
-                          <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                          <div className="w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs font-bold">{session.unread}</span>
                           </div>
                         )}
                       </div>
                     </div>
                     
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate mb-1">
+                    <p className="text-sm text-gray-500 truncate mb-1">
                       {session.lastMessage || 'No messages yet'}
                     </p>
                     
-                    <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                    <div className="flex items-center gap-3 text-xs text-gray-400">
                       <div className="flex items-center gap-1">
                         <MessageCircle className="w-3 h-3" />
                         <span>{session.messageCount || 0} messages</span>
@@ -622,7 +481,7 @@ export function Chat() {
                       e.stopPropagation()
                       deleteSession(session._id)
                     }}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -635,13 +494,13 @@ export function Chat() {
           {filteredSessions.length === 0 && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center p-8">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <MessageCircle className="w-10 h-10 text-gray-400" />
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+                  <MessageCircle className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {searchQuery ? 'No conversations found' : 'No conversations yet'}
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                <p className="text-gray-500 mb-6">
                   {searchQuery 
                     ? `No conversations found matching "${searchQuery}"`
                     : `Start your first conversation with ${activeBot?.name || 'your AI assistant'}`
@@ -650,7 +509,7 @@ export function Chat() {
                 {!searchQuery && (
                   <button
                     onClick={createNewSession}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    className="px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors"
                   >
                     Start New Chat
                   </button>
@@ -663,21 +522,21 @@ export function Chat() {
     )
   }
 
-  // Individual Chat View (Mobile-optimized)
+  // Individual Chat View
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-900">
+    <div className="h-full flex flex-col bg-white">
       {/* Chat Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">
+      <div className="border-b border-gray-200">
         <div className="px-4 py-3">
           <div className="flex items-center gap-3">
             <button
               onClick={closeSession}
-              className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-target"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
             
-            <div className="w-10 h-10 rounded-full overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
               {activeBot?.icon ? (
                 <img
                   src={activeBot.icon}
@@ -685,21 +544,21 @@ export function Chat() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Bot className="w-5 h-5 text-white" />
+                <Bot className="w-5 h-5 text-gray-600" />
               )}
             </div>
             
             <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-gray-900 dark:text-white truncate">
+              <h2 className="font-semibold text-gray-900 truncate">
                 {activeBot?.name || 'AI Assistant'}
               </h2>
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
                 {isTyping ? (
                   <>
                     <div className="flex space-x-1">
-                      <div className="w-1 h-1 bg-green-500 rounded-full animate-bounce"></div>
-                      <div className="w-1 h-1 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-1 h-1 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                      <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                     </div>
                     <span>typing...</span>
                   </>
@@ -712,31 +571,29 @@ export function Chat() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => deleteSession(activeSessionId)}
-                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors touch-target"
-              >
-                <Trash2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </button>
-            </div>
+            <button
+              onClick={() => deleteSession(activeSessionId)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Trash2 className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-900">
+      <div className="flex-1 overflow-y-auto bg-gray-50">
         <div className="p-4 space-y-4">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center p-8">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                  <Bot className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Bot className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Start a conversation
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-gray-500">
                   Send a message to begin chatting with {activeBot?.name || 'your AI assistant'}
                 </p>
               </div>
@@ -744,46 +601,46 @@ export function Chat() {
           ) : (
             messages.map((message, index) => (
               <div key={message._id || index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex items-end gap-2 max-w-[85%] group`}>
+                <div className={`flex items-end gap-2 max-w-[80%]`}>
                   {message.role === 'bot' && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                       {activeBot?.icon ? (
                         <img
                           src={activeBot.icon}
                           alt="Bot"
-                          className="w-6 h-6 rounded-full object-cover"
+                          className="w-6 h-6 rounded-md object-cover"
                         />
                       ) : (
-                        <Bot className="w-4 h-4 text-white" />
+                        <Bot className="w-4 h-4 text-gray-600" />
                       )}
                     </div>
                   )}
 
                   <div className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
                     <div
-                      className={`rounded-2xl px-4 py-3 shadow-sm max-w-xs transition-all duration-200 ${
+                      className={`rounded-lg px-4 py-3 max-w-xs transition-all ${
                         message.role === 'user'
-                          ? 'bg-blue-600 text-white rounded-br-md'
+                          ? 'bg-gray-900 text-white'
                           : message.isError
-                            ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-bl-md'
-                            : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-bl-md shadow-md'
+                            ? 'bg-red-50 text-red-800 border border-red-200'
+                            : 'bg-white text-gray-900 border border-gray-200'
                       }`}
                     >
                       <p className="text-sm leading-relaxed">{message.content}</p>
                     </div>
                     
                     <div className="mt-1 px-1">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                      <span className="text-xs text-gray-400">
                         {formatMessageTime(message.timestamp)}
                         {message.role === 'user' && (
-                          <span className="text-blue-500 ml-1">✓✓</span>
+                          <span className="text-gray-500 ml-1">✓</span>
                         )}
                       </span>
                     </div>
                   </div>
 
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-500 to-gray-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <div className="w-8 h-8 rounded-lg bg-gray-600 flex items-center justify-center flex-shrink-0">
                       <User className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -795,18 +652,18 @@ export function Chat() {
           {isTyping && (
             <div className="flex justify-start">
               <div className="flex items-end gap-2 max-w-[80%]">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
                   {activeBot?.icon ? (
                     <img
                       src={activeBot.icon}
                       alt="Bot"
-                      className="w-6 h-6 rounded-full object-cover"
+                      className="w-6 h-6 rounded-md object-cover"
                     />
                   ) : (
-                    <Bot className="w-4 h-4 text-white" />
+                    <Bot className="w-4 h-4 text-gray-600" />
                   )}
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-md border border-gray-200 dark:border-gray-700">
+                <div className="bg-white rounded-lg px-4 py-3 border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
@@ -824,110 +681,15 @@ export function Chat() {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 safe-area-bottom">
-        {/* File Preview */}
-        {selectedFile && (
-          <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-lg flex items-center justify-center">
-                  {selectedFile.type.startsWith('image/') ? (
-                    <Image className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  ) : (
-                    <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {selectedFile.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={sendFileMessage}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Send
-                </button>
-                <button
-                  onClick={removeSelectedFile}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
+      <div className="bg-white border-t border-gray-200 p-4">
         <form onSubmit={handleSubmit} className="flex items-center gap-3">
-          {/* Attachment Button */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-              className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors touch-target"
-            >
-              <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </button>
-
-            {/* Attachment Menu */}
-            {showAttachmentMenu && (
-              <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-slide-up">
-                <div className="p-2">
-                  <button
-                    onClick={() => {
-                      imageInputRef.current?.click()
-                      setShowAttachmentMenu(false)
-                    }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <Image className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Photo</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      fileInputRef.current?.click()
-                      setShowAttachmentMenu(false)
-                    }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-green-600 dark:text-green-400" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Document</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      setShowAttachmentMenu(false)
-                    }}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                      <Camera className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Camera</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
           <div className="flex-1 relative">
             <input
               type="text"
               value={input}
               onChange={(e) => dispatch(setInput(e.target.value))}
               placeholder="Type a message..."
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
               disabled={isTyping}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -941,10 +703,10 @@ export function Chat() {
           <button
             type="submit"
             disabled={!input.trim() || isTyping}
-            className={`p-3 rounded-full transition-all duration-300 touch-target ${
+            className={`p-3 rounded-lg transition-all ${
               input.trim() && !isTyping
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-105'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                ? 'bg-gray-900 hover:bg-gray-800 text-white'
+                : 'bg-gray-200 text-gray-400'
             }`}
           >
             {isTyping ? (
@@ -954,22 +716,6 @@ export function Chat() {
             )}
           </button>
         </form>
-
-        {/* Hidden File Inputs */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf,.doc,.docx,.txt,.csv,.xlsx"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-        <input
-          ref={imageInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
       </div>
     </div>
   )

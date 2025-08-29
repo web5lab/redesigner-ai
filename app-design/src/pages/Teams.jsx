@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Plus, Mail, Crown, Edit3, Eye, Trash2, X } from 'lucide-react';
 
-export function Teams() {
+export default function Teams() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('viewer');
@@ -189,7 +189,7 @@ export function Teams() {
         </div>
 
         {/* Role Permissions Info */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Role Permissions</h3>
           <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
             <p><strong>Admin:</strong> Full access - can manage team, edit bots, and view all data</p>
@@ -197,8 +197,9 @@ export function Teams() {
             <p><strong>Viewer:</strong> Read-only access to bots and conversations</p>
           </div>
         </div>
-        </div>
       </div>
+
+      {/* Invite Modal */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">

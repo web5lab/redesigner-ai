@@ -9,6 +9,7 @@ export function Chatbot() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notification, setNotification] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [lastActivity, setLastActivity] = useState(Date.now());
 
   window.addEventListener("message", (event) => {
     if (event.data?.type === "CHATBOT") {

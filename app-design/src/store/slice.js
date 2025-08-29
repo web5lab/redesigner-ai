@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { getUserData, getBots, getChatSessions, getChatSession } from './actions'
+import { GetUserData, GetBots, getChatSessions, getChatSession } from './actions'
 
 const initialState = {
   logedIn: false,
@@ -111,17 +111,17 @@ export const globalSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getUserData.pending, (state) => {
+      .addCase(GetUserData.pending, (state) => {
         state.logedIn = false
       })
-      .addCase(getUserData.rejected, (state, action) => {
+      .addCase(GetUserData.rejected, (state, action) => {
         state.logedIn = false
       })
-      .addCase(getUserData.fulfilled, (state, action) => {
+      .addCase(GetUserData.fulfilled, (state, action) => {
         state.profile = action.payload
         state.logedIn = true
       })
-      .addCase(getBots.fulfilled, (state, action) => {
+      .addCase(GetBots.fulfilled, (state, action) => {
         state.bots = action.payload.bots || []
       })
       .addCase(getChatSessions.pending, (state) => {

@@ -31,42 +31,14 @@ export function Login() {
     setIsLoading(true)
     setLoginMethod('google')
     
-    try {
-      // Simulate login process
-      setTimeout(() => {
-        dispatch(setLoggedIn(true))
-        dispatch(setProfile({
-          name: 'John Doe',
-          email: 'john@example.com',
-          profilePicture: null
-        }))
-        navigate('/')
-      }, 2000)
-    } catch (error) {
-      setIsLoading(false)
-      setLoginMethod(null)
-    }
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`
   }
 
   const handleGithubLogin = async () => {
     setIsLoading(true)
     setLoginMethod('github')
     
-    try {
-      // Simulate login process
-      setTimeout(() => {
-        dispatch(setLoggedIn(true))
-        dispatch(setProfile({
-          name: 'John Doe',
-          email: 'john@example.com',
-          profilePicture: null
-        }))
-        navigate('/')
-      }, 2000)
-    } catch (error) {
-      setIsLoading(false)
-      setLoginMethod(null)
-    }
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/github`
   }
 
   return (

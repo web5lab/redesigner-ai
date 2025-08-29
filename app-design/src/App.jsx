@@ -14,7 +14,7 @@ import { Settings } from './pages/Settings'
 import Teams from './pages/Teams'
 
 import { logedInSelector } from './store/selectors'
-import { getUserData } from './store/actions'
+import { GetUserData } from './store/actions'
 
 function AppLayout() {
   const location = useLocation()
@@ -65,7 +65,7 @@ export default function App() {
   useEffect(() => {
     const token = localStorage.getItem('authToken')
     if (token && !isLoggedIn) {
-      dispatch(getUserData(token))
+      dispatch(GetUserData(token))
     }
   }, [dispatch, isLoggedIn])
 

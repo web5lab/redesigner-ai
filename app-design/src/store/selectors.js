@@ -40,4 +40,3 @@ export const inputSelector = createSelector(
 export const isTypingSelector = createSelector(
   [globalSelector],
   (global) => global.uiConfig.isTyping
-)

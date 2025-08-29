@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../services/axiosInstance'
 import toast from 'react-hot-toast'
 
-export const getUserData = createAsyncThunk(
+export const GetUserData = createAsyncThunk(
   'global/getUserData',
   async (token) => {
     try {
@@ -11,6 +11,7 @@ export const getUserData = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
+      console.log("api data", response)
       return response.data
     } catch (err) {
       throw err
@@ -18,9 +19,10 @@ export const getUserData = createAsyncThunk(
   }
 )
 
-export const getBots = createAsyncThunk(
+export const GetBots = createAsyncThunk(
   'global/getBots',
   async () => {
+    console.log("get data api call")
     try {
       const token = localStorage.getItem('authToken')
       const response = await axiosInstance.get('/bot/get-bot', {
@@ -28,8 +30,10 @@ export const getBots = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
+      console.log("api data", response)
       return response.data
     } catch (err) {
+      console.log("api err 1 =>", err)
       throw err
     }
   }
@@ -70,7 +74,7 @@ export const createBotApi = async ({ data }) => {
   }
 }
 
-export const deleteChatBot = async ({ chatBotId }) => {
+export const DeleteChatBot = async ({ chatBotId }) => {
   try {
     const token = localStorage.getItem('authToken')
     const response = await axiosInstance.delete(`/bot/delete-bot/${chatBotId}`, {
@@ -92,6 +96,7 @@ export const updateChatBot = async ({ data, botId }) => {
         Authorization: `Bearer ${token}`
       }
     })
+    console.log("api data", response)
     return response.data
   } catch (err) {
     throw err
@@ -108,6 +113,7 @@ export const getChatSessions = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
+      console.log("api data", response)
       return response.data
     } catch (err) {
       throw err
@@ -125,6 +131,7 @@ export const getChatSession = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
+      console.log("api data", response)
       return response.data
     } catch (err) {
       throw err
@@ -154,3 +161,39 @@ export const getBotConfig = async ({ botId }) => {
     throw err
   }
 }
+
+export const scrapPdfData = createAsyncThunk(
+  'global/addPdfData',
+  async ({ data }) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await axiosInstance.post('/scrap-data/process-pdf', data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log("api data", response)
+      return response.data
+    } catch (err) {
+      throw err
+    }
+  }
+)
+
+export const scrapWebsiteUrl = createAsyncThunk(
+  'global/scrapWebsiteUrl',
+  async ({ url }) => {
+    const token = localStorage.getItem('authToken')
+    try {
+      const response = await axiosInstance.get(`/scrap-data/process-url?url=${url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log("api data", response)
+      return response.data
+    } catch (err) {
+      throw err
+    }
+  }
+)

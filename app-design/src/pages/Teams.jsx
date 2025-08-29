@@ -25,12 +25,14 @@ import {
   Globe,
   MessageSquare
 } from 'lucide-react'
-import { botsSelector } from '../store/selectors'
+import { botsSelector, activeBotSelector } from '../store/selectors'
 import { CreateBotModal } from '../components/CreateBotModal'
+import { GetBots } from '../store/actions'
 
 export default function Teams() {
   const dispatch = useDispatch()
   const bots = useSelector(botsSelector)
+  const activeBot = useSelector(activeBotSelector)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedBot, setSelectedBot] = useState(null)
@@ -87,6 +89,10 @@ export default function Teams() {
       }
     ]
   })
+
+  useEffect(() => {
+    dispatch(GetBots())
+  }, [dispatch])
 
   const handleInviteMember = () => {
     if (inviteEmail.trim() && selectedBot) {

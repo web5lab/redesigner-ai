@@ -33,6 +33,7 @@ import { Navigation } from './landing/components/Navigation';
 import ChatWidget from './pages/ChatBot';
 import { ChatUI } from './components/ChatUi';
 import { ShareChatUI } from './components/ShareChatUi';
+import { Teams } from './pages/Teams';
 
 const botRoutes = [
   { path: '/stats', element: <Dashboard /> },
@@ -42,6 +43,7 @@ const botRoutes = [
   { path: '/preview', element: <Preview /> },
   { path: '/integrations', element: <Integrations /> },
   { path: '/bot-settings', element: <BotSettings /> },
+  { path: '/teams', element: <Teams /> },
 ];
 
 function AuthHandler() {

@@ -32,6 +32,7 @@ const botNavigation = [
   { name: 'Customize', href: '/preview', icon: Settings },
   { name: 'Training', href: '/training', icon: Brain },
   { name: 'Sessions', href: '/sessions', icon: MessageSquare },
+  { name: 'Teams', href: '/teams', icon: Users },
   { name: 'Integrations', href: '/integrations', icon: Plug },
   { name: 'Bot Settings', href: '/bot-settings', icon: Settings },
 ];

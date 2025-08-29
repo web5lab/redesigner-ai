@@ -5,6 +5,7 @@ import { BotProvider } from './contexts/BotContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { BottomNavigation } from './components/BottomNavigation'
+import { useEffect } from 'react'
 
 // Pages
 import { Bots } from './pages/Bots'
@@ -14,7 +15,25 @@ import { Settings } from './pages/Settings'
 import Teams from './pages/Teams'
 
 import { logedInSelector } from './store/selectors'
-import { GetUserData } from './store/actions'
+import { GetUserData, GetBots } from './store/actions'
+
+function AuthHandler() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const token = params.get('token')
+    if (token) {
+      localStorage.setItem('authToken', token)
+      dispatch(GetUserData(token))
+      navigate('/')
+    }
+  }, [location, navigate, dispatch])
+
+  return null
+}
 
 function AppLayout() {
   const location = useLocation()
@@ -29,6 +48,7 @@ function AppLayout() {
       <main className="flex-1 overflow-hidden">
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/auth-success" element={<AuthHandler />} />
           <Route path="/" element={
             <ProtectedRoute>
               <Bots />
@@ -63,11 +83,15 @@ export default function App() {
   const isLoggedIn = useSelector(logedInSelector)
 
   useEffect(() => {
+    dispatch(GetBots())
+  }, [dispatch])
+
+  useEffect(() => {
     const token = localStorage.getItem('authToken')
-    if (token && !isLoggedIn) {
+    if (token) {
       dispatch(GetUserData(token))
     }
-  }, [dispatch, isLoggedIn])
+  }, [dispatch])
 
   return (
     <BrowserRouter>

@@ -11,7 +11,6 @@ export const GetUserData = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
-      console.log("api data", response)
       return response.data
     } catch (err) {
       throw err
@@ -22,7 +21,6 @@ export const GetUserData = createAsyncThunk(
 export const GetBots = createAsyncThunk(
   'global/getBots',
   async () => {
-    console.log("get data api call")
     try {
       const token = localStorage.getItem('authToken')
       const response = await axiosInstance.get('/bot/get-bot', {
@@ -30,10 +28,8 @@ export const GetBots = createAsyncThunk(
           Authorization: `Bearer ${token}`
         }
       })
-      console.log("api data", response)
       return response.data
     } catch (err) {
-      console.log("api err 1 =>", err)
       throw err
     }
   }

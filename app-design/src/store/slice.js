@@ -124,6 +124,9 @@ export const globalSlice = createSlice({
       .addCase(GetBots.fulfilled, (state, action) => {
         state.bots = action.payload.bots || []
       })
+      .addCase(GetBots.fulfilled, (state, action) => {
+        state.bots = action.payload.bots || []
+      })
       .addCase(getChatSessions.pending, (state) => {
         state.chatSessions = []
       })

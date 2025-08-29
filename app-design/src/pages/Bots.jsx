@@ -43,7 +43,9 @@ export function Bots() {
   }
 
   useEffect(() => {
-    dispatch(GetBots())
+    if (bots.length === 0) {
+      dispatch(GetBots())
+    }
   }, [dispatch])
 
   const filteredBots = bots.filter(bot =>

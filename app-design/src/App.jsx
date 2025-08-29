@@ -5,7 +5,6 @@ import { BotProvider } from './contexts/BotContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { BottomNavigation } from './components/BottomNavigation'
-import { useEffect } from 'react'
 
 // Pages
 import { Bots } from './pages/Bots'

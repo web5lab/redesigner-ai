@@ -27,7 +27,7 @@ import {
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { botsSelector } from '../store/selectors'
-import { addMessage, setInput, setIsTyping, setSessionId } from '../store/slice'
+import { addMessage, setInput, setIsTyping, setSessionId, setActiveBot } from '../store/slice'
 import { geminiChatApi, getChatSessions } from '../store/actions'
 
 export function Chat() {

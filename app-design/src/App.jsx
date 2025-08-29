@@ -12,6 +12,7 @@ import { Chat } from './pages/Chat'
 import { Training } from './pages/Training'
 import { Login } from './pages/Login'
 import { Settings } from './pages/Settings'
+import { Customize } from './pages/Customize'
 import Teams from './pages/Teams'
 
 import { logedInSelector } from './store/selectors'

@@ -140,24 +140,6 @@ export const getBotConfig = async ({ botId }) => {
   }
 }
 
-export const getChatSession = createAsyncThunk(
-  'global/getChatSession',
-  async ({ sessionId }) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.get(`/chat/get-chat-session/${sessionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      console.log("api data", response)
-      return response.data
-    } catch (err) {
-      throw err
-    }
-  }
-)
-
 export const scrapPdfData = createAsyncThunk(
   'global/addPdfData',
   async ({ data }) => {

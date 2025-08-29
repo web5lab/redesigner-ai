@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, Play, Bot, MessageSquare, Users, Smartphone, Zap, CheckCircle, X } from 'lucide-react';
 
-export default function Hero() {
+export function Hero() {
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [showIframe, setShowIframe] = useState(false);
@@ -33,181 +33,111 @@ export default function Hero() {
 
   return (
     <section className="relative pt-32 pb-20 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Main Content */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-            AI customer support
-            <br />
-            <span className="text-gray-600">with human backup</span>
-          </h1>
-          
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Deploy intelligent chatbots that seamlessly hand off to human agents. 
-            Support customers 24/7 from web and mobile app.
-          </p>
-
-          {/* Demo Input Section */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="flex-1 relative w-full">
-                  <input
-                    type="url"
-                    placeholder="Enter your website URL to see the demo"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <Zap className="w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 text-lg font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  <span>Try Demo</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-              
-              {errorMessage && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors">
-              <Play className="w-4 h-4" />
-              Or watch overview
-            </button>
-          </div>
-
-          {/* Simple Stats */}
-          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>99.9% uptime</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>10k+ support teams</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <span>Mobile app included</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Demo Section */}
+      <div className="max-w-7xl mx-auto">
+        {/* Main Layout - Left Content, Right Screenshots */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Web Demo */}
-          <div className="relative">
-            <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
-              {/* Browser Bar */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-                <div className="flex-1 text-center">
-                  <div className="bg-white border border-gray-200 rounded px-3 py-1 text-sm text-gray-600 max-w-xs mx-auto">
-                    yoursite.com
+
+          {/* Left Side - Hero Content */}
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
+                AI customer support
+                <br />
+                <span className="text-gray-600">with human backup</span>
+              </h1>
+
+              <p className="text-xl text-gray-600 mb-8">
+                Deploy intelligent chatbots that seamlessly hand off to human agents.
+                Support customers 24/7 from web and mobile app.
+              </p>
+            </div>
+
+            {/* Demo Input Section */}
+            <div className="mb-8">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex-1 relative w-full">
+                    <input
+                      type="url"
+                      placeholder="Enter your website URL to see the demo"
+                      value={websiteUrl}
+                      onChange={(e) => setWebsiteUrl(e.target.value)}
+                      className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                      <Zap className="w-5 h-5 text-gray-400" />
+                    </div>
                   </div>
+                  <button
+                    onClick={handleSubmit}
+                    className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 text-lg font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    <span>Try Demo</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
+
+                {errorMessage && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+                  </div>
+                )}
               </div>
-              
-              {/* Chat Interface */}
-              <div className="h-80 bg-gray-50 p-6 relative">
-                <div className="absolute bottom-6 right-6 w-72 h-64 bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col">
-                  {/* Chat Header */}
-                  <div className="flex items-center gap-3 p-3 border-b border-gray-100">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900 text-sm">Support Bot</div>
-                      <div className="text-xs text-green-600">Online</div>
-                    </div>
-                  </div>
-                  
-                  {/* Messages */}
-                  <div className="flex-1 p-3 space-y-2 text-xs">
-                    <div className="flex gap-2">
-                      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-2 h-2 text-white" />
-                      </div>
-                      <div className="bg-gray-100 rounded-lg px-2 py-1">
-                        Hi! How can I help you?
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2 justify-end">
-                      <div className="bg-blue-500 text-white rounded-lg px-2 py-1">
-                        I need help with billing
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Users className="w-2 h-2 text-white" />
-                      </div>
-                      <div className="bg-orange-100 border border-orange-200 rounded-lg px-2 py-1">
-                        <div className="text-orange-700">Connecting you with Sarah...</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Input */}
-                  <div className="p-2 border-t border-gray-100">
-                    <div className="flex gap-1">
-                      <input 
-                        className="flex-1 px-2 py-1 border border-gray-200 rounded text-xs" 
-                        placeholder="Type a message..."
-                        disabled
-                      />
-                      <button className="bg-blue-500 text-white p-1 rounded">
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-start items-center mb-8">
+              <button
+                onClick={handleWatchDemo}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors"
+              >
+                <Play className="w-4 h-4" />
+                Or watch overview
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="flex flex-wrap gap-6 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>99.9% uptime</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>10k+ support teams</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span>Mobile app included</span>
               </div>
             </div>
           </div>
 
-          {/* Mobile App Screenshots */}
+          {/* Right Side - Mobile Screenshots */}
           <div className="space-y-6">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Mobile app for agents</h3>
               <p className="text-gray-600 mb-6">
-                Support teams can respond to customers from anywhere using our native mobile app. 
+                Support teams can respond to customers from anywhere using our native mobile app.
                 Get notifications, manage conversations, and provide help on the go.
               </p>
             </div>
 
             {/* Mobile Screenshots */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-6 justify-center lg:justify-start">
               {/* Mobile Screenshot 1 - Chat List */}
-              <div className="w-48 h-96 bg-gray-900 rounded-3xl p-2 shadow-xl">
+              <div className="w-48 h-96 bg-gray-900 rounded-3xl p-2 shadow-xl transform rotate-1 hover:rotate-0 transition-transform duration-300">
                 <div className="w-full h-full bg-white rounded-2xl overflow-hidden">
                   {/* Status Bar */}
                   <div className="h-6 bg-gray-900 flex items-center justify-center">
                     <div className="text-white text-xs">9:41 AM</div>
                   </div>
-                  
+
                   {/* App Header */}
                   <div className="p-4 border-b border-gray-100">
                     <h4 className="font-bold text-gray-900">Support Chats</h4>
                     <p className="text-sm text-gray-600">3 active conversations</p>
                   </div>
-                  
+
                   {/* Chat List */}
                   <div className="p-2 space-y-2">
                     <div className="flex items-center gap-3 p-2 bg-blue-50 rounded-lg">
@@ -220,7 +150,7 @@ export default function Hero() {
                       </div>
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 p-2 rounded-lg">
                       <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                         <Users className="w-4 h-4 text-white" />
@@ -230,7 +160,7 @@ export default function Hero() {
                         <div className="text-xs text-gray-600 truncate">Payment issue resolved</div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 p-2 rounded-lg">
                       <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                         <Users className="w-4 h-4 text-white" />
@@ -246,13 +176,13 @@ export default function Hero() {
               </div>
 
               {/* Mobile Screenshot 2 - Chat Interface */}
-              <div className="w-48 h-96 bg-gray-900 rounded-3xl p-2 shadow-xl">
+              <div className="w-48 h-96 bg-gray-900 rounded-3xl p-2 shadow-xl transform -rotate-1 hover:rotate-0 transition-transform duration-300">
                 <div className="w-full h-full bg-white rounded-2xl overflow-hidden">
                   {/* Status Bar */}
                   <div className="h-6 bg-gray-900 flex items-center justify-center">
                     <div className="text-white text-xs">9:41 AM</div>
                   </div>
-                  
+
                   {/* Chat Header */}
                   <div className="flex items-center gap-3 p-3 border-b border-gray-100">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -263,7 +193,7 @@ export default function Hero() {
                       <div className="text-xs text-green-600">Agent: You</div>
                     </div>
                   </div>
-                  
+
                   {/* Messages */}
                   <div className="flex-1 p-3 space-y-2">
                     <div className="flex gap-2">
@@ -274,25 +204,25 @@ export default function Hero() {
                         I can't access my account
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 justify-end">
                       <div className="bg-blue-500 text-white rounded-lg px-2 py-1 text-xs">
                         I can help you with that. Let me check your account status.
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 justify-end">
                       <div className="bg-blue-500 text-white rounded-lg px-2 py-1 text-xs">
                         I've reset your password. Check your email for the new login details.
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Input */}
                   <div className="p-2 border-t border-gray-100">
                     <div className="flex gap-1">
-                      <input 
-                        className="flex-1 px-2 py-1 border border-gray-200 rounded text-xs" 
+                      <input
+                        className="flex-1 px-2 py-1 border border-gray-200 rounded text-xs"
                         placeholder="Type a message..."
                         disabled
                       />
@@ -305,8 +235,8 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Mobile Features */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            {/* Mobile Features - Now below screenshots */}
+            <div className="grid grid-cols-2 gap-4 text-sm max-w-md">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-blue-500" />
                 <span className="text-gray-600">Real-time chat</span>
@@ -385,7 +315,7 @@ export default function Hero() {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  
+
                   {/* Chat Messages */}
                   <div className="flex-1 p-4 space-y-4 overflow-y-auto">
                     <div className="flex gap-3">
@@ -398,7 +328,7 @@ export default function Hero() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-3 justify-end">
                       <div className="bg-blue-500 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-xs">
                         <p className="text-sm">
@@ -406,7 +336,7 @@ export default function Hero() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-3">
                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                         <Bot className="w-4 h-4 text-white" />
@@ -417,7 +347,7 @@ export default function Hero() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-3">
                       <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
                         <Users className="w-4 h-4 text-white" />
@@ -430,12 +360,12 @@ export default function Hero() {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Input Area */}
                   <div className="p-4 border-t border-gray-100 bg-gray-50">
                     <div className="flex gap-2">
-                      <input 
-                        className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                      <input
+                        className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Type your message..."
                         disabled
                       />
@@ -456,21 +386,20 @@ export default function Hero() {
                     title="Open chat"
                   >
                     <MessageSquare className="w-7 h-7 text-white" />
-                    
+
                     {unreadCount > 0 && (
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white animate-bounce">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </div>
                     )}
-                    
+
                     <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 animate-ping opacity-20"></div>
                   </button>
                 </div>
               )}
             </div>
           </div>
-        </div>
-      )}
+        </div>)}
     </section>
   );
 }

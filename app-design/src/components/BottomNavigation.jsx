@@ -19,7 +19,7 @@ export function BottomNavigation() {
   return (
     <>
       {/* Floating Action Button */}
-      <div className="fixed bottom-20 right-6 z-50">
+      <div className=" z-50">
         <button
           onClick={() => setShowFAB(!showFAB)}
           className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300 hover:scale-105"

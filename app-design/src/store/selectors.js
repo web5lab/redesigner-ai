@@ -41,3 +41,13 @@ export const isTypingSelector = createSelector(
   [globalSelector],
   (global) => global.uiConfig.isTyping
 )
+
+export const chatSessionsSelector = createSelector(
+  [globalSelector],
+  (global) => global.chatSessions
+)
+
+export const activeSessionSelector = createSelector(
+  [globalSelector],
+  (global) => global.activeSession
+)

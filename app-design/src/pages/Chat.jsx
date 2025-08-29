@@ -24,204 +24,8 @@ import {
   Camera
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
-import { addMessage, setInput, setIsTyping } from '../store/slice'
+import { addMessage, setInput, setIsTyping, setSessionId } from '../store/slice'
 import { geminiChatApi, getChatSessions } from '../store/actions'
-
-// Mock chat sessions data with more realistic conversations
-const mockChatSessions = [
-  {
-    id: 1,
-    title: 'Customer Support',
-    lastMessage: 'Thank you for your help with the billing issue!',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    messageCount: 12,
-    status: 'active',
-    unread: 2,
-    avatar: 'https://ui-avatars.com/api/?name=Customer+Support&background=3b82f6&color=ffffff&size=48',
-    messages: [
-      {
-        id: 1,
-        role: 'bot',
-        content: 'Hello! I\'m here to help with your customer support needs. How can I assist you today?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30)
-      },
-      {
-        id: 2,
-        role: 'user',
-        content: 'Hi! I\'m having trouble with my billing. My card was charged twice this month.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 25)
-      },
-      {
-        id: 3,
-        role: 'bot',
-        content: 'I understand your concern about the duplicate charge. Let me look into your billing history right away. Can you provide me with your account email?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 24)
-      },
-      {
-        id: 4,
-        role: 'user',
-        content: 'Sure, it\'s john.doe@email.com',
-        timestamp: new Date(Date.now() - 1000 * 60 * 20)
-      },
-      {
-        id: 5,
-        role: 'bot',
-        content: 'Perfect! I can see the duplicate charge on your account. I\'ve initiated a refund for the extra charge. You should see it reflected in 3-5 business days. Is there anything else I can help you with?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 15)
-      },
-      {
-        id: 6,
-        role: 'user',
-        content: 'Thank you for your help with the billing issue!',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5)
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Product Demo',
-    lastMessage: 'Can you show me the advanced features?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 45),
-    messageCount: 8,
-    status: 'active',
-    unread: 1,
-    avatar: 'https://ui-avatars.com/api/?name=Product+Demo&background=10b981&color=ffffff&size=48',
-    messages: [
-      {
-        id: 1,
-        role: 'bot',
-        content: 'Welcome! I\'m excited to show you our product features. What would you like to learn about first?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60)
-      },
-      {
-        id: 2,
-        role: 'user',
-        content: 'I\'d like to understand the AI capabilities and how it can help my business.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 55)
-      },
-      {
-        id: 3,
-        role: 'bot',
-        content: 'Great question! Our AI can handle customer inquiries 24/7, learn from your business data, and provide personalized responses. It integrates seamlessly with your existing tools.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 50)
-      },
-      {
-        id: 4,
-        role: 'user',
-        content: 'Can you show me the advanced features?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 45)
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Technical Support',
-    lastMessage: 'The integration is working perfectly now!',
-    timestamp: new Date(Date.now() - 1000 * 60 * 120),
-    messageCount: 15,
-    status: 'completed',
-    unread: 0,
-    avatar: 'https://ui-avatars.com/api/?name=Technical+Support&background=f59e0b&color=ffffff&size=48',
-    messages: [
-      {
-        id: 1,
-        role: 'bot',
-        content: 'Hi! I\'m here to help with any technical issues. What seems to be the problem?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 180)
-      },
-      {
-        id: 2,
-        role: 'user',
-        content: 'I\'m having trouble integrating the API with my website. The webhook isn\'t receiving data.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 175)
-      },
-      {
-        id: 3,
-        role: 'bot',
-        content: 'Let me help you troubleshoot the webhook integration. First, can you check if your endpoint URL is correctly configured in the dashboard?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 170)
-      },
-      {
-        id: 4,
-        role: 'user',
-        content: 'Yes, the URL looks correct. It\'s https://mysite.com/webhook',
-        timestamp: new Date(Date.now() - 1000 * 60 * 165)
-      },
-      {
-        id: 5,
-        role: 'bot',
-        content: 'Perfect! Now let\'s check the webhook secret and SSL certificate. Make sure your endpoint can handle POST requests and returns a 200 status code.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 160)
-      },
-      {
-        id: 6,
-        role: 'user',
-        content: 'Found the issue! I had the wrong HTTP method. Changed it to POST and now it\'s working.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 125)
-      },
-      {
-        id: 7,
-        role: 'bot',
-        content: 'Excellent! I\'m glad we got that sorted out. The webhook should now receive all the data properly. Is there anything else you need help with?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 123)
-      },
-      {
-        id: 8,
-        role: 'user',
-        content: 'The integration is working perfectly now!',
-        timestamp: new Date(Date.now() - 1000 * 60 * 120)
-      }
-    ]
-  },
-  {
-    id: 4,
-    title: 'Sales Inquiry',
-    lastMessage: 'When can we schedule a demo?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 240),
-    messageCount: 6,
-    status: 'active',
-    unread: 0,
-    avatar: 'https://ui-avatars.com/api/?name=Sales+Inquiry&background=8b5cf6&color=ffffff&size=48',
-    messages: [
-      {
-        id: 1,
-        role: 'bot',
-        content: 'Hello! I\'m here to help with your sales inquiry. What information can I provide about our services?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 260)
-      },
-      {
-        id: 2,
-        role: 'user',
-        content: 'Hi! I\'m interested in your enterprise plan. Can you tell me about the pricing and features?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 255)
-      },
-      {
-        id: 3,
-        role: 'bot',
-        content: 'I\'d be happy to discuss our enterprise solutions! Our enterprise plan includes unlimited AI conversations, priority support, custom integrations, and dedicated account management.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 250)
-      },
-      {
-        id: 4,
-        role: 'user',
-        content: 'That sounds great! What about the pricing structure?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 245)
-      },
-      {
-        id: 5,
-        role: 'bot',
-        content: 'Our enterprise pricing is customized based on your specific needs and usage volume. I\'d recommend scheduling a demo with our sales team to discuss your requirements and get a personalized quote.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 242)
-      },
-      {
-        id: 6,
-        role: 'user',
-        content: 'When can we schedule a demo?',
-        timestamp: new Date(Date.now() - 1000 * 60 * 240)
-      }
-    ]
-  }
-]
 
 export function Chat() {
   const navigate = useNavigate()
@@ -230,23 +34,63 @@ export function Chat() {
   const activeBot = useSelector(activeBotSelector)
   const input = useSelector(inputSelector)
   const isTyping = useSelector(isTypingSelector)
-  const [chatSessions, setChatSessions] = useState(mockChatSessions)
+  const [chatSessions, setChatSessions] = useState([])
   const [activeSessionId, setActiveSessionId] = useState(null)
   const [showSessionsList, setShowSessionsList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
+  const [sessionMessages, setSessionMessages] = useState({})
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
   const imageInputRef = useRef(null)
 
-  const activeSession = chatSessions.find(session => session.id === activeSessionId)
-  const messages = activeSession?.messages || []
+  const activeSession = chatSessions.find(session => session._id === activeSessionId)
+  const messages = sessionMessages[activeSessionId] || []
 
   const filteredSessions = chatSessions.filter(session =>
-    session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    session.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+    (session.title || session.name || 'Untitled Chat').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (session.lastMessage || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Load chat sessions when component mounts or activeBot changes
+  useEffect(() => {
+    if (activeBot?._id) {
+      loadChatSessions()
+    }
+  }, [activeBot])
+
+  const loadChatSessions = async () => {
+    try {
+      const response = await dispatch(getChatSessions({ botId: activeBot._id }))
+      if (response.payload) {
+        setChatSessions(response.payload)
+      }
+    } catch (error) {
+      console.error('Error loading chat sessions:', error)
+    }
+  }
+
+  const loadSessionMessages = async (sessionId) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/chat/get-chat-session/${sessionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const sessionData = await response.json()
+      
+      if (sessionData.messages) {
+        setSessionMessages(prev => ({
+          ...prev,
+          [sessionId]: sessionData.messages
+        }))
+      }
+    } catch (error) {
+      console.error('Error loading session messages:', error)
+    }
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -257,66 +101,104 @@ export function Chat() {
     const params = new URLSearchParams(location.search)
     const sessionId = params.get('session')
     if (sessionId) {
-      const session = chatSessions.find(s => s.id === parseInt(sessionId))
+      const session = chatSessions.find(s => s._id === sessionId)
       if (session) {
-        setActiveSessionId(session.id)
+        setActiveSessionId(session._id)
         setShowSessionsList(false)
+        loadSessionMessages(session._id)
       }
     }
   }, [location.search, chatSessions])
 
-  const createNewSession = () => {
-    const newSession = {
-      id: Date.now(),
-      title: `New Chat ${chatSessions.length + 1}`,
-      lastMessage: '',
-      timestamp: new Date(),
-      messageCount: 1,
-      status: 'active',
-      unread: 0,
-      avatar: 'https://ui-avatars.com/api/?name=New+Chat&background=6366f1&color=ffffff&size=48',
-      messages: [
-        {
-          id: 1,
-          role: 'bot',
-          content: 'Hello! I\'m your AI assistant. How can I help you today?',
-          timestamp: new Date()
-        }
-      ]
+  const createNewSession = async () => {
+    if (!activeBot) return
+
+    try {
+      // Create a new session by sending the first message
+      const welcomeMessage = activeBot.welcomeMessage || 'Hello! How can I help you today?'
+      
+      const newSessionData = {
+        _id: `temp_${Date.now()}`,
+        title: `New Chat ${chatSessions.length + 1}`,
+        name: `New Chat ${chatSessions.length + 1}`,
+        lastMessage: welcomeMessage,
+        timestamp: new Date(),
+        messageCount: 1,
+        status: 'active',
+        unread: 0,
+        messages: [
+          {
+            _id: `msg_${Date.now()}`,
+            role: 'bot',
+            content: welcomeMessage,
+            timestamp: new Date()
+          }
+        ]
+      }
+
+      setChatSessions(prev => [newSessionData, ...prev])
+      setSessionMessages(prev => ({
+        ...prev,
+        [newSessionData._id]: newSessionData.messages
+      }))
+      setActiveSessionId(newSessionData._id)
+      setShowSessionsList(false)
+    } catch (error) {
+      console.error('Error creating new session:', error)
     }
-    setChatSessions(prev => [newSession, ...prev])
-    setActiveSessionId(newSession.id)
-    setShowSessionsList(false)
   }
 
   const openSession = (sessionId) => {
     setActiveSessionId(sessionId)
     setShowSessionsList(false)
-    // Update URL to indicate we're in a chat session
     navigate(`/chat?session=${sessionId}`, { replace: true })
+    
+    // Load messages if not already loaded
+    if (!sessionMessages[sessionId]) {
+      loadSessionMessages(sessionId)
+    }
+    
     // Mark as read
     setChatSessions(prev => prev.map(session => 
-      session.id === sessionId ? { ...session, unread: 0 } : session
+      session._id === sessionId ? { ...session, unread: 0 } : session
     ))
   }
 
   const closeSession = () => {
     setActiveSessionId(null)
     setShowSessionsList(true)
-    // Remove session parameter from URL
     navigate('/chat', { replace: true })
   }
 
-  const deleteSession = (sessionId) => {
-    setChatSessions(prev => prev.filter(session => session.id !== sessionId))
-    if (activeSessionId === sessionId) {
-      closeSession()
+  const deleteSession = async (sessionId) => {
+    try {
+      const token = localStorage.getItem('authToken')
+      await fetch(`${import.meta.env.VITE_SERVER_URL}/chat/delete-session/${sessionId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      
+      setChatSessions(prev => prev.filter(session => session._id !== sessionId))
+      setSessionMessages(prev => {
+        const newMessages = { ...prev }
+        delete newMessages[sessionId]
+        return newMessages
+      })
+      
+      if (activeSessionId === sessionId) {
+        closeSession()
+      }
+    } catch (error) {
+      console.error('Error deleting session:', error)
     }
   }
 
   const formatTimestamp = (date) => {
     const now = new Date()
-    const diff = now - date
+    const timestamp = new Date(date)
+    const diff = now - timestamp
     const minutes = Math.floor(diff / (1000 * 60))
     const hours = Math.floor(diff / (1000 * 60 * 60))
     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
@@ -348,7 +230,7 @@ export function Chat() {
     if (!selectedFile || !activeSession) return
 
     const fileMessage = {
-      id: Date.now(),
+      _id: `msg_${Date.now()}`,
       role: 'user',
       content: `📎 ${selectedFile.name}`,
       timestamp: new Date(),
@@ -359,13 +241,17 @@ export function Chat() {
       }
     }
 
+    setSessionMessages(prev => ({
+      ...prev,
+      [activeSessionId]: [...(prev[activeSessionId] || []), fileMessage]
+    }))
+
     setChatSessions(prev => prev.map(session => 
-      session.id === activeSessionId 
+      session._id === activeSessionId 
         ? {
             ...session,
-            messages: [...session.messages, fileMessage],
             lastMessage: `📎 ${selectedFile.name}`,
-            messageCount: session.messageCount + 1,
+            messageCount: (session.messageCount || 0) + 1,
             timestamp: new Date()
           }
         : session
@@ -376,19 +262,23 @@ export function Chat() {
     // Simulate bot response to file
     setTimeout(() => {
       const botResponse = {
-        id: Date.now() + 1,
+        _id: `msg_${Date.now() + 1}`,
         role: 'bot',
         content: `I've received your file "${selectedFile.name}". How can I help you with this?`,
         timestamp: new Date()
       }
       
+      setSessionMessages(prev => ({
+        ...prev,
+        [activeSessionId]: [...(prev[activeSessionId] || []), botResponse]
+      }))
+
       setChatSessions(prev => prev.map(session => 
-        session.id === activeSessionId 
+        session._id === activeSessionId 
           ? {
               ...session,
-              messages: [...session.messages, botResponse],
               lastMessage: botResponse.content,
-              messageCount: session.messageCount + 1,
+              messageCount: (session.messageCount || 0) + 1,
               timestamp: new Date()
             }
           : session
@@ -398,107 +288,117 @@ export function Chat() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!input.trim() || isTyping) return
-
-    if (!activeSession) return
+    if (!input.trim() || isTyping || !activeBot) return
 
     dispatch(setIsTyping(true))
     
     const userMessage = {
-      id: Date.now(),
+      _id: `msg_${Date.now()}`,
       role: 'user',
       content: input,
       timestamp: new Date()
     }
 
-    // Update the active session with new message
+    // Add message to current session
+    setSessionMessages(prev => ({
+      ...prev,
+      [activeSessionId]: [...(prev[activeSessionId] || []), userMessage]
+    }))
+
+    // Update session in list
     setChatSessions(prev => prev.map(session => 
-      session.id === activeSessionId 
+      session._id === activeSessionId 
         ? {
             ...session,
-            messages: [...session.messages, userMessage],
             lastMessage: input,
-            messageCount: session.messageCount + 1,
+            messageCount: (session.messageCount || 0) + 1,
             timestamp: new Date()
           }
         : session
     ))
     
+    const messageToSend = input
     dispatch(setInput(''))
 
     try {
-      // Use real AI response if activeBot is available
-      if (activeBot) {
-        const chatData = await geminiChatApi({
-          data: { message: input, botId: activeBot._id }
-        })
-        
-        const botResponse = {
-          id: Date.now() + 1,
-          role: 'bot',
-          content: chatData.aiResponse,
-          timestamp: new Date()
+      const chatData = await geminiChatApi({
+        data: { 
+          message: messageToSend, 
+          botId: activeBot._id,
+          sessionId: activeSessionId.startsWith('temp_') ? null : activeSessionId
         }
+      })
+      
+      // Update session ID if it was temporary
+      if (activeSessionId.startsWith('temp_') && chatData.sessionId) {
+        const newSessionId = chatData.sessionId
         
+        // Update the session ID in the sessions list
         setChatSessions(prev => prev.map(session => 
-          session.id === activeSessionId 
-            ? {
-                ...session,
-                messages: [...session.messages, botResponse],
-                lastMessage: botResponse.content,
-                messageCount: session.messageCount + 1,
-                timestamp: new Date()
-              }
+          session._id === activeSessionId 
+            ? { ...session, _id: newSessionId }
             : session
         ))
-      } else {
-        // Fallback to mock response
-        setTimeout(() => {
-          const responses = [
-            "I understand your question. Let me help you with that right away.",
-            "That's a great point! Here's what I can tell you about that topic.",
-            "I'd be happy to assist you with this. Let me provide you with the information you need.",
-            "Thank you for reaching out! I have some helpful information for you.",
-            "I can definitely help you with that. Here's what you should know..."
-          ]
-          
-          const botResponse = {
-            id: Date.now() + 1,
-            role: 'bot',
-            content: responses[Math.floor(Math.random() * responses.length)],
-            timestamp: new Date()
-          }
-          
-          setChatSessions(prev => prev.map(session => 
-            session.id === activeSessionId 
-              ? {
-                  ...session,
-                  messages: [...session.messages, botResponse],
-                  lastMessage: botResponse.content,
-                  messageCount: session.messageCount + 1,
-                  timestamp: new Date()
-                }
-              : session
-          ))
-        }, 1500 + Math.random() * 1000)
+        
+        // Move messages to new session ID
+        setSessionMessages(prev => {
+          const messages = prev[activeSessionId] || []
+          const newMessages = { ...prev }
+          delete newMessages[activeSessionId]
+          newMessages[newSessionId] = messages
+          return newMessages
+        })
+        
+        setActiveSessionId(newSessionId)
+        dispatch(setSessionId(newSessionId))
       }
+      
+      const botResponse = {
+        _id: `msg_${Date.now() + 1}`,
+        role: 'bot',
+        content: chatData.aiResponse,
+        timestamp: new Date()
+      }
+      
+      const finalSessionId = chatData.sessionId || activeSessionId
+      
+      setSessionMessages(prev => ({
+        ...prev,
+        [finalSessionId]: [...(prev[finalSessionId] || []), botResponse]
+      }))
+
+      setChatSessions(prev => prev.map(session => 
+        session._id === finalSessionId 
+          ? {
+              ...session,
+              lastMessage: botResponse.content,
+              messageCount: (session.messageCount || 0) + 1,
+              timestamp: new Date()
+            }
+          : session
+      ))
       
       dispatch(setIsTyping(false))
     } catch (error) {
       const errorResponse = {
-        id: Date.now() + 1,
+        _id: `msg_${Date.now() + 1}`,
         role: 'bot',
         content: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date(),
         isError: true
       }
+      
+      setSessionMessages(prev => ({
+        ...prev,
+        [activeSessionId]: [...(prev[activeSessionId] || []), errorResponse]
+      }))
+
       setChatSessions(prev => prev.map(session => 
-        session.id === activeSessionId 
+        session._id === activeSessionId 
           ? {
               ...session,
-              messages: [...session.messages, errorResponse],
               lastMessage: errorResponse.content,
-              messageCount: session.messageCount + 1,
+              messageCount: (session.messageCount || 0) + 1,
               timestamp: new Date()
             }
           : session
@@ -515,11 +415,21 @@ export function Chat() {
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Chats</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {chatSessions.length} conversations
-                </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate('/')}
+                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors touch-target"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </button>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    {activeBot?.name || 'Chat Sessions'}
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {chatSessions.length} conversations
+                  </p>
+                </div>
               </div>
               <button
                 onClick={createNewSession}
@@ -548,19 +458,23 @@ export function Chat() {
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {filteredSessions.map((session) => (
               <button
-                key={session.id}
-                onClick={() => openSession(session.id)}
+                key={session._id}
+                onClick={() => openSession(session._id)}
                 className="w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left group"
               >
                 <div className="flex items-center gap-4">
                   {/* Avatar */}
                   <div className="relative">
-                    <div className="w-14 h-14 rounded-full overflow-hidden shadow-lg ring-2 ring-gray-100 dark:ring-gray-700">
-                      <img
-                        src={session.avatar}
-                        alt={session.title}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-14 h-14 rounded-full overflow-hidden shadow-lg ring-2 ring-gray-100 dark:ring-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                      {activeBot?.icon ? (
+                        <img
+                          src={activeBot.icon}
+                          alt={session.title || session.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Bot className="w-6 h-6 text-white" />
+                      )}
                     </div>
                     {session.status === 'active' && (
                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
@@ -571,11 +485,11 @@ export function Chat() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {session.title}
+                        {session.title || session.name || `Chat ${session._id.slice(-6)}`}
                       </h3>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatTimestamp(session.timestamp)}
+                          {formatTimestamp(session.timestamp || session.updatedAt)}
                         </span>
                         {session.unread > 0 && (
                           <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
@@ -586,19 +500,30 @@ export function Chat() {
                     </div>
                     
                     <p className="text-sm text-gray-500 dark:text-gray-400 truncate mb-1">
-                      {session.lastMessage}
+                      {session.lastMessage || 'No messages yet'}
                     </p>
                     
                     <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                       <div className="flex items-center gap-1">
                         <MessageCircle className="w-3 h-3" />
-                        <span>{session.messageCount} messages</span>
+                        <span>{session.messageCount || 0} messages</span>
                       </div>
                       <div className={`w-2 h-2 rounded-full ${
                         session.status === 'active' ? 'bg-green-500' : 'bg-gray-300'
                       }`}></div>
                     </div>
                   </div>
+
+                  {/* Actions */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteSession(session._id)
+                    }}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </button>
             ))}
@@ -617,7 +542,7 @@ export function Chat() {
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
                   {searchQuery 
                     ? `No conversations found matching "${searchQuery}"`
-                    : 'Start your first conversation with an AI assistant'
+                    : `Start your first conversation with ${activeBot?.name || 'your AI assistant'}`
                   }
                 </p>
                 {!searchQuery && (
@@ -650,17 +575,21 @@ export function Chat() {
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
             
-            <div className="w-10 h-10 rounded-full overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-700">
-              <img
-                src={activeSession?.avatar || 'https://ui-avatars.com/api/?name=AI+Assistant&background=3b82f6&color=ffffff&size=40'}
-                alt={activeSession?.title}
-                className="w-full h-full object-cover"
-              />
+            <div className="w-10 h-10 rounded-full overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+              {activeBot?.icon ? (
+                <img
+                  src={activeBot.icon}
+                  alt={activeBot.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Bot className="w-5 h-5 text-white" />
+              )}
             </div>
             
             <div className="flex-1 min-w-0">
               <h2 className="font-semibold text-gray-900 dark:text-white truncate">
-                {activeSession?.title || 'Chat Session'}
+                {activeBot?.name || 'AI Assistant'}
               </h2>
               <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 {isTyping ? (
@@ -686,7 +615,7 @@ export function Chat() {
                 onClick={() => deleteSession(activeSessionId)}
                 className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors touch-target"
               >
-                <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <Trash2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
             </div>
           </div>
@@ -696,52 +625,84 @@ export function Chat() {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-900">
         <div className="p-4 space-y-4">
-          {messages.map((message, index) => (
-            <div key={message.id || index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`flex items-end gap-2 max-w-[85%] group`}>
-                {message.role === 'bot' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Bot className="w-4 h-4 text-white" />
-                  </div>
-                )}
-
-                <div className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <div
-                    className={`rounded-2xl px-4 py-3 shadow-sm max-w-xs transition-all duration-200 ${
-                      message.role === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-md'
-                        : message.isError
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-bl-md'
-                          : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-bl-md shadow-md'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
-                  </div>
-                  
-                  <div className="mt-1 px-1">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {formatMessageTime(message.timestamp)}
-                      {message.role === 'user' && (
-                        <span className="text-blue-500 ml-1">✓✓</span>
-                      )}
-                    </span>
-                  </div>
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center p-8">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                  <Bot className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
-
-                {message.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-500 to-gray-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                )}
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Start a conversation
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Send a message to begin chatting with {activeBot?.name || 'your AI assistant'}
+                </p>
               </div>
             </div>
-          ))}
+          ) : (
+            messages.map((message, index) => (
+              <div key={message._id || index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-end gap-2 max-w-[85%] group`}>
+                  {message.role === 'bot' && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                      {activeBot?.icon ? (
+                        <img
+                          src={activeBot.icon}
+                          alt="Bot"
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <Bot className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                  )}
+
+                  <div className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div
+                      className={`rounded-2xl px-4 py-3 shadow-sm max-w-xs transition-all duration-200 ${
+                        message.role === 'user'
+                          ? 'bg-blue-600 text-white rounded-br-md'
+                          : message.isError
+                            ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-bl-md'
+                            : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-bl-md shadow-md'
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed">{message.content}</p>
+                    </div>
+                    
+                    <div className="mt-1 px-1">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {formatMessageTime(message.timestamp)}
+                        {message.role === 'user' && (
+                          <span className="text-blue-500 ml-1">✓✓</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {message.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-500 to-gray-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
 
           {isTyping && (
             <div className="flex justify-start">
               <div className="flex items-end gap-2 max-w-[80%]">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
-                  <Bot className="w-4 h-4 text-white" />
+                  {activeBot?.icon ? (
+                    <img
+                      src={activeBot.icon}
+                      alt="Bot"
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <Bot className="w-4 h-4 text-white" />
+                  )}
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-md border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-2">
@@ -750,6 +711,7 @@ export function Chat() {
                       <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{animationDelay: '0.1s'}}></div>
                       <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{animationDelay: '0.2s'}}></div>
                     </div>
+                    <span className="text-xs text-gray-500 italic">AI is thinking...</span>
                   </div>
                 </div>
               </div>
@@ -843,7 +805,6 @@ export function Chat() {
                   
                   <button
                     onClick={() => {
-                      // Handle camera capture
                       setShowAttachmentMenu(false)
                     }}
                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
@@ -866,6 +827,12 @@ export function Chat() {
               placeholder="Type a message..."
               className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               disabled={isTyping}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit(e)
+                }
+              }}
             />
           </div>
           

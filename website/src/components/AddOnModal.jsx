@@ -27,17 +27,17 @@ export function AddOnModal({ addOn, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full shadow-lg border border-gray-200 relative">
+      <div className="bg-white rounded-lg max-w-md w-full border border-gray-200 relative">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+          className="absolute right-4 top-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <X className="w-4 h-4 text-gray-500" />
         </button>
 
         <div className="p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200">
+            <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
               <Package className="w-5 h-5 text-gray-600" />
             </div>
             <div>
@@ -50,7 +50,7 @@ export function AddOnModal({ addOn, onClose }) {
 
           {status === 'success' ? (
             <div className="text-center py-8">
-              <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -68,7 +68,7 @@ export function AddOnModal({ addOn, onClose }) {
             </div>
           ) : (
             <form onSubmit={handlePurchase} className="space-y-6">
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm font-medium text-gray-700">Price per unit</span>
                   <span className="text-sm font-medium text-gray-900">{addOn?.price || '$0'}</span>
@@ -97,7 +97,7 @@ export function AddOnModal({ addOn, onClose }) {
               </div>
 
               {status === 'error' && (
-                <div className="p-3 rounded-lg bg-red-50 flex items-center gap-2 text-red-700 border border-red-200">
+                <div className="p-3 rounded-lg bg-red-100 flex items-center gap-2 text-red-700 border border-red-200">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <p className="text-sm">{error}</p>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Crown, Zap, MessageCircle, RotateCcw, X, Send, CheckCircle, Star } from 'lucide-react';
+import { Sparkles, Crown, Zap, MessageCircle, RotateCcw, X, Send, CheckCircle, Star, Bot, User } from 'lucide-react';
 
 // --- Quick reply options ---
 const quickReplies = {
@@ -327,33 +327,32 @@ const ChatWidget = () => {
       </div>
 
       {/* Enhanced Header */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-2 text-white shadow-2xl border-b border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/50 to-purple-500/50 backdrop-blur-sm"></div>
-        <div className="relative flex items-center justify-between">
+      <div className="bg-gray-900 px-6 py-4 text-white border-b border-gray-700">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 flex-1 min-w-0">
             <div className="relative">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-lg">
+              <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center border border-gray-600">
                 {currentAgent.includes('AI') || currentAgent === 'Connecting...' ? (
                   <div className="relative">
-                    <Sparkles className="w-6 h-6 text-white" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse border border-white/50"></div>
+                    <Bot className="w-6 h-6 text-white" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border border-white"></div>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Crown className="w-6 h-6 text-white" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse border border-white/50"></div>
+                    <User className="w-6 h-6 text-white" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border border-white"></div>
                   </div>
                 )}
               </div>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-lg truncate text-white">{currentAgent}</h3>
+                <h3 className="font-semibold text-lg truncate text-white">{currentAgent}</h3>
               
               </div>
               <div className="flex items-center space-x-2 text-sm">
-                <div className={`w-2.5 h-2.5 rounded-full ${isTransferring ? 'bg-yellow-400' : 'bg-green-400'} animate-pulse shadow-lg`}></div>
-                <span className="text-white/90 font-medium">{isTransferring ? 'Connecting...' : 'Online'}</span>
+                <div className={`w-2 h-2 rounded-full ${isTransferring ? 'bg-yellow-400' : 'bg-green-400'}`}></div>
+                <span className="text-gray-300 font-medium">{isTransferring ? 'Connecting...' : 'Online'}</span>
                
               </div>
             </div>
@@ -361,17 +360,17 @@ const ChatWidget = () => {
           <div className="flex items-center space-x-3 pl-4 flex-shrink-0">
             <button
               onClick={() => clearChat()}
-              className="group w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-all duration-300 border border-white/30 hover:scale-110 shadow-lg"
+              className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center justify-center transition-colors border border-gray-600"
               title="Clear chat"
             >
-              <RotateCcw className="w-5 h-5 text-white group-hover:rotate-180 transition-transform duration-500" />
+              <RotateCcw className="w-5 h-5 text-white" />
             </button>
             <button
               onClick={() => emitCloseEvent()}
-              className="group w-10 h-10 bg-red-500/80 hover:bg-red-600 backdrop-blur-sm rounded-xl flex items-center justify-center transition-all duration-300 border border-white/30 hover:scale-110 shadow-lg"
+              className="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center transition-colors border border-red-500"
               title="Close chat"
             >
-              <X className="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-300" />
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
@@ -380,10 +379,10 @@ const ChatWidget = () => {
       {/* Enhanced Message Container */}
       <div
         ref={chatContainerRef}
-        className="flex-1 p-6 space-y-6 overflow-y-auto relative z-10"
+        className="flex-1 p-6 space-y-4 overflow-y-auto bg-gray-50"
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(59, 130, 246, 0.3) transparent'
+          scrollbarColor: 'rgba(156, 163, 175, 0.3) transparent'
         }}
       >
         {chatMessages.map((msg, index) => (
@@ -391,7 +390,7 @@ const ChatWidget = () => {
             {/* System Message */}
             {msg.type === 'system' ? (
               <div className="flex justify-center">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg border border-white/20 backdrop-blur-sm">
+                <div className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium border border-green-500">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
                     {msg.message}
@@ -400,34 +399,28 @@ const ChatWidget = () => {
               </div>
             ) : (
               <div className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className="max-w-[85%] sm:max-w-[80%]">
+                <div className="max-w-[80%]">
                   {/* Agent name above bot messages */}
                   {msg.type === 'bot' && msg.agent && msg.agent !== currentAgent && msg.agent !== 'AI Assistant' && msg.agent !== 'System' && !isTransferring && (
                     <div className="text-xs text-gray-600 mb-1 px-2 font-medium">
                       {msg.agent}
                     </div>
                   )}
-                  <div className="relative group">
+                  <div className="relative">
                     <div
-                      className={`px-6 py-4 rounded-3xl shadow-lg transition-all duration-300 group-hover:shadow-xl ${
+                      className={`px-4 py-3 rounded-lg border transition-all ${
                         msg.type === 'user'
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-br-lg border border-blue-400/50'
-                          : 'bg-white/80 backdrop-blur-sm text-gray-800 rounded-bl-lg border border-white/50 shadow-xl'
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'bg-white text-gray-900 border-gray-200'
                       }`}
                     >
                       <p className="text-sm leading-relaxed font-medium">{msg.message}</p>
-                      <p className={`text-xs mt-2 text-right font-medium ${
-                        msg.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                      <p className={`text-xs mt-2 text-right ${
+                        msg.type === 'user' ? 'text-gray-300' : 'text-gray-500'
                       }`}>
                         {formatTime(msg.timestamp)}
                       </p>
                     </div>
-                    {/* Decorative gradient border */}
-                    <div className={`absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 ${
-                      msg.type === 'user' 
-                        ? 'bg-gradient-to-r from-blue-400 to-indigo-500 blur-sm' 
-                        : 'bg-gradient-to-r from-blue-200 to-purple-200 blur-sm'
-                    }`} style={{transform: 'scale(1.02)'}}></div>
                   </div>
                 </div>
               </div>
@@ -438,16 +431,16 @@ const ChatWidget = () => {
         {/* Enhanced Typing Indicator */}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] sm:max-w-[80%]">
+            <div className="max-w-[80%]">
               <div className="text-xs text-gray-600 mb-1 px-2 font-medium flex items-center gap-2">
-                <Sparkles className="w-3 h-3 animate-spin" />
+                <Bot className="w-3 h-3" />
                 {currentAgent}
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl rounded-bl-lg px-6 py-4 shadow-xl border border-white/50">
+              <div className="bg-white rounded-lg px-4 py-3 border border-gray-200">
                 <div className="flex space-x-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full animate-bounce"></div>
-                  <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full animate-bounce delay-100"></div>
-                  <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full animate-bounce delay-200"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
                 </div>
               </div>
             </div>
@@ -461,12 +454,10 @@ const ChatWidget = () => {
               <button
                 key={index}
                 onClick={() => handleQuickReply(reply)}
-                className="group relative px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 text-blue-700 text-sm rounded-2xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300/50 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl font-medium"
+                className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-100 hover:border-gray-300 transition-all font-medium"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative flex items-center gap-2">
+                <span className="flex items-center gap-2">
                   {reply}
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </span>
               </button>
             ))}
@@ -475,9 +466,8 @@ const ChatWidget = () => {
       </div>
 
       {/* Enhanced Input Area */}
-      <div className="relative p-6 bg-white/80 backdrop-blur-sm border-t border-white/50 flex-shrink-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-indigo-50/50"></div>
-        <div className="relative flex space-x-4">
+      <div className="p-6 bg-white border-t border-gray-200 flex-shrink-0">
+        <div className="flex space-x-4">
           <div className="flex-1 relative">
             <input
               type="text"
@@ -485,20 +475,16 @@ const ChatWidget = () => {
               onChange={(e) => setCurrentMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleChatSubmit()}
               placeholder="Type your message..."
-              className="w-full px-6 py-4 bg-white/90 backdrop-blur-sm border-2 border-gray-200/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-sm placeholder-gray-500 font-medium transition-all duration-300 shadow-lg"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm placeholder-gray-500"
               disabled={isTransferring}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <MessageCircle className="w-5 h-5 text-gray-400" />
-            </div>
           </div>
           <button
             onClick={handleChatSubmit}
-            className="group relative w-12 h-12 flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+            className="w-12 h-12 flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             disabled={!currentMessage.trim() || isTransferring}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-2xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-            <Send className="w-5 h-5 relative group-hover:translate-x-0.5 transition-transform duration-200" />
+            <Send className="w-5 h-5" />
           </button>
         </div>
       </div>

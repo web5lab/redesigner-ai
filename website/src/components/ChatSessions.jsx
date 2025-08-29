@@ -43,7 +43,7 @@ export function ChatSessions({ sessions, onSessionSelect, onSessionDelete }) {
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-lg focus:border-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm"
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all text-sm"
           />
         </div>
@@ -86,7 +86,7 @@ export function ChatSessions({ sessions, onSessionSelect, onSessionDelete }) {
                     </p>
                     
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           <span>{formatTimestamp(session.timestamp)}</span>
@@ -116,7 +116,7 @@ export function ChatSessions({ sessions, onSessionSelect, onSessionDelete }) {
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
               <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
                 <MessageSquare className="w-8 h-8 text-gray-400" />
               </div>
@@ -130,8 +130,8 @@ export function ChatSessions({ sessions, onSessionSelect, onSessionDelete }) {
                 }
               </p>
               {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-4 hover:bg-gray-100 transition-colors cursor-pointer"
                   className="mt-3 text-gray-900 font-medium text-sm hover:underline"
                 >
                   Clear search

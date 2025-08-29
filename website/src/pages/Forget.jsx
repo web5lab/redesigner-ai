@@ -24,13 +24,13 @@ export function ForgotPassword() {
       subtitle="Enter your email to receive a reset link"
     >
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 flex items-center gap-2 text-red-700 border border-red-200">
+        <div className="mb-4 p-3 rounded-lg bg-red-100 flex items-center gap-2 text-red-700 border border-red-200">
           <AlertCircle className="w-4 h-4" />
           <p className="text-sm">{error}</p>
         </div>
       )}
       {message && (
-        <div className="mb-4 p-3 rounded-lg bg-green-50 flex items-center gap-2 text-green-700 border border-green-200">
+        <div className="mb-4 p-3 rounded-lg bg-green-100 flex items-center gap-2 text-green-700 border border-green-200">
           <CheckCircle className="w-4 h-4" />
           <p className="text-sm">{message}</p>
         </div>

@@ -69,7 +69,7 @@ export function SwapInterface() {
   }) : '0.00';
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm">
+    <div className="bg-white rounded-lg p-6 border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-900">Swap Tokens</h3>
         <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700">
@@ -80,7 +80,7 @@ export function SwapInterface() {
 
       <form onSubmit={handleSwap} className="space-y-6">
         <div className="space-y-2">
-          <div className="relative bg-blue-50/50 p-4 rounded-xl">
+          <div className="relative bg-gray-100 p-4 rounded-lg">
             <label className="text-xs text-gray-500 mb-2 block">You Pay</label>
             <div className="flex items-center gap-3">
             <input
@@ -96,7 +96,7 @@ export function SwapInterface() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
                 onClick={() => setFromToken(TOKENS.find(t => t !== fromToken))}
               >
                 <img src={fromToken.icon} alt={fromToken.symbol} className="w-5 h-5" />
@@ -109,7 +109,7 @@ export function SwapInterface() {
               <button
                 type="button"
                 onClick={() => setAmount(fromToken.balance)}
-                className="text-blue-600 hover:text-blue-700"
+                className="text-gray-600 hover:text-gray-900"
               >
                 MAX
               </button>
@@ -126,14 +126,14 @@ export function SwapInterface() {
               setToToken(temp);
               setQuote(null);
             }}
-            className="p-2 rounded-full hover:bg-blue-50 border border-blue-200 bg-white -my-3 z-10"
+            className="p-2 rounded-full hover:bg-gray-100 border border-gray-200 bg-white -my-3 z-10"
           >
-            <ArrowDownUp className="w-4 h-4 text-blue-500" />
+            <ArrowDownUp className="w-4 h-4 text-gray-600" />
           </button>
         </div>
 
         <div className="space-y-2">
-          <div className="relative bg-blue-50/50 p-4 rounded-xl">
+          <div className="relative bg-gray-100 p-4 rounded-lg">
             <label className="text-xs text-gray-500 mb-2 block">You Receive</label>
             <div className="flex items-center gap-3">
             <input
@@ -146,7 +146,7 @@ export function SwapInterface() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-blue-200 hover:bg-blue-50 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
                 onClick={() => setToToken(TOKENS.find(t => t !== toToken))}
               >
                 <img src={toToken.icon} alt={toToken.symbol} className="w-5 h-5" />
@@ -169,7 +169,7 @@ export function SwapInterface() {
             <button
               type="button"
               onClick={() => setShowSlippageSettings(!showSlippageSettings)}
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
               Slippage Tolerance
             </button>
@@ -185,8 +185,8 @@ export function SwapInterface() {
                   onClick={() => setSlippage(value)}
                   className={`flex-1 px-3 py-1.5 rounded-lg text-sm ${
                     slippage === value
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'bg-blue-50 text-gray-600 hover:bg-blue-100'
+                      ? 'bg-gray-200 text-gray-900'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   {value}%
@@ -202,9 +202,9 @@ export function SwapInterface() {
             onClick={handleGetQuote}
             className={`w-full px-4 py-3 rounded-xl flex items-center justify-center gap-2 ${
               isLoading
-                ? 'bg-blue-100 cursor-wait'
-                : 'bg-blue-100 hover:bg-blue-200'
-            } text-blue-600 transition-colors font-medium`}
+                ? 'bg-gray-200 cursor-wait'
+                : 'bg-gray-200 hover:bg-gray-300'
+            } text-gray-700 transition-colors font-medium`}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -218,7 +218,7 @@ export function SwapInterface() {
           </button>
           <button
             type="submit"
-            className="w-full px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
+            className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
             disabled={!quote}
           >
             Swap

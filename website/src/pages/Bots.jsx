@@ -535,15 +535,7 @@ export function Bots() {
 
                     {/* Action Buttons */}
                     <div className="space-y-3">
-                      {/* Primary Action */}
-                      <button
-                        onClick={() => handleBotSelect(bot)}
-                        className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                        Open Dashboard
-                      </button>
-                      
+     
                       {/* Secondary Actions */}
                       <div className="grid grid-cols-3 gap-2">
                         <button

@@ -5,7 +5,7 @@ import { api } from '../services/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { getChatSessions } from '../store/global.Action';
 import { activeBotSelector, SessionsSelector } from '../store/global.Selctor';
-import { MessageSquare, Send, Download, Trash2, Edit3, MoreVertical, Sparkles, Clock, Users, TrendingUp, Zap, Bot, User, Copy, Share2, Archive } from 'lucide-react';
+import { MessageSquare, Send, Download, Trash2, Edit3, Bot, User, Clock } from 'lucide-react';
 
 export function Sessions() {
   const navigate = useNavigate();
@@ -17,9 +17,6 @@ export function Sessions() {
   const [isTyping, setIsTyping] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [showSaveQAModal, setShowSaveQAModal] = useState(false);
-  const [currentQA, setCurrentQA] = useState({ question: '', answer: '' });
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -41,7 +38,6 @@ export function Sessions() {
   const handleDeleteSession = async (sessionId) => {
     try {
       await api.deleteSession(sessionId);
-      setSessions(prev => prev.filter(session => session._id !== sessionId));
       if (selectedSession && selectedSession._id === sessionId) {
         setSelectedSession(sessions.find(s => s._id !== sessionId) || null);
       }
@@ -132,71 +128,31 @@ export function Sessions() {
       messages: updatedMessages
     });
 
-    const editedMessage = selectedSession.messages.find(msg => msg._id === editingMessageId);
-    if (editedMessage && editedMessage.role === 'bot') {
-      const userMessageIndex = updatedMessages.findIndex(
-        msg => msg._id === editingMessageId
-      ) - 1;
-
-      if (userMessageIndex >= 0) {
-        const userMessage = updatedMessages[userMessageIndex];
-        setCurrentQA({
-          question: userMessage.content,
-          answer: editedContent
-        });
-        setShowSaveQAModal(true);
-      }
-    }
-
     setEditingMessageId(null);
     setEditedContent('');
   };
 
-  const saveQAPair = () => {
-    console.log('Saving Q&A pair:', currentQA);
-    setShowSaveQAModal(false);
-  };
-
-  const exportToJSON = () => {
-    if (!selectedSession) return;
-
-    const sessionData = {
-      sessionId: selectedSession._id,
-      sessionName: selectedSession.name,
-      botId: activeBot._id,
-      botName: activeBot.name,
-      messages: selectedSession.messages,
-      createdAt: selectedSession.createdAt,
-      updatedAt: selectedSession.updatedAt
-    };
-
-    const dataStr = JSON.stringify(sessionData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-    const exportFileDefaultName = `chat_session_${selectedSession._id}.json`;
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none -z-10">
-        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 left-1/2 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
-      </div>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+              <MessageSquare className="w-6 h-6 text-gray-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Chat Sessions</h1>
+              <p className="text-gray-600">Manage and review conversations</p>
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <div className="relative flex w-full h-screen z-10">
-        {/* Enhanced Left Sidebar - Sessions List */}
-        <div className="w-96 flex-shrink-0 bg-white/80 backdrop-blur-sm border-r border-white/50 shadow-lg">
-         
-
-          {/* Enhanced Sessions List */}
-          <div className="flex-1 h-full overflow-hidden">
+      <div className="flex w-full h-screen">
+        {/* Left Sidebar - Sessions List */}
+        <div className="w-96 flex-shrink-0 bg-gray-50 border-r border-gray-200">
+          <div className="h-full overflow-hidden">
             <ChatSessions
               sessions={sessions}
               activeSessionId={selectedSession?._id}
@@ -206,21 +162,18 @@ export function Sessions() {
           </div>
         </div>
 
-        {/* Enhanced Main Chat Area */}
-        <div className="flex-1 flex flex-col bg-white/60 backdrop-blur-sm">
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col bg-white">
           {selectedSession ? (
             <>
-              {/* Enhanced Chat Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gradient-to-r from-white/80 to-blue-50/80 backdrop-blur-sm shadow-sm">
+              {/* Chat Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
-                      <Bot className="w-6 h-6" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+                    <Bot className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                    <h2 className="text-lg font-semibold text-gray-900">
                       {activeBot.name}
                     </h2>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -235,36 +188,23 @@ export function Sessions() {
 
                 <div className="flex items-center gap-2">
                   <button
-                    className="group p-3 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 hover:scale-105"
-                    onClick={() => setShowExportModal(true)}
+                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     title="Export chat"
                   >
-                    <Download className="w-5 h-5" />
+                    <Download className="w-4 h-4" />
                   </button>
                   <button
-                    className="group p-3 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200 hover:scale-105"
-                    title="Share chat"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </button>
-                  <button
-                    className="group p-3 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all duration-200 hover:scale-105"
-                    title="Archive chat"
-                  >
-                    <Archive className="w-5 h-5" />
-                  </button>
-                  <button
-                    className="group p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 hover:scale-105"
+                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     onClick={() => handleDeleteSession(selectedSession._id)}
                     title="Delete chat"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Enhanced Messages Area */}
-              <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+              {/* Messages Area */}
+              <div className="flex-1 p-6 overflow-y-auto">
                 {selectedSession.messages && selectedSession.messages.length > 0 ? (
                   <div className="space-y-6 max-w-4xl mx-auto">
                     {selectedSession.messages.map((message, index) => (
@@ -273,35 +213,31 @@ export function Sessions() {
                         className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} group`}
                       >
                         {message.role !== 'user' && (
-                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold mr-4 flex-shrink-0 shadow-lg">
-                            <Bot className="w-5 h-5" />
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center mr-4 flex-shrink-0">
+                            <Bot className="w-4 h-4 text-gray-600" />
                           </div>
                         )}
 
                         <div className={`flex flex-col max-w-3xl ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
                           {editingMessageId === message._id ? (
-                            <div className={`rounded-2xl p-6 shadow-lg border ${
-                              message.role === 'user' 
-                                ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200' 
-                                : 'bg-white border-gray-200'
-                            }`}>
+                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 w-full">
                               <textarea
-                                className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
                                 value={editedContent}
                                 onChange={(e) => setEditedContent(e.target.value)}
                                 rows={4}
                                 style={{ minWidth: '400px' }}
                               />
-                              <div className="flex justify-end space-x-3 mt-4">
+                              <div className="flex justify-end space-x-3 mt-3">
                                 <button
                                   onClick={cancelEditing}
-                                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all"
+                                  className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all"
                                 >
                                   Cancel
                                 </button>
                                 <button
                                   onClick={saveEdit}
-                                  className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md font-medium"
+                                  className="px-4 py-1.5 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-all font-medium"
                                 >
                                   Save Changes
                                 </button>
@@ -309,28 +245,27 @@ export function Sessions() {
                             </div>
                           ) : (
                             <div
-                              className={`relative rounded-2xl px-6 py-4 shadow-lg transition-all duration-200 hover:shadow-xl ${
+                              className={`relative rounded-lg px-4 py-3 border transition-all ${
                                 message.role === 'user'
-                                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-br-none'
-                                  : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none hover:border-blue-200'
+                                  ? 'bg-gray-900 text-white border-gray-900'
+                                  : 'bg-white border-gray-200 text-gray-800 hover:border-gray-300'
                               }`}
                             >
                               <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
-                              <div className={`text-xs mt-3 flex items-center gap-2 ${
-                                message.role === 'user' ? 'text-blue-200' : 'text-gray-500'
+                              <div className={`text-xs mt-2 flex items-center gap-2 ${
+                                message.role === 'user' ? 'text-gray-300' : 'text-gray-500'
                               }`}>
                                 <Clock className="w-3 h-3" />
                                 <span>{formatTimestamp(message.timestamp)}</span>
                               </div>
 
-                              {/* Enhanced Edit Button */}
                               {message.role === 'bot' && (
                                 <button
                                   onClick={() => startEditing(message)}
-                                  className="absolute -top-2 -right-2 p-2 bg-white border border-gray-200 text-blue-600 hover:text-white hover:bg-blue-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110"
+                                  className="absolute -top-2 -right-2 p-1.5 bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                                   title="Edit response"
                                 >
-                                  <Edit3 className="w-4 h-4" />
+                                  <Edit3 className="w-3 h-3" />
                                 </button>
                               )}
                             </div>
@@ -338,8 +273,8 @@ export function Sessions() {
                         </div>
 
                         {message.role === 'user' && (
-                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center text-white font-bold ml-4 flex-shrink-0 shadow-lg">
-                            <User className="w-5 h-5" />
+                          <div className="w-8 h-8 rounded-lg bg-gray-600 border border-gray-600 flex items-center justify-center ml-4 flex-shrink-0">
+                            <User className="w-4 h-4 text-white" />
                           </div>
                         )}
                       </div>
@@ -347,17 +282,17 @@ export function Sessions() {
 
                     {isTyping && (
                       <div className="flex justify-start">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold mr-4 flex-shrink-0 shadow-lg">
-                          <Bot className="w-5 h-5" />
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center mr-4 flex-shrink-0">
+                          <Bot className="w-4 h-4 text-gray-600" />
                         </div>
-                        <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-none px-6 py-4 shadow-lg">
+                        <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
                           <div className="flex items-center space-x-2">
                             <div className="flex space-x-1">
-                              <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                              <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '200ms' }}></div>
-                              <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '400ms' }}></div>
+                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
+                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '400ms' }}></div>
                             </div>
-                            <span className="text-sm text-gray-500 italic ml-2">AI is thinking...</span>
+                            <span className="text-sm text-gray-500 italic">AI is thinking...</span>
                           </div>
                         </div>
                       </div>
@@ -366,21 +301,17 @@ export function Sessions() {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center text-blue-500 mb-6 shadow-lg">
-                      <MessageSquare className="w-12 h-12" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 mb-6 border border-gray-200">
+                      <MessageSquare className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Start a conversation</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Start a conversation</h3>
                     <p className="text-gray-600 mb-6 max-w-md">Send a message to begin chatting with {activeBot.name}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Sparkles className="w-4 h-4" />
-                      <span>Powered by advanced AI technology</span>
-                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Enhanced Message Input */}
-              <div className="p-6 border-t border-gray-100 bg-gradient-to-r from-white/80 to-blue-50/80 backdrop-blur-sm">
+              {/* Message Input */}
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
                 <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto">
                   <div className="flex items-end gap-4">
                     <div className="flex-1 relative">
@@ -389,8 +320,8 @@ export function Sessions() {
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type your message..."
                         rows={1}
-                        className="w-full px-6 py-4 pr-16 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-sm resize-none bg-white/80 backdrop-blur-sm"
-                        style={{ minHeight: '56px', maxHeight: '120px' }}
+                        className="w-full px-4 py-3 pr-16 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none bg-white"
+                        style={{ minHeight: '48px', maxHeight: '120px' }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -398,27 +329,17 @@ export function Sessions() {
                           }
                         }}
                       />
-                      <div className="absolute right-4 bottom-4 flex items-center gap-2">
-                        <button
-                          type="button"
-                          className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all"
-                          title="Attach file"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                      </div>
                     </div>
                     <button
                       type="submit"
-                      className={`group relative p-4 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-xl ${
+                      className={`p-3 rounded-lg transition-all ${
                         newMessage.trim()
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white hover:scale-105'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          ? 'bg-gray-900 hover:bg-gray-800 text-white'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       }`}
                       disabled={!newMessage.trim() || isTyping}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity"></div>
-                      <Send className="w-5 h-5 relative z-10" />
+                      <Send className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
@@ -429,125 +350,25 @@ export function Sessions() {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center bg-gradient-to-br from-white/60 to-blue-50/60">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center text-blue-500 mb-8 shadow-xl">
-                <MessageSquare className="w-16 h-16" />
+            <div className="flex flex-col items-center justify-center h-full text-center bg-gray-50">
+              <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6 border border-gray-200">
+                <MessageSquare className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 No conversation selected
               </h3>
-              <p className="text-gray-600 mb-8 max-w-md text-lg">Select a chat from the sidebar or create a new one to get started</p>
+              <p className="text-gray-600 mb-8 max-w-md">Select a chat from the sidebar or create a new one to get started</p>
               <button
-                className="group relative flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
                 onClick={() => navigate('/preview')}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <Sparkles className="w-6 h-6 relative z-10" />
-                <span className="font-semibold text-lg relative z-10">Start New Chat</span>
+                <MessageSquare className="w-4 h-4" />
+                Start New Chat
               </button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Enhanced Export Modal */}
-      {showExportModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/50">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600">
-                  <Download className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Export Chat Session</h3>
-              </div>
-              <button
-                onClick={() => setShowExportModal(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              This will export the current chat session as a JSON file that you can download and share.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowExportModal(false)}
-                className="flex-1 px-6 py-3 text-gray-700 hover:text-gray-900 rounded-xl border border-gray-300 hover:bg-gray-50 transition-all font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  exportToJSON();
-                  setShowExportModal(false);
-                }}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md font-medium"
-              >
-                Export Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Enhanced Save Q&A Modal */}
-      {showSaveQAModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl border border-white/50">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Save Q&A Pair</h3>
-              </div>
-              <button
-                onClick={() => setShowSaveQAModal(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Question</label>
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 text-sm leading-relaxed">
-                  {currentQA.question}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Answer</label>
-                <textarea
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  value={currentQA.answer}
-                  onChange={(e) => setCurrentQA({ ...currentQA, answer: e.target.value })}
-                  rows={6}
-                  placeholder="Enter the answer..."
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-8">
-              <button
-                onClick={() => setShowSaveQAModal(false)}
-                className="flex-1 px-6 py-3 text-gray-700 hover:text-gray-900 rounded-xl border border-gray-300 hover:bg-gray-50 transition-all font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveQAPair}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all shadow-md font-medium"
-              >
-                Save to Knowledge Base
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

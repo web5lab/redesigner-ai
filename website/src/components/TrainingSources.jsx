@@ -1,4 +1,5 @@
 import { Upload, Globe, FileText, CheckCircle, Clock, AlertCircle, Trash2 } from 'lucide-react';
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_SOURCES = 20;
 const MAX_TEXT_LENGTH = 5000;
@@ -15,26 +16,26 @@ export function TrainingSources({
   const getStatusIcon = (status) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'processing':
-        return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
+        return <Clock className="w-4 h-4 text-gray-500 animate-spin" />;
       case 'failed':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
       default:
-        return <Clock className="w-5 h-5 text-gray-400" />;
+        return <Clock className="w-4 h-4 text-gray-400" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-50 border-green-200 text-green-700';
+        return 'border-green-200 bg-green-50';
       case 'processing':
-        return 'bg-blue-50 border-blue-200 text-blue-700';
+        return 'border-blue-200 bg-blue-50';
       case 'failed':
-        return 'bg-red-50 border-red-200 text-red-700';
+        return 'border-red-200 bg-red-50';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-700';
+        return 'border-gray-200 bg-gray-50';
     }
   };
 
@@ -63,16 +64,16 @@ export function TrainingSources({
                   onFileUpload?.(e);
                 }} 
               />
-              <div className={`group relative flex items-center justify-center border-2 border-dashed rounded-2xl p-8 transition-all duration-300 ${
+              <div className={`flex items-center justify-center border-2 border-dashed rounded-lg p-8 transition-all ${
                 totalSources >= MAX_SOURCES
                   ? 'border-gray-200 cursor-not-allowed bg-gray-50'
-                  : 'border-blue-300 hover:border-blue-400 cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100'
+                  : 'border-gray-300 hover:border-gray-400 cursor-pointer bg-gray-50 hover:bg-gray-100'
               }`}>
                 <div className="text-center">
-                  <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${
-                    totalSources >= MAX_SOURCES ? 'bg-gray-200' : 'bg-gradient-to-r from-blue-500 to-indigo-600 group-hover:scale-110 transition-transform'
+                  <div className={`w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center ${
+                    totalSources >= MAX_SOURCES ? 'bg-gray-200' : 'bg-gray-100'
                   }`}>
-                    <Upload className={`w-8 h-8 ${totalSources >= MAX_SOURCES ? 'text-gray-400' : 'text-white'}`} />
+                    <Upload className={`w-6 h-6 ${totalSources >= MAX_SOURCES ? 'text-gray-400' : 'text-gray-600'}`} />
                   </div>
                   <h3 className={`text-lg font-semibold mb-2 ${totalSources >= MAX_SOURCES ? 'text-gray-400' : 'text-gray-900'}`}>
                     {totalSources >= MAX_SOURCES ? 'Maximum sources reached' : 'Upload PDF Document'}
@@ -96,28 +97,28 @@ export function TrainingSources({
             }
             onWebsiteAdd?.(e);
           }} className="mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Globe className="w-5 h-5 text-blue-600" />
+                <Globe className="w-5 h-5 text-gray-600" />
                 Add Website URL
               </h3>
               <div className="flex gap-3">
                 <div className="flex-1 relative">
-                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="url"
                     name="url"
                     placeholder="https://example.com"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white"
                     required
                   />
                 </div>
                 <button
                   type="submit"
-                  className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-all ${
                     totalSources >= MAX_SOURCES
                       ? 'bg-gray-300 cursor-not-allowed text-gray-600'
-                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-gray-900 hover:bg-gray-800 text-white'
                   }`}
                   disabled={totalSources >= MAX_SOURCES}
                 >
@@ -138,9 +139,9 @@ export function TrainingSources({
             }
             onTextAdd?.(e);
           }} className="mb-8">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-green-600" />
+                <FileText className="w-5 h-5 text-gray-600" />
                 Add Custom Text
               </h3>
               <div className="space-y-4">
@@ -150,7 +151,7 @@ export function TrainingSources({
                     placeholder="Enter your training text here..."
                     maxLength={MAX_TEXT_LENGTH}
                     rows={6}
-                    className="w-full px-4 py-3 rounded-xl border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 resize-none bg-white"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none bg-white"
                     required
                   />
                   <div className="flex justify-between items-center mt-2">
@@ -164,10 +165,10 @@ export function TrainingSources({
                 </div>
                 <button
                   type="submit"
-                  className={`w-full px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  className={`w-full px-6 py-3 rounded-lg font-medium transition-all ${
                     totalSources >= MAX_SOURCES
                       ? 'bg-gray-300 cursor-not-allowed text-gray-600'
-                      : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-gray-900 hover:bg-gray-800 text-white'
                   }`}
                   disabled={totalSources >= MAX_SOURCES}
                 >
@@ -207,29 +208,29 @@ export function TrainingSources({
       {/* Sources List */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <FileText className="w-5 h-5" />
+          <FileText className="w-5 h-5 text-gray-600" />
           Added Sources ({items.length})
         </h3>
         
         {items.length > 0 ? (
-          <div className="grid gap-4">
+          <div className="space-y-3">
             {items.map((item, index) => (
-              <div key={index} className={`group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 hover:shadow-md ${getStatusColor(item.status)}`}>
+              <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all ${getStatusColor(item.status)}`}>
                 <div className="flex items-center space-x-4">
-                  <div className="p-2 rounded-lg bg-white/50">
+                  <div className="p-2 rounded-lg bg-white border border-gray-200">
                     {type === 'pdf' ? (
-                      <FileText className="w-5 h-5" />
+                      <FileText className="w-4 h-4 text-gray-600" />
                     ) : type === 'websites' ? (
-                      <Globe className="w-5 h-5" />
+                      <Globe className="w-4 h-4 text-gray-600" />
                     ) : (
-                      <FileText className="w-5 h-5" />
+                      <FileText className="w-4 h-4 text-gray-600" />
                     )}
                   </div>
                   <div>
-                    <h4 className="font-medium truncate max-w-xs">
+                    <h4 className="font-medium text-gray-900 truncate max-w-xs">
                       {type === 'text' ? `Text Document ${index + 1}` : item.name}
                     </h4>
-                    <p className="text-sm opacity-75">
+                    <p className="text-sm text-gray-600">
                       {type === 'pdf' ? 'PDF Document' :
                        type === 'websites' ? 'Website Content' :
                        'Custom Text'}
@@ -240,11 +241,11 @@ export function TrainingSources({
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     {getStatusIcon(item.status)}
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm font-medium text-gray-700 capitalize">
                       {item.status}
                     </span>
                   </div>
-                  <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-100 rounded-lg transition-all">
+                  <button className="p-2 hover:bg-red-100 rounded-lg transition-all">
                     <Trash2 className="w-4 h-4 text-red-500" />
                   </button>
                 </div>
@@ -252,14 +253,14 @@ export function TrainingSources({
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-200">
-            <div className="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-gray-200">
               {type === 'pdf' ? (
-                <FileText className="w-8 h-8 text-gray-400" />
+                <FileText className="w-6 h-6 text-gray-400" />
               ) : type === 'websites' ? (
-                <Globe className="w-8 h-8 text-gray-400" />
+                <Globe className="w-6 h-6 text-gray-400" />
               ) : (
-                <FileText className="w-8 h-8 text-gray-400" />
+                <FileText className="w-6 h-6 text-gray-400" />
               )}
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No sources added yet</h3>

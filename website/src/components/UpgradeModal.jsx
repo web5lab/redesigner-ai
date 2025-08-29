@@ -475,4 +475,5 @@ const ChatWidget = () => {
   );
 };
 
-export default ChatWidget;
+export const UpgradeModal = ChatWidget;
+export default UpgradeModal;

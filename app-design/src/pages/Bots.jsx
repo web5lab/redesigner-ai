@@ -75,6 +75,24 @@ export function Bots() {
       {/* Bots List */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-3">
+          {/* Create New Bot Card */}
+          <div
+            onClick={() => setShowCreateModal(true)}
+            className="group bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-3xl border-2 border-dashed border-blue-200 dark:border-blue-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gradient-to-br hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all duration-300 cursor-pointer"
+          >
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Plus className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                Create New Assistant
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Build a custom AI assistant for your needs
+              </p>
+            </div>
+          </div>
+        
         
 
           {/* Bots List */}

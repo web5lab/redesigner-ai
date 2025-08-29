@@ -31,29 +31,29 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-5 gap-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8">
           {/* Brand */}
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">CustomerBot</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-900">CustomerBot</span>
             </div>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
               AI-powered customer support that scales with your business. 
               Deploy intelligent chatbots with seamless human handoff.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3 sm:gap-4">
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
+                  className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5 text-gray-600" />
+                  <social.icon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </a>
               ))}
             </div>
@@ -61,14 +61,14 @@ export function Footer() {
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h4 className="font-semibold text-gray-900 mb-4 capitalize">{category}</h4>
-              <ul className="space-y-3">
+            <div key={category} className="mt-6 sm:mt-0">
+              <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 capitalize">{category}</h4>
+              <ul className="space-y-2 sm:space-y-3">
                 {links.map((link, index) => (
                   <li key={index}>
                     <a
                       href={link.href}
-                      className="text-gray-600 hover:text-gray-900 transition-colors"
+                      className="text-sm sm:text-base text-gray-600 hover:text-gray-900 transition-colors"
                     >
                       {link.name}
                     </a>
@@ -79,11 +79,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-600">
+        <div className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm sm:text-base text-gray-600 text-center md:text-left">
             © 2024 CustomerBot. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-gray-600">
+          <div className="flex gap-4 sm:gap-6 text-sm text-gray-600">
             <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
             <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
             <a href="#" className="hover:text-gray-900 transition-colors">Security</a>

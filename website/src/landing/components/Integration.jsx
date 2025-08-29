@@ -22,64 +22,64 @@ const apiFeatures = [
 export function Integration() {
   return (
     <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Integrate with your existing tools
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
             Connect CustomerBot with your favorite platforms and tools. Works everywhere your customers are.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Platform Integrations */}
           <div>
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-6">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-4 sm:mb-6">
               <Puzzle className="w-4 h-4" />
               Platform Integrations
             </div>
             
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
               Works with your favorite platforms
             </h3>
             
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {platforms.map((platform, index) => (
-                <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-                  <span className="text-2xl">{platform.logo}</span>
+                <div key={index} className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                  <span className="text-xl sm:text-2xl">{platform.logo}</span>
                   <div>
-                    <div className="font-semibold text-gray-900">{platform.name}</div>
-                    <div className="text-sm text-gray-600">{platform.users} sites</div>
+                    <div className="text-sm sm:text-base font-semibold text-gray-900">{platform.name}</div>
+                    <div className="text-xs sm:text-sm text-gray-600">{platform.users} sites</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <button className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">
+            <button className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm sm:text-base">
               View all integrations
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* API & Mobile */}
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12 mt-8 lg:mt-0">
             {/* API Section */}
             <div>
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-3 sm:mb-4">
                 <Code className="w-4 h-4" />
                 Developer API
               </div>
               
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Powerful API for custom integrations
               </h3>
               
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {apiFeatures.map((feature, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
+                    <span className="text-sm sm:text-base text-gray-700">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -87,25 +87,25 @@ export function Integration() {
 
             {/* Mobile App Section */}
             <div>
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mb-3 sm:mb-4">
                 <Smartphone className="w-4 h-4" />
                 Mobile App
               </div>
               
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Native mobile apps
               </h3>
               
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                 Download our mobile app for iOS and Android. Manage support tickets, respond to customers, and collaborate with your team from anywhere.
               </p>
 
-              <div className="flex gap-4">
-                <button className="flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                   <span>📱</span>
                   App Store
                 </button>
-                <button className="flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+                <button className="flex items-center justify-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
                   <span>🤖</span>
                   Google Play
                 </button>

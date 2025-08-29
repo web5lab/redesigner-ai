@@ -28,26 +28,26 @@ const testimonials = [
 export function Testimonials() {
   return (
     <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Loved by support teams
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-lg sm:text-xl text-gray-600 px-4">
             See what our customers have to say about their experience.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <div key={index} className="bg-gray-50 rounded-lg p-4 sm:p-6 border border-gray-200">
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                 ))}
               </div>
               
-              <blockquote className="text-gray-700 mb-6 leading-relaxed">
+              <blockquote className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
                 "{testimonial.text}"
               </blockquote>
               
@@ -55,11 +55,11 @@ export function Testimonials() {
                 <img
                   src={testimonial.image}
                   alt={testimonial.author}
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
                 <div>
-                  <div className="font-medium text-gray-900">{testimonial.author}</div>
-                  <div className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</div>
+                  <div className="text-sm sm:text-base font-medium text-gray-900">{testimonial.author}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">{testimonial.role}, {testimonial.company}</div>
                 </div>
               </div>
             </div>

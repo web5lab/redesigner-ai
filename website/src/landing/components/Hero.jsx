@@ -34,20 +34,20 @@ export function Hero() {
         <div className="text-center max-w-4xl mx-auto">
           <div className="space-y-8">
             <div>
-              <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-8 tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 md:mb-8 tracking-tight leading-tight">
                 AI customer support
                 <br />
                 <span className="text-gray-600">with human backup</span>
               </h1>
 
-              <p className="text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
                 Deploy intelligent chatbots that seamlessly hand off to human agents.
                 Support customers 24/7 from web and mobile app.
               </p>
             </div>
 
             {/* Demo Input Section */}
-            <div className="mb-12 max-w-2xl mx-auto">
+            <div className="mb-8 md:mb-12 max-w-2xl mx-auto px-4">
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   <div className="flex-1 relative w-full">
@@ -56,7 +56,7 @@ export function Hero() {
                       placeholder="Enter your website URL to see the demo"
                       value={websiteUrl}
                       onChange={(e) => setWebsiteUrl(e.target.value)}
-                      className="w-full px-6 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                      className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
                       <Zap className="w-5 h-5 text-gray-400" />
@@ -64,7 +64,7 @@ export function Hero() {
                   </div>
                   <button
                     onClick={handleSubmit}
-                    className="group w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 text-lg font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                    className="group w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
                     <span>Try Demo</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -72,17 +72,17 @@ export function Hero() {
                 </div>
 
                 {errorMessage && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-center sm:text-left">
                     <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 md:mb-12 px-4">
               <button
                 onClick={handleWatchDemo}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-6 py-3 font-medium transition-colors"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-4 sm:px-6 py-3 font-medium transition-colors"
               >
                 <Play className="w-4 h-4" />
                 Or watch overview
@@ -90,7 +90,7 @@ export function Hero() {
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-8 text-sm text-gray-600 justify-center">
+            <div className="flex flex-wrap gap-4 sm:gap-8 text-sm text-gray-600 justify-center px-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span>99.9% uptime</span>
@@ -110,25 +110,25 @@ export function Hero() {
 
       {/* Website Preview Modal */}
       {showIframe && (
-        <div className="fixed inset-0 z-[99999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <div className="relative w-full h-full max-w-screen-xl max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-[99999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 lg:p-8">
+          <div className="relative w-full h-full max-w-screen-xl max-h-[95vh] sm:max-h-[90vh] bg-white rounded-lg sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
             {/* Enhanced Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full">
+                <div className="flex items-center gap-2 bg-gray-900 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full">
                   <Play className="w-4 h-4" />
-                  <span className="text-sm font-bold">Live Demo</span>
+                  <span className="text-xs sm:text-sm font-bold">Live Demo</span>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 truncate max-w-[calc(100%-200px)]">
+                <h3 className="text-sm sm:text-lg font-bold text-gray-900 truncate max-w-[calc(100%-120px)] sm:max-w-[calc(100%-200px)]">
                   {websiteUrl || 'Demo Website'}
                 </h3>
               </div>
               <button
                 onClick={() => setShowIframe(false)}
-                className="p-3 text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
+                className="p-2 sm:p-3 text-gray-500 hover:text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-100 transition-colors"
                 title="Close preview"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 

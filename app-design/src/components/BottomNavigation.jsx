@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Bot, MessageCircle, BarChart3, Settings, Plus } from 'lucide-react'
+import { Bot, MessageCircle, Users, Settings, Plus } from 'lucide-react'
 
 export function BottomNavigation() {
   const navigate = useNavigate()
@@ -10,7 +10,7 @@ export function BottomNavigation() {
   const navItems = [
     { id: 'bots', icon: Bot, label: 'Bots', path: '/' },
     { id: 'chat', icon: MessageCircle, label: 'Chat', path: '/chat' },
-    { id: 'analytics', icon: BarChart3, label: 'Analytics', path: '/dashboard' },
+    { id: 'teams', icon: Users, label: 'Teams', path: '/teams' },
     { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' }
   ]
 

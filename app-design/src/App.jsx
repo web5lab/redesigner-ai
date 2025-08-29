@@ -11,7 +11,7 @@ import { Bots } from './pages/Bots'
 import { Chat } from './pages/Chat'
 import { Login } from './pages/Login'
 import { Settings } from './pages/Settings'
-import { Dashboard } from './pages/Dashboard'
+import { Teams } from './pages/Teams'
 
 import { logedInSelector } from './store/selectors'
 import { getUserData } from './store/actions'
@@ -39,9 +39,9 @@ function AppLayout() {
               <Chat />
             </ProtectedRoute>
           } />
-          <Route path="/dashboard" element={
+          <Route path="/teams" element={
             <ProtectedRoute>
-              <Dashboard />
+              <Teams />
             </ProtectedRoute>
           } />
           <Route path="/settings" element={

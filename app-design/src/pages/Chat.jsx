@@ -17,7 +17,7 @@ import {
   Trash2,
   Clock,
   Phone,
-  Video
+  Video,
   Paperclip,
   Image,
   FileText,

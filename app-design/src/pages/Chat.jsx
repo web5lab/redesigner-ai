@@ -21,7 +21,7 @@ import {
   Paperclip,
   Image,
   FileText,
-  Camera
+  Camera,
   ChevronDown,
   Check
 } from 'lucide-react'

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { 
   Users, 
   Plus, 
@@ -17,61 +18,76 @@ import {
   Star,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Bot,
+  ChevronDown,
+  ChevronRight,
+  Globe,
+  MessageSquare
 } from 'lucide-react'
+import { botsSelector } from '../store/selectors'
 
 export default function Teams() {
+  const dispatch = useDispatch()
+  const bots = useSelector(botsSelector)
   const [showInviteModal, setShowInviteModal] = useState(false)
+  const [selectedBot, setSelectedBot] = useState(null)
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('viewer')
   const [searchQuery, setSearchQuery] = useState('')
   const [filterRole, setFilterRole] = useState('all')
-  const [selectedMember, setSelectedMember] = useState(null)
-  const [teamMembers, setTeamMembers] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'admin',
-      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      joinedAt: '2024-01-15',
-      lastActive: '2 hours ago',
-      status: 'online'
-    },
-    {
-      id: 2,
-      name: 'Sarah Wilson',
-      email: 'sarah@example.com',
-      role: 'editor',
-      avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      joinedAt: '2024-02-20',
-      lastActive: '1 day ago',
-      status: 'away'
-    },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      email: 'mike@example.com',
-      role: 'viewer',
-      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      joinedAt: '2024-03-10',
-      lastActive: '3 days ago',
-      status: 'offline'
-    },
-    {
-      id: 4,
-      name: 'Emma Davis',
-      email: 'emma@example.com',
-      role: 'editor',
-      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      joinedAt: '2024-03-15',
-      lastActive: '5 minutes ago',
-      status: 'online'
-    }
-  ])
+  const [expandedBots, setExpandedBots] = useState(new Set())
+
+  // Mock team data grouped by bot
+  const [botTeams, setBotTeams] = useState({
+    '1': [
+      {
+        id: 1,
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'admin',
+        avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
+        joinedAt: '2024-01-15',
+        lastActive: '2 hours ago',
+        status: 'online'
+      },
+      {
+        id: 2,
+        name: 'Sarah Wilson',
+        email: 'sarah@example.com',
+        role: 'editor',
+        avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
+        joinedAt: '2024-02-20',
+        lastActive: '1 day ago',
+        status: 'away'
+      }
+    ],
+    '2': [
+      {
+        id: 3,
+        name: 'Mike Johnson',
+        email: 'mike@example.com',
+        role: 'viewer',
+        avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
+        joinedAt: '2024-03-10',
+        lastActive: '3 days ago',
+        status: 'offline'
+      },
+      {
+        id: 4,
+        name: 'Emma Davis',
+        email: 'emma@example.com',
+        role: 'editor',
+        avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
+        joinedAt: '2024-03-15',
+        lastActive: '5 minutes ago',
+        status: 'online'
+      }
+    ]
+  })
 
   const handleInviteMember = () => {
-    if (inviteEmail.trim()) {
+    if (inviteEmail.trim() && selectedBot) {
       const newMember = {
         id: Date.now(),
         name: inviteEmail.split('@')[0],
@@ -82,21 +98,45 @@ export default function Teams() {
         lastActive: 'Just now',
         status: 'online'
       }
-      setTeamMembers([...teamMembers, newMember])
+      
+      setBotTeams(prev => ({
+        ...prev,
+        [selectedBot]: [...(prev[selectedBot] || []), newMember]
+      }))
+      
       setInviteEmail('')
       setInviteRole('viewer')
       setShowInviteModal(false)
+      setSelectedBot(null)
     }
   }
 
-  const handleRemoveMember = (memberId) => {
-    setTeamMembers(teamMembers.filter(member => member.id !== memberId))
+  const handleRemoveMember = (botId, memberId) => {
+    setBotTeams(prev => ({
+      ...prev,
+      [botId]: prev[botId]?.filter(member => member.id !== memberId) || []
+    }))
   }
 
-  const handleRoleChange = (memberId, newRole) => {
-    setTeamMembers(teamMembers.map(member => 
-      member.id === memberId ? { ...member, role: newRole } : member
-    ))
+  const handleRoleChange = (botId, memberId, newRole) => {
+    setBotTeams(prev => ({
+      ...prev,
+      [botId]: prev[botId]?.map(member => 
+        member.id === memberId ? { ...member, role: newRole } : member
+      ) || []
+    }))
+  }
+
+  const toggleBotExpansion = (botId) => {
+    setExpandedBots(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(botId)) {
+        newSet.delete(botId)
+      } else {
+        newSet.add(botId)
+      }
+      return newSet
+    })
   }
 
   const getRoleIcon = (role) => {
@@ -126,18 +166,21 @@ export default function Teams() {
     }
   }
 
-  const filteredMembers = teamMembers.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         member.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesRole = filterRole === 'all' || member.role === filterRole
-    return matchesSearch && matchesRole
-  })
-
-  const roleStats = {
-    admin: teamMembers.filter(m => m.role === 'admin').length,
-    editor: teamMembers.filter(m => m.role === 'editor').length,
-    viewer: teamMembers.filter(m => m.role === 'viewer').length
+  const getTotalMembers = () => {
+    return Object.values(botTeams).reduce((total, members) => total + members.length, 0)
   }
+
+  const getBotMembers = (botId) => {
+    const members = botTeams[botId] || []
+    return members.filter(member => {
+      const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           member.email.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesRole = filterRole === 'all' || member.role === filterRole
+      return matchesSearch && matchesRole
+    })
+  }
+
+  const selectedBotData = bots.find(bot => bot._id === selectedBot)
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -151,16 +194,9 @@ export default function Teams() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Team Management</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{teamMembers.length} team members</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{getTotalMembers()} total members across {bots.length} bots</p>
               </div>
             </div>
-            <button
-              onClick={() => setShowInviteModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Invite</span>
-            </button>
           </div>
 
           {/* Search and Filter */}
@@ -189,151 +225,198 @@ export default function Teams() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="p-4">
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                <Crown className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Admins</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{roleStats.admin}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Edit3 className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Editors</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{roleStats.editor}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Eye className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Viewers</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">{roleStats.viewer}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Team Members List */}
+      {/* Bot Teams List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="p-4 space-y-3">
-          {filteredMembers.map((member) => (
-            <div
-              key={member.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              <div className="p-4">
-                <div className="flex items-center gap-4">
-                  {/* Avatar with Status */}
-                  <div className="relative">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-14 h-14 rounded-2xl object-cover shadow-lg ring-2 ring-gray-100 dark:ring-gray-700"
-                    />
-                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 ${getStatusColor(member.status)} border-2 border-white dark:border-gray-800 rounded-full`}></div>
-                  </div>
-
-                  {/* Member Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">{member.name}</h3>
-                      {getRoleIcon(member.role)}
-                    </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{member.email}</p>
-                    <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>Active {member.lastActive}</span>
+        <div className="p-4 space-y-4">
+          {bots.map((bot) => {
+            const members = getBotMembers(bot._id)
+            const isExpanded = expandedBots.has(bot._id)
+            const totalBotMembers = botTeams[bot._id]?.length || 0
+            
+            return (
+              <div
+                key={bot._id}
+                className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
+              >
+                {/* Bot Header */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 border-b border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => toggleBotExpansion(bot._id)}
+                      className="flex items-center gap-4 flex-1 text-left group"
+                    >
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg ring-2 ring-gray-100 dark:ring-gray-700">
+                          <img
+                            src={bot.icon || `https://ui-avatars.com/api/?name=${encodeURIComponent(bot.name)}&background=3b82f6&color=ffffff&size=56`}
+                            alt={bot.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full flex items-center justify-center">
+                          <Bot className="w-2 h-2 text-white" />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Role Badge */}
-                  <div className={`px-3 py-1.5 rounded-xl text-xs font-medium ${getRoleColor(member.role)}`}>
-                    <div className="flex items-center gap-1">
-                      {getRoleIcon(member.role)}
-                      <span className="capitalize">{member.role}</span>
-                    </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {bot.name}
+                          </h3>
+                          <div className="flex items-center gap-1">
+                            {isExpanded ? (
+                              <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                          {bot.description || 'AI Assistant for customer support'}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            <span>{totalBotMembers} members</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3" />
+                            <span>Active bot</span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSelectedBot(bot._id)
+                        setShowInviteModal(true)
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span className="hidden sm:inline">Invite</span>
+                    </button>
                   </div>
                 </div>
 
-                {/* Member Actions */}
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={member.role}
-                      onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="editor">Editor</option>
-                      <option value="viewer">Viewer</option>
-                    </select>
-                    
-                    {member.role !== 'admin' && (
-                      <button
-                        onClick={() => handleRemoveMember(member.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                {/* Bot Team Members */}
+                {isExpanded && (
+                  <div className="p-4">
+                    {members.length > 0 ? (
+                      <div className="space-y-3">
+                        {members.map((member) => (
+                          <div
+                            key={member.id}
+                            className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4 border border-gray-100 dark:border-gray-600 hover:shadow-md transition-all duration-300"
+                          >
+                            <div className="flex items-center gap-4">
+                              {/* Avatar with Status */}
+                              <div className="relative">
+                                <img
+                                  src={member.avatar}
+                                  alt={member.name}
+                                  className="w-12 h-12 rounded-xl object-cover shadow-md ring-2 ring-gray-100 dark:ring-gray-600"
+                                />
+                                <div className={`absolute -bottom-1 -right-1 w-4 h-4 ${getStatusColor(member.status)} border-2 border-white dark:border-gray-700 rounded-full`}></div>
+                              </div>
+
+                              {/* Member Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-gray-900 dark:text-white truncate">{member.name}</h4>
+                                  {getRoleIcon(member.role)}
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{member.email}</p>
+                                <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    <span>Active {member.lastActive}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Role Badge */}
+                              <div className={`px-3 py-1.5 rounded-xl text-xs font-medium ${getRoleColor(member.role)}`}>
+                                <div className="flex items-center gap-1">
+                                  {getRoleIcon(member.role)}
+                                  <span className="capitalize">{member.role}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Member Actions */}
+                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                              <div className="flex items-center gap-2">
+                                <select
+                                  value={member.role}
+                                  onChange={(e) => handleRoleChange(bot._id, member.id, e.target.value)}
+                                  className="flex-1 px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                                >
+                                  <option value="admin">Admin</option>
+                                  <option value="editor">Editor</option>
+                                  <option value="viewer">Viewer</option>
+                                </select>
+                                
+                                {member.role !== 'admin' && (
+                                  <button
+                                    onClick={() => handleRemoveMember(bot._id, member.id)}
+                                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <Users className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No team members</h4>
+                        <p className="text-gray-500 dark:text-gray-400 mb-4">
+                          This bot doesn't have any team members yet
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSelectedBot(bot._id)
+                            setShowInviteModal(true)
+                          }}
+                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                        >
+                          Invite First Member
+                        </button>
+                      </div>
                     )}
                   </div>
-                </div>
+                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
 
-          {/* Empty State */}
-          {filteredMembers.length === 0 && (
+          {/* Empty State for No Bots */}
+          {bots.length === 0 && (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-gray-400" />
+                <Bot className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                {searchQuery ? 'No members found' : 'No team members yet'}
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No bots available</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-8">
-                {searchQuery 
-                  ? `No members found matching "${searchQuery}"`
-                  : 'Invite your first team member to get started'
-                }
+                Create your first bot to start managing team members
               </p>
-              {!searchQuery && (
-                <button
-                  onClick={() => setShowInviteModal(true)}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  Invite First Member
-                </button>
-              )}
             </div>
           )}
         </div>
       </div>
 
       {/* Role Permissions Info */}
-      <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-800">
           <div className="flex items-center gap-2 mb-3">
             <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -342,11 +425,11 @@ export default function Teams() {
           <div className="space-y-2 text-sm text-blue-800 dark:text-blue-300">
             <div className="flex items-center gap-2">
               <Crown className="w-4 h-4 text-yellow-500" />
-              <span><strong>Admin:</strong> Full access to all features and team management</span>
+              <span><strong>Admin:</strong> Full access to bot settings and team management</span>
             </div>
             <div className="flex items-center gap-2">
               <Edit3 className="w-4 h-4 text-blue-500" />
-              <span><strong>Editor:</strong> Can modify bot settings and training data</span>
+              <span><strong>Editor:</strong> Can modify bot responses and training data</span>
             </div>
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-gray-500" />
@@ -372,11 +455,16 @@ export default function Teams() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Invite Team Member</h3>
-                    <p className="text-blue-100 text-sm">Add a new member to your team</p>
+                    <p className="text-blue-100 text-sm">
+                      {selectedBotData ? `Add member to ${selectedBotData.name}` : 'Add a new team member'}
+                    </p>
                   </div>
                 </div>
                 <button
-                  onClick={() => setShowInviteModal(false)}
+                  onClick={() => {
+                    setShowInviteModal(false)
+                    setSelectedBot(null)
+                  }}
                   className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-colors"
                 >
                   <X className="w-5 h-5" />
@@ -386,6 +474,50 @@ export default function Teams() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-6">
+              {/* Bot Selection */}
+              {!selectedBot && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    Select Bot
+                  </label>
+                  <select
+                    value={selectedBot || ''}
+                    onChange={(e) => setSelectedBot(e.target.value)}
+                    className="w-full px-4 py-4 rounded-2xl border border-gray-200 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="">Choose a bot...</option>
+                    {bots.map((bot) => (
+                      <option key={bot._id} value={bot._id}>
+                        {bot.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Selected Bot Display */}
+              {selectedBot && selectedBotData && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={selectedBotData.icon || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedBotData.name)}&background=3b82f6&color=ffffff&size=40`}
+                      alt={selectedBotData.name}
+                      className="w-10 h-10 rounded-xl object-cover"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-blue-900 dark:text-blue-400">{selectedBotData.name}</h4>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">Selected bot for invitation</p>
+                    </div>
+                    <button
+                      onClick={() => setSelectedBot(null)}
+                      className="ml-auto p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800 rounded-lg transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   Email Address
@@ -419,13 +551,14 @@ export default function Teams() {
 
               {/* Role Description */}
               <div className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2 capitalize">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2 capitalize flex items-center gap-2">
+                  {getRoleIcon(inviteRole)}
                   {inviteRole} Permissions
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {inviteRole === 'admin' && 'Full access to all features, team management, and bot settings'}
-                  {inviteRole === 'editor' && 'Can modify bot configurations, training data, and view analytics'}
-                  {inviteRole === 'viewer' && 'Read-only access to conversations and basic analytics'}
+                  {inviteRole === 'admin' && 'Full access to bot settings, training, team management, and analytics'}
+                  {inviteRole === 'editor' && 'Can modify bot configurations, training data, and view detailed analytics'}
+                  {inviteRole === 'viewer' && 'Read-only access to conversations, basic analytics, and bot performance'}
                 </p>
               </div>
             </div>
@@ -433,14 +566,17 @@ export default function Teams() {
             {/* Modal Footer */}
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex gap-3">
               <button
-                onClick={() => setShowInviteModal(false)}
+                onClick={() => {
+                  setShowInviteModal(false)
+                  setSelectedBot(null)
+                }}
                 className="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleInviteMember}
-                disabled={!inviteEmail.trim()}
+                disabled={!inviteEmail.trim() || !selectedBot}
                 className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Mail className="w-4 h-4" />

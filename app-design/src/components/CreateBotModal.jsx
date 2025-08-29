@@ -16,7 +16,7 @@ import {
   Database,
   Plus
 } from 'lucide-react'
-import { getBots } from '../store/actions'
+import { GetBots } from '../store/actions'
 
 export function CreateBotModal({ onClose }) {
   const dispatch = useDispatch()
@@ -62,7 +62,7 @@ export function CreateBotModal({ onClose }) {
 
       // Simulate bot creation
       setTimeout(() => {
-        dispatch(getBots())
+        dispatch(GetBots())
         setIsCreating(false)
         setIsCreated(true)
         setCurrentStep(4)

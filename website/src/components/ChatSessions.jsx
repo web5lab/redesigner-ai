@@ -130,9 +130,8 @@ export function ChatSessions({ sessions, onSessionSelect, onSessionDelete }) {
                 }
               </p>
               {searchQuery && (
-                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                  className="p-4 hover:bg-gray-100 transition-colors cursor-pointer"
-                  className="mt-3 text-gray-900 font-medium text-sm hover:underline"
+            <button
+                 className="p-4 hover:bg-gray-100 transition-colors cursor-pointer"
                 >
                   Clear search
                 </button>

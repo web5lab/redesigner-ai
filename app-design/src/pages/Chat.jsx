@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { 
   Send, 
   Bot, 
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { activeBotSelector, messagesSelector, inputSelector, isTypingSelector } from '../store/selectors'
 import { addMessage, setInput, setIsTyping } from '../store/slice'
+import { geminiChatApi, getChatSessions } from '../store/actions'
 
 // Mock chat sessions data with more realistic conversations
 const mockChatSessions = [
@@ -224,6 +225,7 @@ const mockChatSessions = [
 
 export function Chat() {
   const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useDispatch()
   const activeBot = useSelector(activeBotSelector)
   const input = useSelector(inputSelector)
@@ -249,6 +251,19 @@ export function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
+
+  // Check URL for session parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const sessionId = params.get('session')
+    if (sessionId) {
+      const session = chatSessions.find(s => s.id === parseInt(sessionId))
+      if (session) {
+        setActiveSessionId(session.id)
+        setShowSessionsList(false)
+      }
+    }
+  }, [location.search, chatSessions])
 
   const createNewSession = () => {
     const newSession = {
@@ -412,20 +427,16 @@ export function Chat() {
     dispatch(setInput(''))
 
     try {
-      // Simulate AI response
-      setTimeout(() => {
-        const responses = [
-          "I understand your question. Let me help you with that right away.",
-          "That's a great point! Here's what I can tell you about that topic.",
-          "I'd be happy to assist you with this. Let me provide you with the information you need.",
-          "Thank you for reaching out! I have some helpful information for you.",
-          "I can definitely help you with that. Here's what you should know..."
-        ]
+      // Use real AI response if activeBot is available
+      if (activeBot) {
+        const chatData = await geminiChatApi({
+          data: { message: input, botId: activeBot._id }
+        })
         
         const botResponse = {
           id: Date.now() + 1,
           role: 'bot',
-          content: responses[Math.floor(Math.random() * responses.length)],
+          content: chatData.aiResponse,
           timestamp: new Date()
         }
         
@@ -440,9 +451,39 @@ export function Chat() {
               }
             : session
         ))
-        
-        dispatch(setIsTyping(false))
-      }, 1500 + Math.random() * 1000)
+      } else {
+        // Fallback to mock response
+        setTimeout(() => {
+          const responses = [
+            "I understand your question. Let me help you with that right away.",
+            "That's a great point! Here's what I can tell you about that topic.",
+            "I'd be happy to assist you with this. Let me provide you with the information you need.",
+            "Thank you for reaching out! I have some helpful information for you.",
+            "I can definitely help you with that. Here's what you should know..."
+          ]
+          
+          const botResponse = {
+            id: Date.now() + 1,
+            role: 'bot',
+            content: responses[Math.floor(Math.random() * responses.length)],
+            timestamp: new Date()
+          }
+          
+          setChatSessions(prev => prev.map(session => 
+            session.id === activeSessionId 
+              ? {
+                  ...session,
+                  messages: [...session.messages, botResponse],
+                  lastMessage: botResponse.content,
+                  messageCount: session.messageCount + 1,
+                  timestamp: new Date()
+                }
+              : session
+          ))
+        }, 1500 + Math.random() * 1000)
+      }
+      
+      dispatch(setIsTyping(false))
     } catch (error) {
       const errorResponse = {
         id: Date.now() + 1,
@@ -466,7 +507,7 @@ export function Chat() {
     }
   }
 
-  // Sessions List View (WhatsApp-style)
+  // Sessions List View (Mobile-optimized)
   if (showSessionsList || !activeSession) {
     return (
       <div className="h-full flex flex-col bg-white dark:bg-gray-900">
@@ -480,6 +521,12 @@ export function Chat() {
                   {chatSessions.length} conversations
                 </p>
               </div>
+              <button
+                onClick={createNewSession}
+                className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
             </div>
 
             {/* Search */}
@@ -589,7 +636,7 @@ export function Chat() {
     )
   }
 
-  // Individual Chat View (WhatsApp-style)
+  // Individual Chat View (Mobile-optimized)
   return (
     <div className="h-full flex flex-col bg-white dark:bg-gray-900">
       {/* Chat Header */}
@@ -635,7 +682,6 @@ export function Chat() {
             </div>
 
             <div className="flex items-center gap-2">
-            
               <button
                 onClick={() => deleteSession(activeSessionId)}
                 className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors touch-target"

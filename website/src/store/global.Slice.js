@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { GetBots, getChatSession, getChatSessions, GetUserData, updateChatBot } from './global.Action'
+import { GetBots, getChatSession, getChatSessions, GetUserData, updateChatBot, getBotTeam, getUserTeams } from './global.Action'
 
 const initialState = {
   logedIn: false,
@@ -8,6 +8,9 @@ const initialState = {
   activeBot: null,
   chatSessions: [],
   activeSession: null,
+  teams: [],
+  currentTeam: null,
+  teamPermissions: null,
   uiConfig: {
     messages: [{ role: 'bot', content: 'Hello! How can I help you today?' }],
     selectedPalette: 0, // index of the selected palette
@@ -102,6 +105,35 @@ export const globalSlice = createSlice({
     },
     resetMessages: (state) => {
       state.uiConfig.messages = [{ role: 'bot', content: 'Hello! How can I help you today?' }]
+    },
+    setTeams: (state, action) => {
+      state.teams = action.payload
+    },
+    setCurrentTeam: (state, action) => {
+      state.currentTeam = action.payload
+    },
+    setTeamPermissions: (state, action) => {
+      state.teamPermissions = action.payload
+    },
+    addTeamMember: (state, action) => {
+      if (state.currentTeam) {
+        state.currentTeam.members.push(action.payload)
+      }
+    },
+    updateTeamMemberInState: (state, action) => {
+      const { memberId, updates } = action.payload;
+      if (state.currentTeam) {
+        const memberIndex = state.currentTeam.members.findIndex(m => m._id === memberId);
+        if (memberIndex !== -1) {
+          state.currentTeam.members[memberIndex] = { ...state.currentTeam.members[memberIndex], ...updates };
+        }
+      }
+    },
+    removeTeamMemberFromState: (state, action) => {
+      const memberId = action.payload;
+      if (state.currentTeam) {
+        state.currentTeam.members = state.currentTeam.members.filter(m => m._id !== memberId);
+      }
     }
   },
   extraReducers: (builder) => {
@@ -140,6 +172,26 @@ export const globalSlice = createSlice({
       .addCase(getChatSession.fulfilled, (state, action) => {
         state.activeSession = action.payload || null;
       });
+    builder
+      .addCase(getBotTeam.pending, (state) => {
+        state.currentTeam = null;
+      })
+      .addCase(getBotTeam.rejected, (state, action) => {
+        state.currentTeam = null;
+      })
+      .addCase(getBotTeam.fulfilled, (state, action) => {
+        state.currentTeam = action.payload.team || null;
+      });
+    builder
+      .addCase(getUserTeams.pending, (state) => {
+        state.teams = [];
+      })
+      .addCase(getUserTeams.rejected, (state, action) => {
+        state.teams = [];
+      })
+      .addCase(getUserTeams.fulfilled, (state, action) => {
+        state.teams = action.payload.teams || [];
+      });
   }
 })
 
@@ -153,6 +205,12 @@ export const { setLogedIn,
   setIsTyping,
   setSessionId,
   setLogout,
-  resetMessages } = globalSlice.actions
+  resetMessages,
+  setTeams,
+  setCurrentTeam,
+  setTeamPermissions,
+  addTeamMember,
+  updateTeamMemberInState,
+  removeTeamMemberFromState } = globalSlice.actions
 
 export default globalSlice.reducer

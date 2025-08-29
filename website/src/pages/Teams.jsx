@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { botsSelector, activeBotSelector } from '../store/global.Selctor';
 import { CreateBotModal } from '../components/CreateBotModal';
 import { GetBots } from '../store/global.Action';
+import { TeamMemberCard } from '../components/TeamMemberCard';
 
 export function Teams() {
   const navigate = useNavigate();

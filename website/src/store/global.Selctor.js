@@ -57,3 +57,18 @@ export const uiConfigSelector = createSelector(
   [ConfigSelector],
   (uiConfig) => uiConfig
 );
+
+export const teamsSelector = createSelector(
+  [globalSelector],
+  (global) => global.teams
+);
+
+export const currentTeamSelector = createSelector(
+  [globalSelector],
+  (global) => global.currentTeam
+);
+
+export const teamPermissionsSelector = createSelector(
+  [globalSelector],
+  (global) => global.teamPermissions
+);

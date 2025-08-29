@@ -297,7 +297,6 @@ export function Sidebar() {
                   ))}
                 </div>
               </>
-              </div>
             )}
 
             {/* Settings Navigation */}

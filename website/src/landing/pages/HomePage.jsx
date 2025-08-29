@@ -6,7 +6,6 @@ import { Testimonials } from '../components/Testimonials';
 import { HowItWorks } from '../components/HowItWorks';
 import { Stats } from '../components/Stats';
 import { Integration } from '../components/Integration';
-import { CTA } from '../components/CTA';
 
 export function HomePage() {
   return (
@@ -18,7 +17,6 @@ export function HomePage() {
       <Integration />
       <Testimonials />
       <Pricing />
-      <CTA />
     </>
   );
 }

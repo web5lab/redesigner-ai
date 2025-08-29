@@ -97,26 +97,6 @@ export const updateChatBot = async ({ data, botId }) => {
   } catch (err) {
     throw err
   }
-}
-
-export const getChatSessions = createAsyncThunk(
-  'global/getChatSessions',
-  async ({ botId }) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      const response = await axiosInstance.get(`/chat/get-chat-sessions/${botId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      console.log("api data", response)
-      return response.data
-    } catch (err) {
-      throw err
-    }
-  }
-)
-
 export const getChatSession = createAsyncThunk(
   'global/getChatSession',
   async ({ sessionId }) => {

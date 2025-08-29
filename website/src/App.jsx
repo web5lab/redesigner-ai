@@ -118,7 +118,7 @@ function AppLayout() {
                   key={route.path}
                   path={route.path}
                   element={
-                    <ProtectedRoute requiresBot>
+                    <ProtectedRoute>
                       <div className="w-full bg-white mx-auto">
                         {route.element}
                       </div>

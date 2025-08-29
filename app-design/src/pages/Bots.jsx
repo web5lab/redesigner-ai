@@ -17,8 +17,6 @@ import {
 } from 'lucide-react'
 import { botsSelector } from '../store/selectors'
 import { setActiveBot } from '../store/slice'
-import { CreateBotModal } from '../components/CreateBotModal'
-
 export function Bots() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -37,9 +35,7 @@ export function Bots() {
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
-      {showCreateModal && (
-        <CreateBotModal onClose={() => setShowCreateModal(false)} />
-      )}
+   
 
       {/* Premium Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 safe-area-top">

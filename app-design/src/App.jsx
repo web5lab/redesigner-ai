@@ -13,6 +13,7 @@ import { Training } from './pages/Training'
 import { Login } from './pages/Login'
 import { Settings } from './pages/Settings'
 import { Customize } from './pages/Customize'
+import { Documentation } from './pages/Documentation'
 import Teams from './pages/Teams'
 
 import { logedInSelector } from './store/selectors'
@@ -80,6 +81,7 @@ function AppLayout() {
               <Settings />
             </ProtectedRoute>
           } />
+          <Route path="/docs" element={<Documentation />} />
         </Routes>
       </main>
       

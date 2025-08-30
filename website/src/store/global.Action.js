@@ -389,7 +389,8 @@ export const removeTeamMember = async ({ botId, memberId }) => {
     }
 };
 
-export const getTeamPermissions = async ({ botId }) => {
+export const getTeamPermissions =createAsyncThunk(
+    "global/getTeamPermissions", async ({ botId }) => {
     try {
         const token = localStorage.getItem('authToken');
         const response = await axiosInstance.get(`/team/bot/${botId}/permissions`, {
@@ -401,4 +402,4 @@ export const getTeamPermissions = async ({ botId }) => {
     } catch (err) {
         throw err;
     }
-};
+});

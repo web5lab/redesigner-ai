@@ -96,7 +96,7 @@ const DashboardSidebar = ({
       {/* Navigation */}
       <nav className="flex-grow space-y-6">
         {/* Quick Stats */}
-        <div className="space-y-3">
+          <button
           {/* Header */}
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="h-4 w-4 text-emerald-400" />
@@ -221,12 +221,14 @@ const DashboardSidebar = ({
                 active: 'bg-purple-500/20 border-purple-500 text-purple-400',
                 inactive: 'text-slate-300 hover:text-purple-400 hover:border-purple-500/50',
                 icon: 'bg-purple-500'
-              },
-              amber: {
-                active: 'bg-amber-500/20 border-amber-500 text-amber-400',
-                inactive: 'text-slate-300 hover:text-amber-400 hover:border-amber-500/50',
-                icon: 'bg-amber-500'
+            onClick={() => {
+              // Handle navigation or actions here
+              console.log('Navigate to:', item.path);
+              if (window.innerWidth < 1024) {
+                onClose();
               }
+            }}
+              amber: {
             };
 
             const colors = colorClasses[item.color];
@@ -263,11 +265,10 @@ const DashboardSidebar = ({
 
                 {/* Special indicator */}
                 {item.special && (
-                  <Star className="h-4 w-4 text-amber-400 animate-pulse ml-2" />
                 )}
               </button>
             );
-          })}
+          </button>
         </div>
       </nav>
 
@@ -366,14 +367,14 @@ const DashboardSidebar = ({
             <div className="flex items-center space-x-3">
               <img src={logo} alt="Logo" className="h-8 w-8" />
               <span className="text-xl font-bold text-gray-900">DevTools</span>
-            </div>
+            </button>
             <button
-              onClick={onClose}
+              onClick={() => console.log('Navigate to billing')}
               className="lg:hidden p-1 rounded-md hover:bg-gray-100"
             >
               <X className="h-5 w-5 text-gray-500" />
             </button>
-          </div>
+            </button>
 
           {/* User Profile */}
           <div className="p-4 border-b border-gray-200">

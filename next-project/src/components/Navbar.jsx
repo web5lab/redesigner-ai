@@ -37,7 +37,6 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 text-indigo-400 font-bold text-xl">
             <Link href="/" className="flex items-center gap-2 text-indigo-400 font-bold text-xl">
               <img src={logo} className="h-10 w-10" alt="Logo" />
               <span>redesignr<span className="text-purple-400">.ai</span></span>
@@ -48,7 +47,7 @@ const Navbar = () => {
           <nav className="hidden lg:block">
             <ul className="flex space-x-8">
               <li><a href="#features" className="text-slate-300 hover:text-white transition-colors">Features</a></li>
-              <li><Link to="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link></li>
               <li><a href="#pricing" className="text-slate-300 hover:text-white transition-colors">Pricing</a></li>
               <li><a href="#faq" className="text-slate-300 hover:text-white transition-colors">FAQ</a></li>
             </ul>
@@ -156,7 +155,7 @@ const Navbar = () => {
           <div className="flex md:hidden items-center space-x-2">
             {user && user.name && (
               <Link
-                to="/dashboard"
+                href="/dashboard"
                 className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-2 rounded-lg text-sm"
               >
                 Dashboard

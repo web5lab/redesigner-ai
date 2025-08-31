@@ -5,7 +5,7 @@ import StyledModal from './StyledModal';
 
 const SharePopup = ({ isOpen, onClose, website }) => {
   const [copied, setCopied] = useState(false);
-  const shareUrl = `${import.meta.env.VITE_FILE_SERVER_URL}/saved-pages/${website?.uuid}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_FILE_SERVER_URL}/saved-pages/${website?.uuid}`;
 
   if (!isOpen || !website) return null;
 

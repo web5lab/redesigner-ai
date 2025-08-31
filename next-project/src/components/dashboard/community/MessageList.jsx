@@ -32,7 +32,7 @@ const MessageList = ({ messages, isLoading }) => {
         <>
           {messages.map((message) => (
             <MessageItem 
-              key={message.id} 
+              key={message._id} 
               message={message}
               currentUser={user}
             />

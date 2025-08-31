@@ -122,7 +122,6 @@ const BlogList = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="max-w-6xl mx-auto">
                 <h2 className="text-2xl font-bold text-white mb-8">Featured Article</h2>
-                <Link to={`/blog/${featuredBlog.slug}`} className="block group">
                 <Link href={`/blog/${featuredBlog.slug}`} className="block group">
                   <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">

@@ -319,7 +319,7 @@ function WebsiteCard({ website, setShowBilling, handleFormatSelect, index, handl
                     {isCompleted && !isDeleted && (
                         <div className="absolute inset-0 bg-slate-900/30">
                             <img
-                                src={`${import.meta.env.VITE_FILE_SERVER_URL}/saved-pages/${website?.uuid}/screenshot-cropped.png`}
+                                src={`${process.env.NEXT_PUBLIC_FILE_SERVER_URL}/saved-pages/${website?.uuid}/screenshot-cropped.png`}
                                 alt="Website preview"
                                 className={`w-full h-full object-cover transition-all duration-500 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} ${isHovered ? 'scale-105' : 'scale-100'}`}
                                 onLoad={() => setImageLoaded(true)}

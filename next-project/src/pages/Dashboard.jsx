@@ -396,7 +396,7 @@ const Dashboard = () => {
               <Fragment>
                 <div className="flex justify-between items-center mb-4 sm:mb-6">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500 flex items-center">
-                    <Zap size={20} className="mr-2 md:mr-3 text-amber-400" /> Edit Your App In Bolt.new
+                    <FilePlus2 size={20} className="mr-2 text-indigo-400" /> Add New Webpage
                   </h3>
                   <button onClick={() => setShowConvertToWebAppModal(false)} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
                     <XIcon size={20} />
@@ -420,8 +420,7 @@ const Dashboard = () => {
                       }}
                       className="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex items-center justify-center font-medium transition-colors shadow-sm hover:shadow-md text-sm sm:text-base"
                     >
-                      <Copy size={14} sm:size={16} className="mr-1 sm:mr-2" /> Copy Prompt
-                      <Copy size={14} className="mr-1 sm:mr-2" /> Copy Prompt
+                      <Copy size={16} className="mr-2" /> Copy Prompt
                     </button>
                   </div>
                   <div>

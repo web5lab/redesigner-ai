@@ -8,3 +8,5 @@ import Image from "next/image";
               <span>redesignr<span className="text-purple-400">.ai</span></span>
             </Link>
           </div>
+
+export default Image

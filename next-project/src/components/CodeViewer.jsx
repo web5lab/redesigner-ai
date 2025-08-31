@@ -206,7 +206,7 @@ export function CodeViewer({ id, handleOpenDesignChat, website, onClose, multiDe
                       }}
                       className="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex items-center justify-center font-medium transition-colors shadow-sm hover:shadow-md text-sm sm:text-base"
                     >
-                      <Copy size={14} sm:size={16} className="mr-1 sm:mr-2" /> Copy Prompt
+                      <Copy size={16} className="mr-2" /> Copy Prompt
                     </button>
                   </div>
                   <div>

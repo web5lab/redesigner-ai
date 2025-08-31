@@ -405,19 +405,18 @@ const DashboardSidebar = ({
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1">
             {menuItems.map((item) => (
-              <Link
+              <button
                 key={item.path}
-                to={item.path}
-                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                 onClick={() => {
                   if (window.innerWidth < 1024) {
                     onClose();
                   }
                 }}
+                className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.label}</span>
-              </Link>
+              </button>
             ))}
           </nav>
 
@@ -443,20 +442,20 @@ const DashboardSidebar = ({
           {/* Footer */}
           <div className="p-4 border-t border-gray-200">
             <div className="space-y-2">
-              <Link
-                to="/usage"
+              <button
+                onClick={() => {}}
                 className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
               >
                 <History className="h-5 w-5" />
                 <span>Usage History</span>
-              </Link>
-              <Link
-                to="/billing"
+              </button>
+              <button
+                onClick={() => setShowBilling(true)}
                 className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
               >
                 <CreditCard className="h-5 w-5" />
                 <span>Billing</span>
-              </Link>
+              </button>
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"

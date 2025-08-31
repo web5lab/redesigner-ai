@@ -33,107 +33,6 @@ function AuthHandler() {
   return null;
 }
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const user = useSelector(UserSelector);
-  const dispatch = useDispatch();
-  const websiteQueqe = useSelector((state: any) => state?.global?.websiteQueqe);
-  const handleNewWebsite = async () => {
-    try {
-      let website = websiteQueqe
-      console.log("websiet ghjk", websiteQueqe)
-      dispatch(setWebsiteQueqe(null))
-      if (website.mode === "redesign") {
-        const data = {
-          url: website.formData.url,
-          customInstructions: website.formData.instructions,
-          multiDesign: true
-        }
-        await redesignWebsite({ data });
-        const token = localStorage.getItem('authToken');
-        if (token) dispatch(GetWebsite(token));
-      }
-      if (website.mode === "create") {
-        const data = {
-          mode: website.mode,
-          customInstructions: website.formData.instructions,
-        }
-        await redesignWebsite({ data });
-        const token = localStorage.getItem('authToken');
-        if (token) dispatch(GetWebsite(token));
-      }
-      if (website.mode === "docs") {
-        let payload = {
-          mode: website.mode,
-          customInstructions: website.formData.instructions,
-        }
-        if (website.formData.docsSource === 'url') {
-          payload.url = website.formData.repoUrl.trim(); // Repo URL
-        }
-        payload.readMe = website.formData.readmeContent.trim(); // For file content
-        await createDocApi({ data: payload });
-        const token = localStorage.getItem('authToken');
-        if (token) dispatch(GetWebsite(token));
-      }
-      if (website.mode === "design") {
-        const data = {
-          image: website.formData.imageBase64,
-          customInstructions: website.formData.instructions
-        }
-        await imageToDesign({ data });
-        const token = localStorage.getItem('authToken');
-        if (token) dispatch(GetWebsite(token));
-      }
-      const token = localStorage.getItem('authToken');
-      toast.success("you can access your website redesign in my website tab")
-      if (token) {
-        dispatch(GetWebsite(token));
-        dispatch(GetUserData(token));
-      }
-    } catch (error) {
-      console.log("Error creating new website:", error);
-      toast.error('Error creating new website: ' + (error instanceof Error ? error.message : String(error)));
-    }
-  };
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const interval = setInterval(() => {
-        dispatch(GetUserData(token));
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const paymentId = params.get('payment_id');
-    const token = localStorage.getItem('authToken');
-    if (paymentId) {
-      if (token) {
-        dispatch(GetUserData(token));
-        dispatch(GetWebsite(token));
-      }
-      navigate('/dashboard');
-    }
-  }, [location, navigate, dispatch]);
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  } else if (user && websiteQueqe) {
-    handleNewWebsite();
-  }
-
-  return (
-    <>
-      {children}
-    </>
-  );
-};
-
 function App() {
   const [extensionConnected, setExtensionConnected] = useState(false);
   const [extensionId, setExtensionId] = useState(null);
@@ -193,11 +92,7 @@ function App() {
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/auth-success" element={<AuthHandler />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

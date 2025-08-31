@@ -2,24 +2,25 @@ import React from 'react';
 import { Github, Mail, Zap, ArrowRight } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { UserSelector } from '../store/global.Selctor';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import logo from '../assets/logo.webp';
 
 const Login = () => {
   const [isNewUser, setIsNewUser] = React.useState(false);
   const user = useSelector(UserSelector);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
   const handleGithubLogin = () => {
-    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/github`;
+    window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/github`;
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`;
+    window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/google`;
   };
 
   return (
@@ -29,7 +30,7 @@ const Login = () => {
           <div className="flex items-center justify-center gap-2 text-indigo-400 font-bold text-2xl mb-4">
             <img src={logo} className="h-12 w-12" />
             <span onClick={() => {
-              navigate('/');
+              router.push('/');
             }}>redesignr<span className="text-purple-400">.ai</span></span>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">

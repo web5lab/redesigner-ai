@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import {
   Plus, Menu, ChevronLeft, ChevronRight,
   Contact2Icon,
@@ -63,7 +64,7 @@ const Dashboard = () => {
   const websites = useSelector(websiteSelector);
   const dispatch = useDispatch();
   const user = useSelector(UserSelector);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Calculate pagination values
   const totalPages = Math.ceil((websites?.length || 0) / itemsPerPage);
@@ -227,13 +228,13 @@ const Dashboard = () => {
 
   const handleOpenEditDesignPopup = (websiteToEdit) => {
     dispatch(setEditiorPage(websiteToEdit.uuid));
-    navigate('/editior');
+    router.push('/editior');
   }
 
   const handleDesignSelected = (newDesignUuid, websiteId) => {
     dispatch(setEditiorPage(newDesignUuid));
     toast.success(`Switched to new design! Opening editor...`);
-    navigate('/editior');
+    router.push('/editior');
     setEditDesignPopup({ isOpen: false, website: null });
     if (previewWebsite && previewWebsite._id === websiteId) {
       setPreviewWebsite(prev => ({ ...prev, uuid: newDesignUuid }));
@@ -243,7 +244,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     dispatch(logOutUser());
-    navigate('/login');
+    router.push('/login');
     toast.success('Logged out successfully');
   };
 

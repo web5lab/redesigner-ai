@@ -185,7 +185,7 @@ export function CodeViewer({ id, handleOpenDesignChat, website, onClose, multiDe
                     <Zap size={20} md:size={24} className="mr-2 md:mr-3 text-amber-400" /> Convert to Web App
                   </h3>
                   <button onClick={() => setShowConvertToWebAppModal(false)} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
-                    <XIcon size={20} md:size={22} />
+                    <XIcon size={20} />
                   </button>
                 </div>
                 <div className="space-y-4 sm:space-y-6">

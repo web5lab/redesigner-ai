@@ -230,7 +230,7 @@ const TemplatesTab = ({ user, setShowBilling, mainContentAnimation ,onRemixTempl
           <div className="templates-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {templates.map((template) => (
               <div
-                key={template.id}
+                key={template._id}
                 className="group bg-slate-700/50 rounded-lg overflow-hidden border border-slate-600/50 hover:border-indigo-500/50 transition-all"
               >
                 <div className="aspect-[2/1] relative overflow-hidden">

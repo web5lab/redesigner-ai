@@ -376,7 +376,7 @@ function AiEditior({ fullScreenPreview,handleHtmlPreview, handleFullScreenHtml,i
                             ) : (
                                 <iframe
                                     key={`${website.uuid}-${previewKey}`}
-                                    src={`${import.meta.env.VITE_FILE_SERVER_URL}/saved-pages/${website.uuid}`}
+                                    src={`${process.env.NEXT_PUBLIC_FILE_SERVER_URL}/saved-pages/${website.uuid}`}
                                     className="w-full h-full border-none"
                                     title="Website Preview"
                                     sandbox="allow-same-origin allow-scripts allow-popups allow-forms"

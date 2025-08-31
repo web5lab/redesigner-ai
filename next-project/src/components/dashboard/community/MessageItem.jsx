@@ -76,7 +76,7 @@ const MessageItem = ({ message }) => {
               <div className="mt-3 bg-slate-800/70 rounded-lg overflow-hidden border border-slate-600/50">
                 <div className="relative aspect-video">
                   <img
-                    src={`${import.meta.env.VITE_FILE_SERVER_URL}/saved-pages/${message.website.uuid}/screenshot-cropped.png`}
+                    src={`${process.env.NEXT_PUBLIC_FILE_SERVER_URL}/saved-pages/${message.website.uuid}/screenshot-cropped.png`}
                     alt="website preview"
                     className="w-full h-full object-cover"
                   />
@@ -85,7 +85,7 @@ const MessageItem = ({ message }) => {
                 <div className="p-3">
                   <div className="flex items-center justify-between mt-2">
                     <a
-                      href={`${import.meta.env.VITE_FILE_SERVER_URL}/saved-pages/${message.website.uuid}`}
+                      href={`${process.env.NEXT_PUBLIC_FILE_SERVER_URL}/saved-pages/${message.website.uuid}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"

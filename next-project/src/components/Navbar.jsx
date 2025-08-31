@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Menu, X, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { UserSelector } from '../store/global.Selctor';
@@ -9,7 +10,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const user = useSelector(UserSelector);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,7 +60,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2 cursor-pointer">
                   {user.profilePicture ? (
                     <img
-                      onClick={() => navigate('/dashboard')}
+                      onClick={() => router.push('/dashboard')}
                       src={user.profilePicture}
                       alt="Profile"
                       className="h-8 w-8 rounded-full object-cover"
@@ -70,7 +71,7 @@ const Navbar = () => {
                     </div>
                   )}
                   <span
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => router.push('/dashboard')}
                     className="text-white cursor-pointer"
                   >
                     {user.name}
@@ -108,7 +109,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2 cursor-pointer">
                   {user.profilePicture ? (
                     <img
-                      onClick={() => navigate('/dashboard')}
+                      onClick={() => router.push('/dashboard')}
                       src={user.profilePicture}
                       alt="Profile"
                       className="h-8 w-8 rounded-full object-cover"
@@ -119,7 +120,7 @@ const Navbar = () => {
                     </div>
                   )}
                   <span
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => router.push('/dashboard')}
                     className="text-white cursor-pointer text-sm"
                   >
                     {user.name.length > 10 ? `${user.name.substring(0, 10)}...` : user.name}

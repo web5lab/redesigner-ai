@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   User, Settings, CreditCard, HelpCircle, LogOut,
   Camera, Edit2, Zap
@@ -12,7 +12,7 @@ import { UserSelector } from '../store/global.Selctor';
 
 
 const UserProfile= ({ isOpen, onClose }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isEditing, setIsEditing] = React.useState(false);
   const [showBilling, setShowBilling] = React.useState(false);
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const UserProfile= ({ isOpen, onClose }) => {
 
   const handleLogout = () => {
     dispatch(logOutUser())
-    navigate('/login');
+    router.push('/login');
   };
 
   return (

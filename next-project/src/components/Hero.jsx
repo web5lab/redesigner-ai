@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Wand2, FileText, Sparkles, ArrowRight, Zap, Github } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { setWebsiteQueqe } from '../store/global.Slice';
@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 
 const Hero = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showVideo, setShowVideo] = useState(false);
   const [activeTab, setActiveTab] = useState('redesign');
   const dispatch = useDispatch()
@@ -96,7 +96,7 @@ const Hero = () => {
     console.log("form data =>", formData)
     dispatch(setWebsiteQueqe({ formData, mode: activeTab }))
     setIsSubmitting(false);
-    navigate('/dashboard');
+    router.push('/dashboard');
   };
 
   return (
@@ -142,7 +142,7 @@ const Hero = () => {
           </div>
           <div className="md:flex hidden mb-6 flex-col sm:flex-row gap-4 justify-center items-center">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => router.push('/dashboard')}
               className="group relative px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

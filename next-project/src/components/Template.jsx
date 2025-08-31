@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { publicTemplatesSelector } from '../store/global.Selctor';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const TemplateShowcase = () => {
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const sectionRef = useRef(null);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const templates = useSelector(publicTemplatesSelector);
 
@@ -53,7 +53,7 @@ const TemplateShowcase = () => {
     }, []);
 
     const handleUseTemplate = (template) => {
-        navigate('/dashboard');
+        router.push('/dashboard');
     };
 
     const displayedTemplates = templates;

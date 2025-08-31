@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
+import Link from 'next/link';
 import { Calendar, Clock, User, Tag, ArrowLeft, Share2, BookOpen, ExternalLink, Star, Heart, MessageCircle, Bookmark, Eye, ThumbsUp, Copy, CheckCircle } from 'lucide-react';
 import { blogs } from './blogs'; // Assuming you have a blogs data file
 import Navbar from './Navbar';
@@ -254,7 +255,7 @@ const BlogPost = () => {
                   Put these insights into practice with our AI-powered website builder. Create stunning, SEO-optimized websites in minutes.
                 </p>
                 <Link
-                  to="/dashboard"
+                  href="/dashboard"
                   className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-8 py-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Start Building Now

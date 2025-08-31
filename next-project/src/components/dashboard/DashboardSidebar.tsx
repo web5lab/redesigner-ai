@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import {
   CreditCard, History, Sparkles, LogOut, X,
   BookTemplate, Component, MessageSquare, Zap, Star,
@@ -52,7 +52,7 @@ const DashboardSidebar = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-8 sm:mb-10">
         <Link
-          to="/"
+          href="/"
           className="flex items-center gap-2 text-indigo-400 font-bold text-xl sm:text-2xl hover:text-indigo-300 transition-colors"
           onClick={closeMobileSidebar}
         >

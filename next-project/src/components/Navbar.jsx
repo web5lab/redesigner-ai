@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Menu, X, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -38,6 +38,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 text-indigo-400 font-bold text-xl">
+            <Link href="/" className="flex items-center gap-2 text-indigo-400 font-bold text-xl">
               <img src={logo} className="h-10 w-10" alt="Logo" />
               <span>redesignr<span className="text-purple-400">.ai</span></span>
             </Link>
@@ -78,7 +79,7 @@ const Navbar = () => {
                   </span>
                 </div>
                 <Link
-                  to="/dashboard"
+                  href="/dashboard"
                   className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-indigo-500/25"
                 >
                   Dashboard
@@ -93,7 +94,7 @@ const Navbar = () => {
                   Contact Us
                 </a>
                 <Link
-                  to="/login"
+                  href="/login"
                   className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-indigo-500/25"
                 >
                   Dashboard
@@ -127,7 +128,7 @@ const Navbar = () => {
                   </span>
                 </div>
                 <Link
-                  to="/dashboard"
+                  href="/dashboard"
                   className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-indigo-500/25 text-sm"
                 >
                   Dashboard
@@ -142,7 +143,7 @@ const Navbar = () => {
                   Contact
                 </a>
                 <Link
-                  to="/login"
+                  href="/login"
                   className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-indigo-500/25 text-sm"
                 >
                   DashBoard
@@ -187,7 +188,7 @@ const Navbar = () => {
                 </li>
                 <li>
                   <Link
-                    to="/blog"
+                    href="/blog"
                     className="block text-slate-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-slate-800"
                     onClick={closeMobileMenu}
                   >
@@ -242,7 +243,7 @@ const Navbar = () => {
                     Contact Us
                   </a>
                   <Link
-                    to="/login"
+                    href="/login"
                     className="block bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 text-center mx-4"
                     onClick={closeMobileMenu}
                   >

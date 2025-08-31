@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const TermsOfService = () => {
   useEffect(() => {
@@ -28,7 +28,7 @@ const TermsOfService = () => {
             {/* Breadcrumb */}
             <nav className="mb-8 pt-8">
               <Link 
-                to="/" 
+                href="/" 
                 className="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />

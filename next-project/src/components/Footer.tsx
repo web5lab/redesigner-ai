@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Linkedin, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import logo from "../assets/logo.webp";
 import Image from 'next/image';
 
@@ -15,7 +15,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link
-              to="/"
+              href="/"
               className="flex items-center gap-2 group mb-4"
             >
               <Image
@@ -86,13 +86,13 @@ const Footer = () => {
           </p>
           <div className="flex gap-6">
             <Link
-              to="/privacy-policy"
+              href="/privacy-policy"
               className="hover:text-purple-400 transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              to="/terms-of-service"
+              href="/terms-of-service"
               className="hover:text-indigo-400 transition-colors"
             >
               Terms

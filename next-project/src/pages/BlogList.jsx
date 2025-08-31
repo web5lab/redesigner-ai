@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Calendar, Clock, User, ArrowRight, Search, Filter } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -123,6 +123,7 @@ const BlogList = () => {
               <div className="max-w-6xl mx-auto">
                 <h2 className="text-2xl font-bold text-white mb-8">Featured Article</h2>
                 <Link to={`/blog/${featuredBlog.slug}`} className="block group">
+                <Link href={`/blog/${featuredBlog.slug}`} className="block group">
                   <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                       <div className="relative overflow-hidden">
@@ -187,7 +188,7 @@ const BlogList = () => {
               <h2 className="text-2xl font-bold text-white mb-8">Latest Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {regularBlogs.map((blog) => (
-                  <Link key={blog.id} to={`/blog/${blog.slug}`} className="block group">
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="block group">
                     <article className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-xl overflow-hidden shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 hover:transform hover:scale-105 h-full">
                       <div className="relative overflow-hidden">
                         <img

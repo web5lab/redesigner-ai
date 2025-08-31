@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, User, Tag } from 'lucide-react';
 
 const BlogsSection = () => {
@@ -144,7 +144,7 @@ const BlogsSection = () => {
                       </div>
                     </div>
                     <Link 
-                      to={`/blog/${featuredBlog.slug}`}
+                      href={`/blog/${featuredBlog.slug}`}
                       className="flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition-colors group/btn"
                     >
                       Read More
@@ -206,7 +206,7 @@ const BlogsSection = () => {
                   </div>
                   
                   <Link 
-                    to={`/blog/${blog.slug}`}
+                    href={`/blog/${blog.slug}`}
                     className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors group/btn"
                   >
                     Read
@@ -233,7 +233,7 @@ const BlogsSection = () => {
         {/* View All Blogs CTA */}
         <div className="text-center">
           <Link 
-            to="/blog"
+            href="/blog"
             className="group relative inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

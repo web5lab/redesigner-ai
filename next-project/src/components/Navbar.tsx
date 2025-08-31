@@ -1,4 +1,5 @@
 import logo from "../assets/logo.webp";
+import logo from "../assets/logo.webp";
 import Image from "next/image";
 
           <div className="flex items-center">

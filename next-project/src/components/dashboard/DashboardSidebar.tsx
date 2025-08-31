@@ -96,7 +96,7 @@ const DashboardSidebar = ({
       {/* Navigation */}
       <nav className="flex-grow space-y-6">
         {/* Quick Stats */}
-          <button
+        <div className="space-y-3">
           {/* Header */}
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="h-4 w-4 text-emerald-400" />
@@ -137,6 +137,7 @@ const DashboardSidebar = ({
               <div className="text-xs text-slate-400">AI Tokens</div>
             </div>
           </div>
+        </div>
         </div>
 
         {/* Main Navigation */}

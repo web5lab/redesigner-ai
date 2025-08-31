@@ -1,6 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
+  experimental: {
+    swcPlugins: [
+      [
+        "@swc/plugin-styled-jsx",
+        {
+          "throwIfNamespace": false
+        }
+      ]
+    ]
+  },
   images: {
     domains: ['images.pexels.com', 'via.placeholder.com', 'ui-avatars.com'],
     remotePatterns: [

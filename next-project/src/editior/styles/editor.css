@@ -1,0 +1,70 @@
+/* Editor specific styles */
+.editor-header {
+  z-index: 10;
+}
+
+.editor-panel {
+  transition: all 0.3s ease;
+}
+
+.editor-toolbar button {
+  transition: all 0.2s ease;
+}
+
+/* Element highlight animations */
+@keyframes pulse-highlight {
+  0% {
+    outline-color: rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    outline-color: rgba(59, 130, 246, 1);
+  }
+  100% {
+    outline-color: rgba(59, 130, 246, 0.5);
+  }
+}
+
+/* Toast notification styles */
+.toast-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  background-color: #10B981;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.toast-notification.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-notification.error {
+  background-color: #EF4444;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}

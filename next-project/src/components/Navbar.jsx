@@ -1,12 +1,9 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { UserSelector } from '../store/global.Selctor';
-import logo from "../assets/logo.webp";
-import Image from 'next/image';
+import logo from "../assets/logo.webp"
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,7 +37,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 text-indigo-400 font-bold text-xl">
-              <Image src={logo} className="h-10 w-10" alt="Logo" width={40} height={40} />
+              <img src={logo} className="h-10 w-10" alt="Logo" />
               <span>redesignr<span className="text-purple-400">.ai</span></span>
             </Link>
           </div>
@@ -61,13 +58,11 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 cursor-pointer">
                   {user.profilePicture ? (
-                    <Image
+                    <img
                       onClick={() => navigate('/dashboard')}
                       src={user.profilePicture}
                       alt="Profile"
                       className="h-8 w-8 rounded-full object-cover"
-                      width={32}
-                      height={32}
                     />
                   ) : (
                     <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
@@ -112,13 +107,11 @@ const Navbar = () => {
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 cursor-pointer">
                   {user.profilePicture ? (
-                    <Image
+                    <img
                       onClick={() => navigate('/dashboard')}
                       src={user.profilePicture}
                       alt="Profile"
                       className="h-8 w-8 rounded-full object-cover"
-                      width={32}
-                      height={32}
                     />
                   ) : (
                     <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">
@@ -225,12 +218,10 @@ const Navbar = () => {
                 <div className="mt-4 pt-4 border-t border-slate-700">
                   <div className="flex items-center space-x-3 px-4 py-2">
                     {user.profilePicture ? (
-                      <Image
+                      <img
                         src={user.profilePicture}
                         alt="Profile"
                         className="h-8 w-8 rounded-full object-cover"
-                        width={32}
-                        height={32}
                       />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center">

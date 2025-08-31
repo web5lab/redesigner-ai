@@ -29,7 +29,7 @@ function AuthHandler() {
       navigate('/dashboard');
     }
 
-  }, [location, navigate]);
+  }, [location, navigate, dispatch]);
   return null;
 }
 
@@ -49,7 +49,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           multiDesign: true
         }
         await redesignWebsite({ data });
-        dispatch(GetWebsite(localStorage.getItem('authToken')));
+        const token = localStorage.getItem('authToken');
+        if (token) dispatch(GetWebsite(token));
       }
       if (website.mode === "create") {
         const data = {
@@ -57,7 +58,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           customInstructions: website.formData.instructions,
         }
         await redesignWebsite({ data });
-        dispatch(GetWebsite(localStorage.getItem('authToken')));
+        const token = localStorage.getItem('authToken');
+        if (token) dispatch(GetWebsite(token));
       }
       if (website.mode === "docs") {
         let payload = {
@@ -69,7 +71,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
         payload.readMe = website.formData.readmeContent.trim(); // For file content
         await createDocApi({ data: payload });
-        dispatch(GetWebsite(localStorage.getItem('authToken')));
+        const token = localStorage.getItem('authToken');
+        if (token) dispatch(GetWebsite(token));
       }
       if (website.mode === "design") {
         const data = {
@@ -77,15 +80,18 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           customInstructions: website.formData.instructions
         }
         await imageToDesign({ data });
-        dispatch(GetWebsite(localStorage.getItem('authToken')));
+        const token = localStorage.getItem('authToken');
+        if (token) dispatch(GetWebsite(token));
       }
       const token = localStorage.getItem('authToken');
       toast.success("you can access your website redesign in my website tab")
-      dispatch(GetWebsite(token));
-      dispatch(GetUserData(token));
+      if (token) {
+        dispatch(GetWebsite(token));
+        dispatch(GetUserData(token));
+      }
     } catch (error) {
       console.log("Error creating new website:", error);
-      toast.error('Error creating new website:' + error);
+      toast.error('Error creating new website: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
   const navigate = useNavigate();
@@ -107,11 +113,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const paymentId = params.get('payment_id');
     const token = localStorage.getItem('authToken');
     if (paymentId) {
-      dispatch(GetUserData(token));
-      dispatch(GetWebsite(token));
+      if (token) {
+        dispatch(GetUserData(token));
+        dispatch(GetWebsite(token));
+      }
       navigate('/dashboard');
     }
-  }, [location, navigate]);
+  }, [location, navigate, dispatch]);
 
   if (!user) {
     return <Navigate to="/login" replace />;

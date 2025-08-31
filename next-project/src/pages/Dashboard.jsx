@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Plus, Menu, ChevronLeft, ChevronRight,
@@ -65,6 +65,37 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const user = useSelector(UserSelector);
   const router = useRouter();
+
+  // Authentication check - redirect to login if not authenticated
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    
+    // If token exists but no user data, try to fetch user data
+    if (!user) {
+      dispatch(GetUserData(token));
+    }
+  }, [user, router, dispatch]);
+
+  // Show loading while checking authentication
+  if (!user && localStorage.getItem('authToken')) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+          <p className="text-slate-300">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no token and no user, redirect will happen in useEffect above
+  if (!user) {
+    return null;
+  }
 
   // Calculate pagination values
   const totalPages = Math.ceil((websites?.length || 0) / itemsPerPage);

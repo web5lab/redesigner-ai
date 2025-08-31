@@ -182,7 +182,7 @@ export function CodeViewer({ id, handleOpenDesignChat, website, onClose, multiDe
               <Fragment>
                 <div className="flex justify-between items-center mb-4 sm:mb-6">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500 flex items-center">
-                    <Zap size={20} md:size={24} className="mr-2 md:mr-3 text-amber-400" /> Convert to Web App
+                    <Zap size={20} className="mr-2 md:mr-3 text-amber-400" /> Convert to Web App
                   </h3>
                   <button onClick={() => setShowConvertToWebAppModal(false)} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
                     <XIcon size={20} />

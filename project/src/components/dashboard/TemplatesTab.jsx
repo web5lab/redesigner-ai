@@ -266,10 +266,10 @@ const TemplatesTab = ({ user, setShowBilling, mainContentAnimation ,onRemixTempl
                     </button>
                     <button
                       onClick={() => remixFunction(template)}
-                      className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1"
                     >
                       <Wand2 className="h-3 w-3" />
-                      Remix
+                      Use This Design
                     </button>
                   </div>
                 </div>

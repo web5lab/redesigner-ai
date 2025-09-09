@@ -256,14 +256,15 @@ const DashboardSidebar = ({
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-slate-800" />
           </div>
 
-          <div className="flex-grow">
-            <p className="text-sm font-medium text-white group-hover:text-indigo-300 transition-colors">
-              {user?.name || 'User Profile'}
-            </p>
-            <p className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
-              {user?.email || 'User email'}
-            </p>
-          </div>
+ <div className="flex-grow">
+  <p className="text-sm font-medium text-white group-hover:text-indigo-300 transition-colors">
+    {user?.name || 'User Profile'}
+  </p>
+  <p className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors truncate max-w-[120px]">
+    {user?.email || 'User email'}
+  </p>
+</div>
+
 
           <Settings className="h-4 w-4 text-slate-500 group-hover:text-indigo-400 transition-colors" />
         </button>

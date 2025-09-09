@@ -12,6 +12,8 @@ import TemplateShowcase from '../components/Template';
 import { useDispatch } from 'react-redux';
 import { getPublicTemplates } from '../store/global.Action';
 import BlogsSection from '../components/BlogsSection';
+import AIEditorSection from '../components/AIEditorSection';
+import VisualEditorSection from '../components/VisualEditorSection';
 
 const Landing = () => {
   const dispatch = useDispatch();
@@ -26,9 +28,10 @@ const Landing = () => {
         <Hero />
         {/* <EnhancedApiSection/> */}
         <Features />
-        <div className='md:block hidden'>
         <TemplateShowcase />
-        </div>
+      
+        <AIEditorSection />
+        <VisualEditorSection />
         {/* <PowerfulEditor /> */}
         {/* <BlogsSection /> */}
         {/* <Testimonials /> */}

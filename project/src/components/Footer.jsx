@@ -33,20 +33,38 @@ const Footer = () => {
           </div>
 
           {/* Featured Badge */}
-          <div className="md:col-span-2 flex justify-center">
-            <a
-              href="https://theresanaiforthat.com/ai/redesignr/?ref=featured&v=6100518"
-              target="_blank"
-              rel="nofollow"
-              className="inline-block"
-            >
-              <img
-                src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600"
-                alt="Featured on There's an AI for That"
-                className="w-[280px] rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
-              />
-            </a>
-          </div>
+<div className="md:col-span-2 flex flex-col sm:flex-row justify-center items-center gap-6">
+  {/* TAFT Badge */}
+  <a
+    href="https://theresanaiforthat.com/ai/redesignr/?ref=featured&v=6100518"
+    target="_blank"
+    rel="nofollow"
+    className="inline-block"
+  >
+    <img
+      src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600"
+      alt="Featured on There's an AI for That"
+      className="w-[280px] rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
+    />
+  </a>
+
+  {/* Code.market Badge */}
+  <a
+    title="ai tools code.market"
+    href="https://code.market?code.market=verified"
+    target="_blank"
+    rel="nofollow"
+    className="inline-block"
+  >
+    <img
+      src="https://code.market/assets/manage-product/featured-logo-dark.svg"
+      alt="ai tools code.market"
+      title="ai tools code.market"
+      className="h-12 hover:scale-105 transition-transform duration-300"
+    />
+  </a>
+</div>
+
 
           {/* Social Links */}
           <div className="flex md:justify-end items-start gap-3">

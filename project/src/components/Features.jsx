@@ -5,7 +5,8 @@ import {
   BookOpen,
   User,
   Clock,
-  Sparkles
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import web5labNew from '../assets/web5labDark.webp';
 import web5labOld from '../assets/web5labOld.webp';
@@ -68,7 +69,7 @@ const ProblemSolution = () => {
     },
     {
       id: 'docs',
-      icon: <FileText className="h-6 w-6" />, // Assuming you're using Lucide icons; replace if needed
+      icon: <FileText className="h-6 w-6" />,
       title: 'Docs Generator',
       description: 'Generate stunning documentation from your codebase',
       oldTitle: 'Raw Repository Code',
@@ -97,104 +98,142 @@ const ProblemSolution = () => {
   const activeCapability = capabilities.find(cap => cap.id === activeTab) || capabilities[0];
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30 animate-blob"></div>
-      <div className="absolute bottom-1/2 right-1/2 w-96 h-96 bg-blue-600/20 rounded-full filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-
+    <section ref={sectionRef} className="relative py-16 md:py-24 overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <div className="inline-block px-4 py-1.5 mb-6 bg-slate-800/80 rounded-full backdrop-blur-sm border border-slate-700">
-            <span className="text-purple-400 text-sm font-medium">
-              Transform Any Digital Presence
-            </span>
+        
+        {/* Header Content */}
+        <div className="text-center mb-12 max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-4 py-2 mb-6">
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <span className="text-sm font-medium text-indigo-300">Transform Any Digital Presence</span>
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-100 mb-4">
-            From <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">Outdated</span> to{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">Outstanding</span>
+
+          <h2 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">
+              From Outdated
+            </span>
+            <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+              to Outstanding
+            </span>
           </h2>
-          <p className="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto">
-            Whether it's a website redesign, portfolio creation, documentation, or instant blogging -
+
+          <p className="text-xl text-slate-400 leading-relaxed mb-8">
+            Whether it's a website redesign, portfolio creation, documentation, or instant blogging — 
             your AI buddy transforms any digital project in minutes, not hours.
           </p>
         </div>
 
         {/* Capability Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {capabilities.map((cap) => (
             <button
               key={cap.id}
               onClick={() => setActiveTab(cap.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${activeTab === cap.id
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg'
-                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 border border-slate-600/50'
-                }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium ${
+                activeTab === cap.id
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg scale-105'
+                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50'
+              }`}
             >
               {cap.icon}
-              <span className="font-medium">{cap.title}</span>
+              <span>{cap.title}</span>
             </button>
           ))}
         </div>
 
-        {/* Main Comparison */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center mb-16">
-          {/* Before */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
-            <div className="relative p-6 md:p-8 bg-slate-800/90 backdrop-blur-sm rounded-xl border border-red-500/20">
-              <div className="flex items-center mb-4">
-                <div className="p-2 bg-red-500/20 rounded-lg mr-3">
-                  <Clock className="h-5 w-5 text-red-400" />
+        {/* Large Before/After Showcase */}
+        <div className="relative w-full flex justify-center mb-16">
+          <div className="relative rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden bg-slate-900/60 w-full max-w-7xl">
+            <div className="grid md:grid-cols-2 gap-0">
+              
+              {/* Before Side */}
+              <div className="relative group">
+                <div className="p-8 md:p-10 bg-gradient-to-br from-red-500/5 to-orange-500/5 border-r border-slate-700/50 h-full flex flex-col">
+                  <div className="flex items-center mb-6">
+                    <div className="p-3 bg-red-500/20 rounded-xl mr-4">
+                      <Clock className="h-6 w-6 text-red-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-red-400">
+                        {activeCapability.oldTitle}
+                      </h3>
+                      <p className="text-red-300/70 text-sm">Before</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+                    {activeCapability.oldDesc}
+                  </p>
+                  
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="relative overflow-hidden rounded-2xl w-full max-w-md">
+                      <img
+                        src={activeCapability.oldImage}
+                        alt="Before transformation"
+                        loading="lazy"
+                        className="w-full h-64 object-cover opacity-70"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {['Slow loading', 'Poor UX', 'Outdated design'].map((issue, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-red-500/20 text-red-300 text-sm rounded-full">
+                        {issue}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold text-red-400">{activeCapability.oldTitle}</h3>
               </div>
-              <p className="text-slate-300 mb-6">{activeCapability.oldDesc}</p>
-              <div className="relative overflow-hidden rounded-lg">
-                <img
-                  src={activeCapability.oldImage}
-                  alt="Before transformation"
-                  loading="lazy"
-                  className="w-full h-64 object-cover opacity-60"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {['Slow loading', 'Poor UX', 'Outdated design'].map((issue, idx) => (
-                  <span key={idx} className="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded-full">
-                    {issue}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          {/* After */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
-            <div className="relative p-6 md:p-8 bg-slate-800/90 backdrop-blur-sm rounded-xl border border-indigo-500/20">
-              <div className="flex items-center mb-4">
-                <div className="p-2 bg-indigo-500/20 rounded-lg mr-3">
-                  <Sparkles className="h-5 w-5 text-indigo-400" />
+              {/* After Side */}
+              <div className="relative group">
+                <div className="p-8 md:p-10 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 h-full flex flex-col">
+                  <div className="flex items-center mb-6">
+                    <div className="p-3 bg-indigo-500/20 rounded-xl mr-4">
+                      <Sparkles className="h-6 w-6 text-indigo-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-indigo-400">
+                        {activeCapability.newTitle}
+                      </h3>
+                      <p className="text-indigo-300/70 text-sm">After</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+                    {activeCapability.newDesc}
+                  </p>
+                  
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="relative overflow-hidden rounded-2xl w-full max-w-md">
+                      <img
+                        src={activeCapability.newImage}
+                        alt="After transformation"
+                        loading="lazy"
+                        className="w-full h-64 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {activeCapability.stats.map((stat, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-indigo-500/20 text-indigo-300 text-sm rounded-full">
+                        ✓ {stat}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold text-indigo-400">{activeCapability.newTitle}</h3>
               </div>
-              <p className="text-slate-300 mb-6">{activeCapability.newDesc}</p>
-              <div className="relative overflow-hidden rounded-lg">
-                <img
-                  src={activeCapability.newImage}
-                  alt="After transformation"
-                  loading="lazy"
-                  className="w-full h-64 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent"></div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {activeCapability.stats.map((stat, idx) => (
-                  <span key={idx} className="px-2 py-1 bg-indigo-500/20 text-indigo-300 text-xs rounded-full">
-                    ✓ {stat}
-                  </span>
-                ))}
+              
+              {/* Central Arrow */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full p-4 shadow-2xl border-4 border-slate-900">
+                  <ArrowRight className="h-8 w-8 text-white" />
+                </div>
               </div>
             </div>
           </div>

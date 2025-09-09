@@ -11,7 +11,7 @@ import socket from '../../socket';
 import { GetChatHistory, sendMessageApi } from '../../store/global.Action';
 import { setChatHistory } from '../../store/global.Slice';
 
-const CommunityChat = ({ mainContentAnimation, setShowBilling }) => {
+const CommunityChat = ({ mainContentAnimation, setShowBilling ,setActiveTab }) => {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
@@ -74,6 +74,7 @@ const CommunityChat = ({ mainContentAnimation, setShowBilling }) => {
       {/* Chat Messages */}
       <div className="bg-slate-800/30 border min-h-[90vh] border-slate-700/50 rounded-lg mb-4">
         <MessageList
+        setActiveTab={setActiveTab}
           messages={chatHistory}
           isLoading={isLoading}
         />

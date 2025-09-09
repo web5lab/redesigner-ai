@@ -113,7 +113,7 @@ const Dashboard = () => {
       return;
     }
     if (!user || user.AiCredits <= 4) {
-      toast.error('Insufficient credits or user data missing. Please check your plan or re-login.');
+      toast.error('Insufficient credits. Please upgrade your plan.');
       return;
     }
 
@@ -663,6 +663,7 @@ const Dashboard = () => {
         ) : activeTab === 'community' ? (
           <CommunityChat
             user={user}
+            setActiveTab={setActiveTab}
             mainContentAnimation={mainContentAnimation}
           />
         ) : (

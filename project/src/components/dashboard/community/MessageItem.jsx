@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { Clock, ExternalLink, Link as LinkIcon, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { RemixModal } from '../TemplatesModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { UserSelector } from '../../../store/global.Selctor';
+import { GetUserData, GetWebsite, remixWebsite } from '../../../store/global.Action';
 
-const MessageItem = ({ message }) => {
+
+const MessageItem = ({ message , setActiveTab }) => {
   const [showRemixModal, setShowRemixModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
+  const user = useSelector(UserSelector);
+  const dispatch = useDispatch()
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -38,9 +43,30 @@ const MessageItem = ({ message }) => {
     setShowRemixModal(true);
   };
 
-  const handleRemix = (data) => {
-    console.log('Remix Request:', data);
-    // Trigger remix flow here (e.g., API call or redirect)
+  const handleRemix = async (data) => {
+    if (!user || user.AiCredits <= 4) {
+      toast.error('Insufficient credits. Please upgrade your plan.');
+      return;
+    }
+    try {
+      const webdata = await remixWebsite({ data: data });
+      const token = localStorage.getItem('authToken');
+      if (webdata) {
+        if (token) {
+          dispatch(GetWebsite(token));
+          dispatch(GetUserData(token));
+        }
+        toast.success('Template remix initiated! Your customized site is being created.');
+      }
+      setShowRemixModal(false);
+      setSelectedTemplate(null);
+      setActiveTab('websites')
+    } catch (error) {
+      console.error('Error remixing template:', error);
+      toast.error(error.message || 'Failed to remix template.');
+      setShowRemixModal(false);
+      setSelectedTemplate(null);
+    }
   };
 
   return (
@@ -105,10 +131,10 @@ const MessageItem = ({ message }) => {
                   <div className="mt-3">
                     <button
                       onClick={() => handleUseDesign(message.website)}
-                      className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded flex items-center gap-1 transition"
+                      className="text-xs bg-green-600 hover:bg-indigo-500 text-white px-3 py-2 rounded flex items-center gap-1 transition"
                     >
                       <Sparkles className="h-4 w-4" />
-                      Remix This Design
+                      Use This Design
                     </button>
                   </div>
                 </div>

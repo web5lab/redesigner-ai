@@ -4,7 +4,7 @@ import MessageItem from './MessageItem';
 import { useSelector } from 'react-redux';
 import { UserSelector } from '../../../store/global.Selctor';
 
-const MessageList = ({ messages, isLoading }) => {
+const MessageList = ({ messages, isLoading ,setActiveTab}) => {
   const messagesEndRef = useRef(null);
   const user = useSelector(UserSelector);
 
@@ -34,6 +34,7 @@ const MessageList = ({ messages, isLoading }) => {
             <MessageItem 
               key={message.id} 
               message={message}
+              setActiveTab={setActiveTab}
               currentUser={user}
             />
           ))}

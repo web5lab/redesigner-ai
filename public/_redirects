@@ -1,21 +1,55 @@
-@@ .. @@
-+# Multi-language landing pages
-+/fr /landing-fr.html 200
-+/jp /landing-jp.html 200
-+/kr /landing-kr.html 200
-+/japan /landing-jp.html 200
-+/korea /landing-kr.html 200
-+/france /landing-fr.html 200
-+/japanese /landing-jp.html 200
-+/korean /landing-kr.html 200
-+/french /landing-fr.html 200
-+
-+# Language-specific redirects based on keywords
-+/redesignr-ai-france /landing-fr.html 200
-+/redesignr-ai-japan /landing-jp.html 200
-+/redesignr-ai-korea /landing-kr.html 200
-+/ai-website-redesign-france /landing-fr.html 200
-+/ai-website-redesign-japan /landing-jp.html 200
-+/ai-website-redesign-korea /landing-kr.html 200
-+
- /*    /index.html   200
+# Multi-language landing pages
+/es /landing-es.html 200
+/fr /landing-fr.html 200
+/de /landing-de.html 200
+/it /landing-it.html 200
+/br /landing-br.html 200
+/jp /landing-jp.html 200
+/kr /landing-kr.html 200
+/cn /landing-cn.html 200
+/in /landing-in.html 200
+
+# Country-specific redirects
+/spain /landing-es.html 200
+/japan /landing-jp.html 200
+/korea /landing-kr.html 200
+/france /landing-fr.html 200
+/germany /landing-de.html 200
+/italy /landing-it.html 200
+/brazil /landing-br.html 200
+/china /landing-cn.html 200
+/india /landing-in.html 200
+
+# Language-specific redirects
+/spanish /landing-es.html 200
+/japanese /landing-jp.html 200
+/korean /landing-kr.html 200
+/french /landing-fr.html 200
+/german /landing-de.html 200
+/italian /landing-it.html 200
+/portuguese /landing-br.html 200
+/chinese /landing-cn.html 200
+/hindi /landing-in.html 200
+
+# Language-specific redirects based on keywords
+/redesignr-ai-spain /landing-es.html 200
+/redesignr-ai-france /landing-fr.html 200
+/redesignr-ai-germany /landing-de.html 200
+/redesignr-ai-italy /landing-it.html 200
+/redesignr-ai-brazil /landing-br.html 200
+/redesignr-ai-japan /landing-jp.html 200
+/redesignr-ai-korea /landing-kr.html 200
+/redesignr-ai-china /landing-cn.html 200
+/redesignr-ai-india /landing-in.html 200
+
+/ai-website-redesign-spain /landing-es.html 200
+/ai-website-redesign-france /landing-fr.html 200
+/ai-website-redesign-germany /landing-de.html 200
+/ai-website-redesign-italy /landing-it.html 200
+/ai-website-redesign-brazil /landing-br.html 200
+/ai-website-redesign-japan /landing-jp.html 200
+/ai-website-redesign-korea /landing-kr.html 200
+/ai-website-redesign-china /landing-cn.html 200
+/ai-website-redesign-india /landing-in.html 200
+
+/*    /index.html   200

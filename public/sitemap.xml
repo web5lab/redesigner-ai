@@ -6,12 +6,36 @@
      <priority>1.0</priority>
    </url>
 +  <url>
+    <loc>https://redesignr.ai/landing-es.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
 +    <loc>https://redesignr.ai/landing-fr.html</loc>
 +    <lastmod>2025-01-15</lastmod>
 +    <changefreq>monthly</changefreq>
 +    <priority>0.9</priority>
 +  </url>
 +  <url>
+    <loc>https://redesignr.ai/landing-de.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://redesignr.ai/landing-it.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://redesignr.ai/landing-br.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
 +    <loc>https://redesignr.ai/landing-jp.html</loc>
 +    <lastmod>2025-01-15</lastmod>
 +    <changefreq>monthly</changefreq>
@@ -23,5 +47,17 @@
 +    <changefreq>monthly</changefreq>
 +    <priority>0.9</priority>
 +  </url>
+  <url>
+    <loc>https://redesignr.ai/landing-cn.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://redesignr.ai/landing-in.html</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
    <url>
      <loc>https://redesignr.ai/blog/</loc>

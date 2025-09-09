@@ -1,0 +1,21 @@
+@@ .. @@
++# Multi-language landing pages
++/fr /landing-fr.html 200
++/jp /landing-jp.html 200
++/kr /landing-kr.html 200
++/japan /landing-jp.html 200
++/korea /landing-kr.html 200
++/france /landing-fr.html 200
++/japanese /landing-jp.html 200
++/korean /landing-kr.html 200
++/french /landing-fr.html 200
++
++# Language-specific redirects based on keywords
++/redesignr-ai-france /landing-fr.html 200
++/redesignr-ai-japan /landing-jp.html 200
++/redesignr-ai-korea /landing-kr.html 200
++/ai-website-redesign-france /landing-fr.html 200
++/ai-website-redesign-japan /landing-jp.html 200
++/ai-website-redesign-korea /landing-kr.html 200
++
+ /*    /index.html   200

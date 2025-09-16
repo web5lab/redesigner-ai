@@ -32,6 +32,22 @@ const Footer = () => {
             </p>
           </div>
 
+          {/* Languages */}
+          <div>
+            <h4 className="font-semibold mb-4">Languages</h4>
+            <ul className="space-y-2 text-slate-400">
+              <li><a href="/landing-es.html" className="hover:text-white transition-colors">🇪🇸 Español</a></li>
+              <li><a href="/landing-fr.html" className="hover:text-white transition-colors">🇫🇷 Français</a></li>
+              <li><a href="/landing-de.html" className="hover:text-white transition-colors">🇩🇪 Deutsch</a></li>
+              <li><a href="/landing-it.html" className="hover:text-white transition-colors">🇮🇹 Italiano</a></li>
+              <li><a href="/landing-br.html" className="hover:text-white transition-colors">🇧🇷 Português</a></li>
+              <li><a href="/landing-jp.html" className="hover:text-white transition-colors">🇯🇵 日本語</a></li>
+              <li><a href="/landing-kr.html" className="hover:text-white transition-colors">🇰🇷 한국어</a></li>
+              <li><a href="/landing-cn.html" className="hover:text-white transition-colors">🇨🇳 中文</a></li>
+              <li><a href="/landing-in.html" className="hover:text-white transition-colors">🇮🇳 हिंदी</a></li>
+            </ul>
+          </div>
+
           {/* Featured Badge */}
 <div className="md:col-span-2 flex flex-col sm:flex-row justify-center items-center gap-6">
   {/* TAFT Badge */}
